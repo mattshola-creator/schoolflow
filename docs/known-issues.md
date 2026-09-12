@@ -2,8 +2,8 @@
 
 ## Open
 
-- The first Netlify production deploy succeeded, but it was built before the public Supabase variables were persisted and `/api/health` therefore returned HTTP 503. A rebuild with the corrected environment is pending verification.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
+- Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.
 
 ## Closed
 
@@ -12,3 +12,5 @@
 - GitHub Actions run #2 passed the full M0 CI quality job on remote commit `09359d6`.
 - GitHub Actions run #3 passed after the Supabase verification records and generated types were published to remote commit `fe7fe57`.
 - The Supabase `SchoolFlow` development project is visible and healthy. The M0 migration is applied, private-schema access is denied to `public`, `anon`, and `authenticated`, generated types are synchronized, and database advisors report no findings.
+- Netlify visitor SSO is limited to non-production deploys so the production SaaS URL remains public while previews stay protected.
+- Netlify production deploy `6aa5a572b311610008ff633a` succeeded from GitHub commit `1087bd3`; `/` and `/api/health` returned HTTP 200 and health reported Supabase as connected.

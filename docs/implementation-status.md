@@ -4,7 +4,7 @@ Last updated: 12 September 2026
 
 ## Current milestone
 
-M0 Bootstrap — In Progress
+M0 Bootstrap — Completed
 
 ## Implemented
 
@@ -28,12 +28,16 @@ M0 Bootstrap — In Progress
 - Dependency peer check passed
 - Repository secrets scan found no committed credentials
 - Canonical GitHub repository populated through the authenticated connector
-- GitHub Actions run #3 passed the full CI quality job on remote commit `fe7fe57`
+- GitHub Actions passed the full CI quality job on deployed remote commit `1087bd3`
 - Remote workflow and health endpoint contents verified on `main`
 - Supabase project `SchoolFlow` (`bgnmvfktscofbwpyougd`) confirmed active and healthy in the expected organization
 - M0 `private` schema and its access restrictions verified remotely
 - Supabase security and performance advisors returned no findings
 - Supabase Auth health endpoint returned HTTP 200 using the active publishable key
+- Netlify production deploy `6aa5a572b311610008ff633a` completed from `main` commit `1087bd3`
+- Live homepage returned HTTP 200 with the SchoolFlow application rendered
+- Live `/api/health` returned HTTP 200 with Supabase status `connected`
+- Production response headers include HSTS, frame denial, content-type protection, strict referrer policy and no-store health caching
 
 ## Migrations
 
@@ -41,20 +45,18 @@ M0 Bootstrap — In Progress
 
 ## Pending
 
-- Verify the Netlify rebuild with persisted Supabase environment values and repeat live smoke tests
 - M1 Identity and Tenancy
 
 ## Blockers
 
-- Docker is unavailable in the current execution environment, so the local Supabase stack could not be run; the migration was instead applied and verified against the designated development project
-- Netlify project `schoolflow-app` has a ready Git-connected production deployment. Visitor SSO is limited to non-production deploys, and the two public Supabase variables are now verified as persisted; a rebuild is pending verification.
+- None for M0 completion or M1 commencement
 
 ## Deployment state
 
-GitHub source/CI and the Supabase M0 foundation are verified. Netlify project configuration exists but is not deployed.
+Deployed and verified at `https://schoolflow-app.netlify.app`. GitHub CI, the production Netlify build, live application, health endpoint and Supabase connectivity all passed.
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These non-runtime specification and agent-instruction files remain in the private continuation checkpoint and were not disclosed to the public repository.
 
 ## Next action
 
-Verify the new GitHub-triggered Netlify rebuild, then confirm HTTP 200 from `/` and `/api/health` with Supabase reported as connected. M1 remains blocked until these smoke tests succeed.
+Begin M1 Identity and Tenancy from the approved PRD and technical design. Preserve the verified M0 foundation and implement tenant identity as secured vertical slices with migrations, RLS and cross-tenant denial tests.

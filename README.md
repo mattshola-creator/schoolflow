@@ -37,4 +37,6 @@ Every tenant-owned table must include an organization boundary, constraints, ind
 
 The intended flow is GitHub pull request, CI, Netlify preview, verification and controlled production promotion. Configure public Supabase values in the appropriate Netlify contexts. Do not commit secrets.
 
+M0 is deployed and verified at [schoolflow-app.netlify.app](https://schoolflow-app.netlify.app). Runtime health is available at [`/api/health`](https://schoolflow-app.netlify.app/api/health).
+
 Project sources and status records are under `docs/`.

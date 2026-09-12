@@ -41,13 +41,13 @@ M0 Bootstrap — In Progress
 
 ## Pending
 
-- Correct the Netlify Git connection/autopublish configuration, then verify the first deployment and live-smoke-test
+- Verify the Netlify rebuild with persisted Supabase environment values and repeat live smoke tests
 - M1 Identity and Tenancy
 
 ## Blockers
 
 - Docker is unavailable in the current execution environment, so the local Supabase stack could not be run; the migration was instead applied and verified against the designated development project
-- Netlify project `schoolflow-app` has its public Supabase variables configured. A new verified `main` push produced no Netlify deploy, so the Git repository connection/autopublish configuration is not operational yet.
+- Netlify project `schoolflow-app` has a ready Git-connected production deployment. Visitor SSO is limited to non-production deploys, and the two public Supabase variables are now verified as persisted; a rebuild is pending verification.
 
 ## Deployment state
 
@@ -57,4 +57,4 @@ The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md
 
 ## Next action
 
-In Netlify, verify that `schoolflow-app` shows `mattshola-creator/schoolflow` under Continuous Deployment, production branch `main`, and automatic production deploys enabled; then trigger **Deploy site**. The verification push reached GitHub and passed CI but created no Netlify or GitHub deployment record, while `/` remained HTTP 404. M1 remains blocked until deployment and smoke tests succeed.
+Verify the new GitHub-triggered Netlify rebuild, then confirm HTTP 200 from `/` and `/api/health` with Supabase reported as connected. M1 remains blocked until these smoke tests succeed.

@@ -2,7 +2,7 @@
 
 ## Open
 
-- Netlify project `schoolflow-app` has the public Supabase environment values, but a new `main` push did not start a deployment. Netlify still reports no current deploy, GitHub has no deployment record, and the production URL returns HTTP 404.
+- The first Netlify production deploy succeeded, but it was built before the public Supabase variables were persisted and `/api/health` therefore returned HTTP 503. A rebuild with the corrected environment is pending verification.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 
 ## Closed

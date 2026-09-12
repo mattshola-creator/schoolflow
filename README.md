@@ -20,7 +20,7 @@ pnpm supabase:start
 pnpm dev
 ```
 
-Replace the example values with those printed by Supabase. Open `http://localhost:3000`; health is at `/api/health`.
+Replace the example values with those printed by Supabase. Open `http://localhost:3000`; health is at `/api/health`. The endpoint returns `200` only when the application can reach the configured Supabase Auth service, otherwise it returns `503` with a safe degraded status.
 
 ## Quality and database commands
 

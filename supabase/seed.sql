@@ -1,0 +1,1 @@
+-- Intentionally empty in M0. Never seed real school data.

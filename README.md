@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SchoolFlow
 
-## Getting Started
+SchoolFlow is a secure, modular operating platform for one school or a multi-school organization. This repository currently contains the M0 production foundation; business modules are not yet implemented.
 
-First, run the development server:
+## Stack
+
+- Next.js App Router, React, strict TypeScript and Tailwind CSS
+- Supabase PostgreSQL, Auth, Storage and RLS
+- Zod, Vitest, GitHub Actions and Netlify
+
+## Requirements and setup
+
+- Node.js 24 and pnpm 11.19.0
+- Docker-compatible runtime for local Supabase
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install --frozen-lockfile
+cp .env.example .env.local
+pnpm supabase:start
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Replace the example values with those printed by Supabase. Open `http://localhost:3000`; health is at `/api/health`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality and database commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm check
+pnpm db:reset
+pnpm db:lint
+pnpm types:database
+```
 
-## Learn More
+Every tenant-owned table must include an organization boundary, constraints, indexes and tested RLS. Never use privileged secrets in browser code.
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The intended flow is GitHub pull request, CI, Netlify preview, verification and controlled production promotion. Configure public Supabase values in the appropriate Netlify contexts. Do not commit secrets.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Project sources and status records are under `docs/`.

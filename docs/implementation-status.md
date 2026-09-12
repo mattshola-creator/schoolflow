@@ -28,11 +28,12 @@ M0 Bootstrap — In Progress
 - Dependency peer check passed
 - Repository secrets scan found no committed credentials
 - Canonical GitHub repository populated through the authenticated connector
-- GitHub Actions run #2 passed the full CI quality job on remote commit `09359d6`
+- GitHub Actions run #3 passed the full CI quality job on remote commit `fe7fe57`
 - Remote workflow and health endpoint contents verified on `main`
 - Supabase project `SchoolFlow` (`bgnmvfktscofbwpyougd`) confirmed active and healthy in the expected organization
 - M0 `private` schema and its access restrictions verified remotely
 - Supabase security and performance advisors returned no findings
+- Supabase Auth health endpoint returned HTTP 200 using the active publishable key
 
 ## Migrations
 
@@ -46,7 +47,7 @@ M0 Bootstrap — In Progress
 ## Blockers
 
 - Docker is unavailable in the current execution environment, so the local Supabase stack could not be run; the migration was instead applied and verified against the designated development project
-- Netlify project `schoolflow-app` exists and its public Supabase variables were configured, but its GitHub repository connection and first deployment are not yet verified
+- Netlify project `schoolflow-app` exists and its public Supabase variables were configured, but the connected capability cannot create the required GitHub repository link; its first deployment is therefore not yet verified
 
 ## Deployment state
 
@@ -56,4 +57,4 @@ The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md
 
 ## Next action
 
-Connect Netlify project `schoolflow-app` to `mattshola-creator/schoolflow`, deploy through the GitHub workflow, and live-smoke-test `/` and `/api/health`. M1 remains blocked until this succeeds.
+In Netlify, connect project `schoolflow-app` to GitHub repository `mattshola-creator/schoolflow` with production branch `main`. Then trigger the first deploy and live-smoke-test `/` and `/api/health`. M1 remains blocked until this succeeds.

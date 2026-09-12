@@ -2,7 +2,7 @@
 
 ## Open
 
-- Netlify project `schoolflow-app` exists with the public Supabase environment values, but the available connection cannot link it to GitHub. The repository link must be enabled in Netlify before the required production deployment can run.
+- Netlify project `schoolflow-app` is connected to GitHub with the public Supabase environment values, but its first production deployment has not yet been verified.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 
 ## Closed

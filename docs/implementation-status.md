@@ -35,16 +35,16 @@ M0 Bootstrap — In Progress
 ## Pending
 
 - Run the local migration and Supabase connectivity check
-- Create or connect the canonical GitHub repository
+- Publish the verified commits to the canonical GitHub repository and verify CI
 - Connect the GitHub repository to a Netlify project and deploy
 - M1 Identity and Tenancy
 
 ## Blockers
 
 - Docker is unavailable in the current execution environment, so the local Supabase stack and migration could not be run
-- The connected Supabase organization `School Management System` currently has no projects; creating one requires explicit cost confirmation
-- The connected GitHub account `mattshola-creator` currently has no repositories and the connector does not expose repository creation
-- The connected Netlify team `mattshola` currently has no SchoolFlow project; creation is deferred until the canonical GitHub repository exists
+- The connected Supabase organization `School Management System` still exposes no projects, so no development project ID, migration target, URL or publishable key is available
+- The canonical GitHub repository `mattshola-creator/schoolflow` now exists and is empty, but it is public and local Git transport has no authenticated push credential
+- The connected Netlify team `mattshola` has no SchoolFlow project; deployment is blocked by the empty GitHub repository and missing Supabase project configuration
 
 ## Deployment state
 
@@ -52,4 +52,4 @@ Not deployed.
 
 ## Next action
 
-Finish and verify M0 locally, then begin M1 after acceptance.
+Refresh or correct Supabase project access and provide authenticated GitHub repository write transport, then migrate, push, deploy and verify M0. M1 remains blocked.

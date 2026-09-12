@@ -1,6 +1,6 @@
 # SchoolFlow
 
-SchoolFlow is a secure, modular operating platform for one school or a multi-school organization. This repository currently contains the M0 production foundation; business modules are not yet implemented.
+SchoolFlow is a secure, modular operating platform for one school or a multi-school organization. The repository contains the verified bootstrap plus M1 identity and tenant foundations; operational school modules are not yet implemented.
 
 ## Stack
 
@@ -21,6 +21,8 @@ pnpm dev
 ```
 
 Replace the example values with those printed by Supabase. Open `http://localhost:3000`; health is at `/api/health`. The endpoint returns `200` only when the application can reach the configured Supabase Auth service, otherwise it returns `503` with a safe degraded status.
+
+Authentication routes are `/sign-up`, `/login`, `/forgot-password` and `/update-password`. Authenticated users without a membership are directed through `/onboarding`; tenant context is resolved only from memberships visible through RLS.
 
 ## Quality and database commands
 

@@ -14,16 +14,674 @@ export type Database = {
   };
   public: {
     Tables: {
-      [_ in never]: never;
+      invitations: {
+        Row: {
+          accepted_at: string | null;
+          accepted_by: string | null;
+          created_at: string;
+          email: string;
+          expires_at: string;
+          id: string;
+          invited_by: string;
+          organization_id: string;
+          role_id: string;
+          school_id: string | null;
+          status: Database["public"]["Enums"]["invitation_status"];
+          token_hash: string;
+        };
+        Insert: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          email: string;
+          expires_at: string;
+          id?: string;
+          invited_by: string;
+          organization_id: string;
+          role_id: string;
+          school_id?: string | null;
+          status?: Database["public"]["Enums"]["invitation_status"];
+          token_hash: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          email?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string;
+          organization_id?: string;
+          role_id?: string;
+          school_id?: string | null;
+          status?: Database["public"]["Enums"]["invitation_status"];
+          token_hash?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invitations_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invitations_role_id_organization_id_fkey";
+            columns: ["role_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "roles";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "invitations_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      locations: {
+        Row: {
+          address_line: string | null;
+          city: string | null;
+          country_code: string;
+          created_at: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          state: string | null;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          timezone: string;
+          updated_at: string;
+        };
+        Insert: {
+          address_line?: string | null;
+          city?: string | null;
+          country_code?: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          state?: string | null;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          timezone?: string;
+          updated_at?: string;
+        };
+        Update: {
+          address_line?: string | null;
+          city?: string | null;
+          country_code?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          state?: string | null;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          timezone?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "locations_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      management_group_schools: {
+        Row: {
+          created_at: string;
+          management_group_id: string;
+          organization_id: string;
+          school_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          management_group_id: string;
+          organization_id: string;
+          school_id: string;
+        };
+        Update: {
+          created_at?: string;
+          management_group_id?: string;
+          organization_id?: string;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "management_group_schools_management_group_id_fkey";
+            columns: ["management_group_id"];
+            isOneToOne: false;
+            referencedRelation: "management_groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "management_group_schools_management_group_id_organization__fkey";
+            columns: ["management_group_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "management_groups";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "management_group_schools_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "management_group_schools_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "management_group_schools_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      management_groups: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "management_groups_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      organization_memberships: {
+        Row: {
+          all_schools: boolean;
+          created_at: string;
+          effective_from: string;
+          effective_to: string | null;
+          id: string;
+          organization_id: string;
+          status: Database["public"]["Enums"]["membership_status"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          all_schools?: boolean;
+          created_at?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          organization_id: string;
+          status?: Database["public"]["Enums"]["membership_status"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          all_schools?: boolean;
+          created_at?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          organization_id?: string;
+          status?: Database["public"]["Enums"]["membership_status"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "organization_memberships_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      organizations: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          slug: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          name: string;
+          slug: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          slug?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      people: {
+        Row: {
+          created_at: string;
+          first_name: string;
+          id: string;
+          last_name: string;
+          preferred_name: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          first_name: string;
+          id?: string;
+          last_name: string;
+          preferred_name?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          first_name?: string;
+          id?: string;
+          last_name?: string;
+          preferred_name?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      permissions: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          key: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          key: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          key?: string;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          created_at: string;
+          email: string;
+          id: string;
+          person_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          id: string;
+          person_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          id?: string;
+          person_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_person_id_fkey";
+            columns: ["person_id"];
+            isOneToOne: true;
+            referencedRelation: "people";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      role_assignments: {
+        Row: {
+          created_at: string;
+          effective_from: string;
+          effective_to: string | null;
+          id: string;
+          management_group_id: string | null;
+          organization_id: string;
+          role_id: string;
+          school_id: string | null;
+          scope: Database["public"]["Enums"]["assignment_scope"];
+          status: Database["public"]["Enums"]["membership_status"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          management_group_id?: string | null;
+          organization_id: string;
+          role_id: string;
+          school_id?: string | null;
+          scope: Database["public"]["Enums"]["assignment_scope"];
+          status?: Database["public"]["Enums"]["membership_status"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          management_group_id?: string | null;
+          organization_id?: string;
+          role_id?: string;
+          school_id?: string | null;
+          scope?: Database["public"]["Enums"]["assignment_scope"];
+          status?: Database["public"]["Enums"]["membership_status"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "role_assignments_management_group_id_fkey";
+            columns: ["management_group_id"];
+            isOneToOne: false;
+            referencedRelation: "management_groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "role_assignments_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "role_assignments_role_id_organization_id_fkey";
+            columns: ["role_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "roles";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "role_assignments_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      role_permissions: {
+        Row: {
+          created_at: string;
+          organization_id: string;
+          permission_id: string;
+          role_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          organization_id: string;
+          permission_id: string;
+          role_id: string;
+        };
+        Update: {
+          created_at?: string;
+          organization_id?: string;
+          permission_id?: string;
+          role_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey";
+            columns: ["permission_id"];
+            isOneToOne: false;
+            referencedRelation: "permissions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "role_permissions_role_id_organization_id_fkey";
+            columns: ["role_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "roles";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      roles: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          is_system: boolean;
+          key: string;
+          name: string;
+          organization_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_system?: boolean;
+          key: string;
+          name: string;
+          organization_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_system?: boolean;
+          key?: string;
+          name?: string;
+          organization_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "roles_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      school_memberships: {
+        Row: {
+          created_at: string;
+          effective_from: string;
+          effective_to: string | null;
+          id: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["membership_status"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["membership_status"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["membership_status"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "school_memberships_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "school_memberships_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      schools: {
+        Row: {
+          code: string;
+          created_at: string;
+          id: string;
+          location_id: string;
+          name: string;
+          organization_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          id?: string;
+          location_id: string;
+          name: string;
+          organization_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          id?: string;
+          location_id?: string;
+          name?: string;
+          organization_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "schools_location_id_fkey";
+            columns: ["location_id"];
+            isOneToOne: false;
+            referencedRelation: "locations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "schools_location_id_organization_id_fkey";
+            columns: ["location_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "locations";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "schools_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      accept_invitation: { Args: { p_token_hash: string }; Returns: string };
+      create_organization_with_school: {
+        Args: {
+          p_location_name: string;
+          p_organization_name: string;
+          p_organization_slug: string;
+          p_school_code: string;
+          p_school_name: string;
+        };
+        Returns: string;
+      };
+      has_org_membership: {
+        Args: { target_organization_id: string };
+        Returns: boolean;
+      };
+      has_permission: {
+        Args: {
+          permission_key: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: boolean;
+      };
+      has_school_membership: {
+        Args: { target_organization_id: string; target_school_id: string };
+        Returns: boolean;
+      };
     };
     Enums: {
-      [_ in never]: never;
+      assignment_scope: "organization" | "management_group" | "school";
+      invitation_status: "pending" | "accepted" | "revoked" | "expired";
+      lifecycle_status: "active" | "inactive" | "archived";
+      membership_status: "invited" | "active" | "suspended" | "ended";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -150,6 +808,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      assignment_scope: ["organization", "management_group", "school"],
+      invitation_status: ["pending", "accepted", "revoked", "expired"],
+      lifecycle_status: ["active", "inactive", "archived"],
+      membership_status: ["invited", "active", "suspended", "ended"],
+    },
   },
 } as const;

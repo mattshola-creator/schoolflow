@@ -11,7 +11,7 @@ describe("foundation page", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/operational statistics are not mocked/i),
+      screen.getByText(/operational school modules are introduced/i),
     ).toBeInTheDocument();
   });
 });

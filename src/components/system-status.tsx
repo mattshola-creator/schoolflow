@@ -6,9 +6,7 @@ export function SystemStatus() {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_50px_-32px_rgba(15,23,42,0.45)]">
       <div className="border-b border-slate-200 px-6 py-5">
-        <p className="text-sm font-semibold text-slate-950">
-          Foundation status
-        </p>
+        <p className="text-sm font-semibold text-slate-950">Platform status</p>
         <p className="mt-1 text-sm text-slate-500">
           Live configuration readiness
         </p>
@@ -28,8 +26,8 @@ export function SystemStatus() {
         />
       </dl>
       <div className="bg-slate-50 px-6 py-4 text-xs leading-5 text-slate-600">
-        This screen reports real foundation state. Product modules and
-        operational statistics are not mocked.
+        Identity and tenant foundations are connected. Operational school
+        modules are introduced in later milestones.
       </div>
     </div>
   );

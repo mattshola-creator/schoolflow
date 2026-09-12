@@ -1,5 +1,6 @@
 import { ArrowRight, Building2, CheckCircle2, ShieldCheck } from "lucide-react";
 import { SystemStatus } from "@/components/system-status";
+import Link from "next/link";
 
 export default function Home() {
   const principles = [
@@ -23,9 +24,12 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
-            Foundation build
-          </span>
+          <Link
+            href="/login"
+            className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Sign in
+          </Link>
         </div>
       </header>
       <div className="mx-auto grid max-w-6xl gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[1.2fr_0.8fr] lg:py-24">
@@ -45,10 +49,13 @@ export default function Home() {
             parent services in one tenant-safe platform.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <span className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-emerald-800 px-5 font-semibold text-white shadow-sm">
-              Identity and tenancy next
+            <Link
+              href="/sign-up"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-emerald-800 px-5 font-semibold text-white shadow-sm"
+            >
+              Create your workspace
               <ArrowRight aria-hidden="true" className="size-4" />
-            </span>
+            </Link>
             <a
               className="inline-flex h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
               href="/api/health"

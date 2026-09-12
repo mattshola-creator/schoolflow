@@ -4,6 +4,8 @@
 
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 - Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.
+- Supabase security advisor reports intentional warnings for authenticated `SECURITY DEFINER` functions. Each has a fixed empty search path, explicit authenticated grant, revoked anonymous/public execution and caller/scope validation.
+- Supabase performance advisor reports informational missing-index, unused-index and permissive-policy overlap findings. These should be revisited against measured workloads.
 
 ## Closed
 

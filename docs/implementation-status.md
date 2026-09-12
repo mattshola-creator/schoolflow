@@ -4,7 +4,7 @@ Last updated: 12 September 2026
 
 ## Current milestone
 
-M0 Bootstrap — Completed
+M1 Identity & Tenancy — In Progress (implementation recovered; final gate pending)
 
 ## Implemented
 
@@ -14,6 +14,12 @@ M0 Bootstrap — Completed
 - Bounded runtime Supabase connectivity probe in `/api/health`
 - Vitest foundation, CI and Netlify configuration
 - Architecture and continuation records
+- Supabase Auth signup, login, logout, email confirmation callback and password recovery/update routes
+- Person/profile model, organization tenant boundary, management groups, reusable locations and schools
+- Organization/school memberships, configurable roles, permissions and scoped assignments
+- Atomic organization/first-school onboarding and token-hash invitation acceptance
+- Operation-specific RLS, permission helpers and cross-tenant foreign-key constraints
+- Protected application shell, membership-backed dashboard and server-validated active tenant/school context
 
 ## Verified
 
@@ -42,10 +48,14 @@ M0 Bootstrap — Completed
 ## Migrations
 
 - `20260912000100_bootstrap_private_schema.sql` — applied remotely as migration version `20260912173038` / `bootstrap_private_schema`
+- `20260912000200_identity_tenancy.sql` — applied remotely as `20260912202428` / `identity_tenancy`
+- `20260912000300_tenant_onboarding.sql` — applied remotely as `20260912202856` / `tenant_onboarding`
+- `20260912000400_fix_tenant_onboarding.sql` — applied remotely as `20260912203053` / `fix_tenant_onboarding`
+- `20260912000500_restrict_private_trigger_functions.sql` — applied remotely as `20260912220010` / `restrict_private_trigger_functions`
 
 ## Pending
 
-- M1 Identity and Tenancy
+- Final combined quality gate, GitHub publication/CI, Netlify deployment and live M1 verification
 
 ## Blockers
 
@@ -59,4 +69,4 @@ The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md
 
 ## Next action
 
-Begin M1 Identity and Tenancy from the approved PRD and technical design. Preserve the verified M0 foundation and implement tenant identity as secured vertical slices with migrations, RLS and cross-tenant denial tests.
+Run the complete M1 quality gate, publish through the authenticated GitHub connector, verify CI and Netlify, then execute live authentication and tenancy smoke tests.

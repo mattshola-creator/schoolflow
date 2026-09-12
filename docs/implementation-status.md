@@ -27,29 +27,33 @@ M0 Bootstrap — In Progress
 - Health response included no-store caching and configured security headers
 - Dependency peer check passed
 - Repository secrets scan found no committed credentials
+- Canonical GitHub repository populated through the authenticated connector
+- GitHub Actions run #2 passed the full CI quality job on remote commit `09359d6`
+- Remote workflow and health endpoint contents verified on `main`
+- Supabase project `SchoolFlow` (`bgnmvfktscofbwpyougd`) confirmed active and healthy in the expected organization
+- M0 `private` schema and its access restrictions verified remotely
+- Supabase security and performance advisors returned no findings
 
 ## Migrations
 
-- `20260912000100_bootstrap_private_schema.sql` — not applied remotely
+- `20260912000100_bootstrap_private_schema.sql` — applied remotely as migration version `20260912173038` / `bootstrap_private_schema`
 
 ## Pending
 
-- Run the local migration and Supabase connectivity check
-- Publish the verified commits to the canonical GitHub repository and verify CI
-- Connect the GitHub repository to a Netlify project and deploy
+- Complete the GitHub connection for Netlify project `schoolflow-app`, deploy and live-smoke-test
 - M1 Identity and Tenancy
 
 ## Blockers
 
-- Docker is unavailable in the current execution environment, so the local Supabase stack and migration could not be run
-- The connected Supabase organization `School Management System` still exposes no projects, so no development project ID, migration target, URL or publishable key is available
-- The canonical GitHub repository `mattshola-creator/schoolflow` now exists and is empty, but it is public and local Git transport has no authenticated push credential
-- The connected Netlify team `mattshola` has no SchoolFlow project; deployment is blocked by the empty GitHub repository and missing Supabase project configuration
+- Docker is unavailable in the current execution environment, so the local Supabase stack could not be run; the migration was instead applied and verified against the designated development project
+- Netlify project `schoolflow-app` exists and its public Supabase variables were configured, but its GitHub repository connection and first deployment are not yet verified
 
 ## Deployment state
 
-Not deployed.
+GitHub source/CI and the Supabase M0 foundation are verified. Netlify project configuration exists but is not deployed.
+
+The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These non-runtime specification and agent-instruction files remain in the private continuation checkpoint and were not disclosed to the public repository.
 
 ## Next action
 
-Refresh or correct Supabase project access and provide authenticated GitHub repository write transport, then migrate, push, deploy and verify M0. M1 remains blocked.
+Connect Netlify project `schoolflow-app` to `mattshola-creator/schoolflow`, deploy through the GitHub workflow, and live-smoke-test `/` and `/api/health`. M1 remains blocked until this succeeds.

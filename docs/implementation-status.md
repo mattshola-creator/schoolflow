@@ -4,7 +4,7 @@ Last updated: 13 September 2026
 
 ## Current milestone
 
-M3 Academic Structure & Setup — Completed — Deployed & Verified
+M4 Student & Guardian Core — Implemented; final publication and deployment verification in progress
 
 ## Implemented
 
@@ -24,6 +24,12 @@ M3 Academic Structure & Setup — Completed — Deployed & Verified
 - School subject catalog with atomic level applicability and core/elective classification
 - Database-enforced school/session/period academic locks with immutable release history
 - Persisted academic setup readiness and resumable setup administration experience
+- Organization-level student profiles linked to shared Person identity
+- Historical school/session enrollments and dated class memberships
+- Historical guardian relationships with contact, portal-access and financial-responsibility attributes
+- Atomic authorized student/enrollment/placement/guardian creation
+- Paginated student register, Student 360 profile and enrollment/class history
+- Atomic student/guardian CSV import validation and persisted preview batches
 
 ## Verified
 
@@ -66,6 +72,10 @@ M3 Academic Structure & Setup — Completed — Deployed & Verified
 - Live `/api/health` returned HTTP 200 with Supabase `connected`
 - All disposable M3 QA identity and tenant/academic records were removed and absence verified
 - Permanent organization-owner recovery was corrected and verified on the live application: production password setup, login, dashboard and academic setup access, logout and repeat login passed; the account remains protected from QA cleanup
+- M4 local `pnpm check` passed formatting, zero-warning lint, strict TypeScript, 35 tests across 12 files and the Next.js production build
+- M4 production dependency audit returned no known vulnerabilities
+- M4 database migrations passed rollback-only syntax rehearsals and were applied to the SchoolFlow development project
+- M4 remote transaction passed atomic student/guardian creation, own-school visibility, outsider/cross-tenant denial, identity-rewrite denial and historical-delete denial; all disposable fixtures rolled back
 
 ## Migrations
 
@@ -79,10 +89,13 @@ M3 Academic Structure & Setup — Completed — Deployed & Verified
 - `20260913085906_academic_foundation.sql` — remote `20260913090309` / `academic_foundation`
 - `20260913090742_harden_academic_mutations.sql` — remote `20260913090839` / `harden_academic_mutations`
 - `20260913091415_preserve_academic_history.sql` — remote `20260913091437` / `preserve_academic_history`
+- `20260913200401_student_guardian_core.sql` — remote `20260913200706` / `student_guardian_core`
+- `20260913201126_harden_student_history.sql` — remote `20260913201233` / `harden_student_history`
+- `20260913201645_atomic_student_import_preview.sql` — remote / `atomic_student_import_preview`
 
 ## Blockers
 
-- None for M3.
+- None for implementation. M4 still requires GitHub CI, Netlify production deployment and live M4 smoke verification before completion.
 
 ## Deployment state
 
@@ -90,6 +103,6 @@ Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical rep
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
-## M4 readiness
+## M5 readiness
 
-Ready. M3 has passed its local, database/security, GitHub CI, Netlify deployment and live verification gates. The next approved milestone is M4 Student & Guardian Core; no M4 implementation has started.
+Not ready. M4 must pass publication, CI, deployment and live verification gates first.

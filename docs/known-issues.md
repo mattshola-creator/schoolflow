@@ -10,6 +10,8 @@
 - M2 adds one intentional caller-bound `SECURITY DEFINER` inspection RPC. It has a fixed empty search path, accepts no target-user identifier, validates the authenticated caller and requested tenant/school context, and is executable only by `authenticated`, `service_role` and `postgres`.
 - M3 adds restricted caller-bound entitlement helpers and atomic academic RPCs. They have fixed empty search paths, derive the caller from `auth.uid()`, validate membership, school scope, permission, entitlement and feature state, and expose no target-user inspection surface. The security advisor therefore reports 12 intentional authenticated `SECURITY DEFINER` warnings in total.
 - M3 performance advisor findings are informational missing/unused-index and permissive-policy-overlap recommendations. Operational indexes cover the primary school/session/level access paths; remaining indexes should be driven by measured workloads.
+- M4 adds four intentional caller-bound `SECURITY DEFINER` functions for student capability evaluation, row visibility, atomic record creation and atomic import preview. They use fixed empty search paths, derive identity from `auth.uid()`, validate school scope through M1/M2 controls, and revoke anonymous/public execution.
+- M4 performance advisor findings remain informational foreign-key/index and permissive-policy observations. Operational indexes cover student register, student history, guardian history and import preview access paths; further indexes require measured workloads.
 
 ## Closed
 

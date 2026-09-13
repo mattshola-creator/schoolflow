@@ -1,6 +1,6 @@
 # SchoolFlow
 
-SchoolFlow is a secure, modular operating platform for one school or a multi-school organization. The repository contains the verified bootstrap plus M1 identity and tenant foundations; operational school modules are not yet implemented.
+SchoolFlow is a secure, modular operating platform for one school or a multi-school organization. The repository contains the verified platform, identity, authorization and academic foundations plus the M4 student and guardian core.
 
 ## Stack
 
@@ -36,6 +36,8 @@ pnpm types:database
 Every tenant-owned table must include an organization boundary, constraints, indexes and tested RLS. Never use privileged secrets in browser code.
 
 Academic setup is available at `/academic-setup` for an active school context with the `academics.setup.view` permission, academics entitlement and `academics.academic_setup` feature enabled. Management permissions are split across sessions, periods, class structure, subjects and locks.
+
+Student administration is available at `/students`. It includes an RLS-scoped register, atomic student/enrollment/class/guardian creation, Student 360 history and a controlled CSV validation preview. A current or planned academic session and active class level must exist before enrollment. Preview accepts at most 500 rows and requires `first_name`, `last_name`, `date_of_birth` and `student_number`; optional guardian fields must be supplied as a complete tuple. Preview never creates or auto-merges student records.
 
 ## Deployment
 

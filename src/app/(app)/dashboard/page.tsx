@@ -29,7 +29,7 @@ export default async function DashboardPage() {
     );
   const { options, active } = await loadTenantContext();
   return (
-    <main className="mx-auto max-w-6xl px-5 py-12">
+    <main className="py-12">
       <p className="text-sm font-semibold text-emerald-800">Secure workspace</p>
       <h1 className="mt-2 text-3xl font-semibold">Your organizations</h1>
       {active && (

@@ -4,7 +4,7 @@ Last updated: 13 September 2026
 
 ## Current milestone
 
-M1 Identity & Tenancy — Completed — Deployed & Verified
+M2 Authorization & Entitlements — Implemented; publication and deployment verification pending
 
 ## Implemented
 
@@ -16,6 +16,10 @@ M1 Identity & Tenancy — Completed — Deployed & Verified
 - Operation-specific RLS, permission helpers and cross-tenant foreign-key constraints
 - Protected application shell, membership-backed dashboard and server-validated active tenant/school context
 - Restricted trigger-only functions and fixed-search-path privileged RPCs
+- Caller-bound effective-permission and product-availability evaluator
+- Secure `/api/authorization` inspection endpoint and reusable server capability guard
+- Platform module/feature catalog, configurable plans, tenant plan state and operational feature flags
+- Permission- and entitlement-aware authenticated navigation with distinct denied/unavailable states
 
 ## Verified
 
@@ -36,6 +40,10 @@ M1 Identity & Tenancy — Completed — Deployed & Verified
 - Live password-recovery initiation returned the non-enumerating confirmation response
 - Live `/api/health` returned HTTP 200 with Supabase `connected`
 - All disposable live QA users and tenant data were removed and absence verified
+- M2 local `pnpm check` passed formatting, zero-warning lint, strict TypeScript, 22 tests across 8 files and production build
+- M2 production dependency audit returned no known vulnerabilities
+- Remote M2 authorization transaction passed allowed scoped access, non-member/cross-tenant/invalid-school denial, self-role-escalation denial, plan/flag mutation denial, non-entitled module, disabled feature and suspended-membership cases; all fixtures rolled back
+- All six M2 configuration tables have RLS, explicit deny policies and no `anon` or `authenticated` table privileges
 
 ## Migrations
 
@@ -44,10 +52,12 @@ M1 Identity & Tenancy — Completed — Deployed & Verified
 - `20260912000300_tenant_onboarding.sql` — remote `20260912202856` / `tenant_onboarding`
 - `20260912000400_fix_tenant_onboarding.sql` — remote `20260912203053` / `fix_tenant_onboarding`
 - `20260912000500_restrict_private_trigger_functions.sql` — remote `20260912220010` / `restrict_private_trigger_functions`
+- `20260913052337_authorization_entitlements.sql` — remote `20260913052820` / `authorization_entitlements`
+- `20260913052955_harden_entitlement_catalog.sql` — remote `20260913053032` / `harden_entitlement_catalog`
 
 ## Blockers
 
-- None for M1 completion or M2 commencement.
+- M2 GitHub CI, Netlify production deployment and live authorization smoke testing remain required before completion.
 
 ## Deployment state
 
@@ -55,6 +65,6 @@ Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical rep
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
-## M2 readiness
+## M3 readiness
 
-Ready. M2 is Authorization & Entitlements: complete the effective-permission evaluator and inspection endpoint, module entitlement/feature-flag model, and integration of permission/entitlement checks with navigation and server operations. The foundational role, permission and scoped-assignment tables were brought forward into M1 by the latest approved instruction and must be extended rather than rebuilt.
+Not ready until the M2 revision passes GitHub CI, Netlify deployment and live authorization/entitlement verification.

@@ -223,6 +223,45 @@ export type Database = {
           },
         ];
       };
+      organization_feature_flags: {
+        Row: {
+          enabled: boolean;
+          feature_id: string;
+          organization_id: string;
+          reason: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          enabled: boolean;
+          feature_id: string;
+          organization_id: string;
+          reason?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          enabled?: boolean;
+          feature_id?: string;
+          organization_id?: string;
+          reason?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "organization_feature_flags_feature_id_fkey";
+            columns: ["feature_id"];
+            isOneToOne: false;
+            referencedRelation: "product_features";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "organization_feature_flags_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       organization_memberships: {
         Row: {
           all_schools: boolean;
@@ -263,6 +302,54 @@ export type Database = {
             columns: ["organization_id"];
             isOneToOne: false;
             referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      organization_plans: {
+        Row: {
+          created_at: string;
+          ends_at: string | null;
+          id: string;
+          organization_id: string;
+          plan_id: string;
+          starts_at: string;
+          status: Database["public"]["Enums"]["subscription_status"];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          organization_id: string;
+          plan_id: string;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["subscription_status"];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          organization_id?: string;
+          plan_id?: string;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["subscription_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "organization_plans_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: true;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "organization_plans_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "plans";
             referencedColumns: ["id"];
           },
         ];
@@ -342,6 +429,146 @@ export type Database = {
           description?: string;
           id?: string;
           key?: string;
+        };
+        Relationships: [];
+      };
+      plan_module_entitlements: {
+        Row: {
+          created_at: string;
+          enabled: boolean;
+          module_id: string;
+          plan_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          enabled?: boolean;
+          module_id: string;
+          plan_id: string;
+        };
+        Update: {
+          created_at?: string;
+          enabled?: boolean;
+          module_id?: string;
+          plan_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "plan_module_entitlements_module_id_fkey";
+            columns: ["module_id"];
+            isOneToOne: false;
+            referencedRelation: "product_modules";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "plan_module_entitlements_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "plans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      plans: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          is_active: boolean;
+          key: string;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          is_active?: boolean;
+          key: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          is_active?: boolean;
+          key?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      product_features: {
+        Row: {
+          created_at: string;
+          default_enabled: boolean;
+          description: string;
+          id: string;
+          is_active: boolean;
+          key: string;
+          module_id: string;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          default_enabled?: boolean;
+          description: string;
+          id?: string;
+          is_active?: boolean;
+          key: string;
+          module_id: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          default_enabled?: boolean;
+          description?: string;
+          id?: string;
+          is_active?: boolean;
+          key?: string;
+          module_id?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "product_features_module_id_fkey";
+            columns: ["module_id"];
+            isOneToOne: false;
+            referencedRelation: "product_modules";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      product_modules: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          is_active: boolean;
+          key: string;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          is_active?: boolean;
+          key: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          is_active?: boolean;
+          key?: string;
+          name?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -660,6 +887,10 @@ export type Database = {
         };
         Returns: string;
       };
+      get_my_authorization: {
+        Args: { target_organization_id: string; target_school_id?: string };
+        Returns: Json;
+      };
       has_org_membership: {
         Args: { target_organization_id: string };
         Returns: boolean;
@@ -682,6 +913,7 @@ export type Database = {
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
       lifecycle_status: "active" | "inactive" | "archived";
       membership_status: "invited" | "active" | "suspended" | "ended";
+      subscription_status: "trialing" | "active" | "suspended" | "expired";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -813,6 +1045,7 @@ export const Constants = {
       invitation_status: ["pending", "accepted", "revoked", "expired"],
       lifecycle_status: ["active", "inactive", "archived"],
       membership_status: ["invited", "active", "suspended", "ended"],
+      subscription_status: ["trialing", "active", "suspended", "expired"],
     },
   },
 } as const;

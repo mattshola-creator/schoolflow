@@ -65,6 +65,7 @@ M3 Academic Structure & Setup — Completed — Deployed & Verified
 - Live valid login, invalid-login rejection and logout passed; unauthenticated protected routes redirected safely
 - Live `/api/health` returned HTTP 200 with Supabase `connected`
 - All disposable M3 QA identity and tenant/academic records were removed and absence verified
+- Permanent organization-owner recovery was corrected and verified on the live application: production password setup, login, dashboard and academic setup access, logout and repeat login passed; the account remains protected from QA cleanup
 
 ## Migrations
 

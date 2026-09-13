@@ -2,6 +2,8 @@
 
 ## Open
 
+- Owner password recovery is blocked until the hosted Supabase Auth Site URL and redirect allow-list are changed from localhost to the deployed SchoolFlow origin. The application and Netlify URL fixes are implemented and tested; a new recovery email must be issued only after the hosted Auth setting is verified.
+
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 - Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.
 - Supabase security advisor reports intentional warnings for authenticated `SECURITY DEFINER` functions. Each has a fixed empty search path, explicit authenticated grant, revoked anonymous/public execution and caller/scope validation.

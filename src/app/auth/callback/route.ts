@@ -13,6 +13,13 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL(next, url.origin));
   }
+  if (next === "/update-password")
+    return NextResponse.redirect(
+      new URL(
+        "/forgot-password?error=That+recovery+link+is+invalid+or+expired.+Request+a+new+one",
+        url.origin,
+      ),
+    );
   return NextResponse.redirect(
     new URL(
       "/login?error=Authentication+link+is+invalid+or+expired",

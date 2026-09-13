@@ -70,7 +70,7 @@ M3 Academic Structure & Setup — In Progress
 - `20260913052955_harden_entitlement_catalog.sql` — remote `20260913053032` / `harden_entitlement_catalog`
 - `20260913085906_academic_foundation.sql` — remote `20260913090309` / `academic_foundation`
 - `20260913090742_harden_academic_mutations.sql` — remote `20260913090839` / `harden_academic_mutations`
-- `20260913091415_preserve_academic_history.sql` — remote migration applied / `preserve_academic_history`
+- `20260913091415_preserve_academic_history.sql` — remote `20260913091437` / `preserve_academic_history`
 
 ## Blockers
 

@@ -13,6 +13,8 @@
 
 ## Closed
 
+- M3 Academic Structure & Setup passed the local quality/security gate, remote constraint/RLS/lock denial matrix, GitHub CI, Netlify production deployment and live authenticated academic setup journey. Disposable QA identity and academic records were removed.
+
 - M2 Authorization & Entitlements passed the local quality/security gate, remote schema and denial matrix, GitHub CI, exact-revision Netlify deployment, and live allowed/denied authorization smoke tests. Disposable QA identity and tenant records were removed and baseline entitlements restored.
 - M1 Identity & Tenancy passed the local quality gate, remote RLS/invitation checks, GitHub CI, Netlify deployment, and live authentication/onboarding/invitation smoke tests. Disposable QA identities and tenant records were removed.
 - Trigger-only `private` schema functions no longer grant direct execution to API roles; their migration intentionally remains handled by PostgreSQL triggers.

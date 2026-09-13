@@ -16,8 +16,10 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   {
     module: "students",
     permission: "students.view",
+    feature: "students.student_records",
     label: "Students",
     description: "Student and guardian records",
+    href: "/students",
   },
   {
     module: "staff",

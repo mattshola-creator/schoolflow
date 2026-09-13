@@ -1,4 +1,6 @@
 import { AuthCard, buttonClass, fieldClass } from "@/components/auth-card";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { updatePassword } from "./actions";
 export default async function UpdatePasswordPage({
   searchParams,
@@ -6,6 +8,12 @@ export default async function UpdatePasswordPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user)
+    redirect(
+      "/forgot-password?error=Request+a+new+recovery+link+to+change+your+password",
+    );
   return (
     <AuthCard
       title="Choose a new password"

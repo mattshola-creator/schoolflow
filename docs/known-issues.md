@@ -11,6 +11,7 @@
 
 ## Closed
 
+- M2 Authorization & Entitlements passed the local quality/security gate, remote schema and denial matrix, GitHub CI, exact-revision Netlify deployment, and live allowed/denied authorization smoke tests. Disposable QA identity and tenant records were removed and baseline entitlements restored.
 - M1 Identity & Tenancy passed the local quality gate, remote RLS/invitation checks, GitHub CI, Netlify deployment, and live authentication/onboarding/invitation smoke tests. Disposable QA identities and tenant records were removed.
 - Trigger-only `private` schema functions no longer grant direct execution to API roles; their migration intentionally remains handled by PostgreSQL triggers.
 

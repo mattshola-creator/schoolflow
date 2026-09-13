@@ -4,7 +4,7 @@ Last updated: 13 September 2026
 
 ## Current milestone
 
-M2 Authorization & Entitlements — Implemented; publication and deployment verification pending
+M2 Authorization & Entitlements — Completed — Deployed & Verified
 
 ## Implemented
 
@@ -44,6 +44,13 @@ M2 Authorization & Entitlements — Implemented; publication and deployment veri
 - M2 production dependency audit returned no known vulnerabilities
 - Remote M2 authorization transaction passed allowed scoped access, non-member/cross-tenant/invalid-school denial, self-role-escalation denial, plan/flag mutation denial, non-entitled module, disabled feature and suspended-membership cases; all fixtures rolled back
 - All six M2 configuration tables have RLS, explicit deny policies and no `anon` or `authenticated` table privileges
+- GitHub Actions run `34740709673` passed on M2 commit `43d9d8a`
+- Netlify production deploy `6aa63652f05cd5000928ac5b` succeeded from the same M2 commit using Node.js 24
+- Live homepage and `/api/health` passed; health reported Supabase `connected`
+- Live unauthenticated authorization inspection returned a safe 401 response and the protected dashboard redirected to login
+- Live authenticated dashboard loaded the QA school context; `/api/authorization` returned 26 effective permissions and nine module states without exposing a user identifier
+- Live Students capability passed with permission + entitlement + enabled module; the same route rendered an unavailable state after its entitlement was disabled, then passed again after restoration
+- Invalid capability state failed safely; disposable QA identity and organization records were removed and absence verified
 
 ## Migrations
 
@@ -57,14 +64,14 @@ M2 Authorization & Entitlements — Implemented; publication and deployment veri
 
 ## Blockers
 
-- M2 GitHub CI, Netlify production deployment and live authorization smoke testing remain required before completion.
+- None for M2 completion or M3 commencement.
 
 ## Deployment state
 
-Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; GitHub CI, Netlify production build, live Auth/application journeys and Supabase connectivity passed on the M1 revision.
+Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; GitHub CI, Netlify production build, live authorization/application journeys and Supabase connectivity passed on the M2 revision.
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
 ## M3 readiness
 
-Not ready until the M2 revision passes GitHub CI, Netlify deployment and live authorization/entitlement verification.
+Ready. M3 is Academic Foundation: sessions/periods, class levels/arms, subjects, academic locks and the setup-wizard foundation. No M3 implementation has begun.

@@ -4,7 +4,7 @@ Last updated: 13 September 2026
 
 ## Current milestone
 
-M3 Academic Structure & Setup — In Progress
+M3 Academic Structure & Setup — Completed — Deployed & Verified
 
 ## Implemented
 
@@ -27,7 +27,7 @@ M3 Academic Structure & Setup — In Progress
 
 ## Verified
 
-- Final `pnpm check`: formatting, zero-warning ESLint, strict TypeScript, 14 tests across 6 files and Next.js production build passed
+- Final M3 `pnpm check`: formatting, zero-warning ESLint, strict TypeScript, 28 tests across 10 files and Next.js production build passed
 - Production dependency audit returned no known vulnerabilities
 - Secrets review found no committed service-role, secret key, private key or environment credential
 - RLS tests passed for tenant-scoped SELECT, INSERT, UPDATE and DELETE plus cross-tenant privilege-escalation denial
@@ -58,6 +58,13 @@ M3 Academic Structure & Setup — In Progress
 - Remote M3 migration syntax was exercised in a rollback transaction before application
 - M3 database transaction passed valid session/period/structure/subject creation, invalid-date denial, duplicate denial, lock enforcement/release, immutable lock history, viewer mutation denial and cross-organization denial; all fixtures rolled back
 - M3 entitlement integration transaction denied setup access and writes when the academics module entitlement was disabled; all fixtures rolled back
+- GitHub Actions run `34749847928` passed the full M3 production gate on tested head `f1f4e41`
+- Live M3 QA created a complete school academic setup through real authenticated Supabase requests: current session and period, section, configurable level, custom arm and level-scoped subject
+- Live setup status resolved to `ready`; the authenticated dashboard and academic setup page rendered the active school context and persisted records
+- Live direct-ID cross-tenant mutation returned HTTP 403; an active school lock blocked mutation, authorized release succeeded and the post-release mutation succeeded
+- Live valid login, invalid-login rejection and logout passed; unauthenticated protected routes redirected safely
+- Live `/api/health` returned HTTP 200 with Supabase `connected`
+- All disposable M3 QA identity and tenant/academic records were removed and absence verified
 
 ## Migrations
 
@@ -74,14 +81,14 @@ M3 Academic Structure & Setup — In Progress
 
 ## Blockers
 
-- None for M3 implementation. Final local gate, publication, CI, deployment and live verification remain pending.
+- None for M3.
 
 ## Deployment state
 
-Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; GitHub CI, Netlify production build, live authorization/application journeys and Supabase connectivity passed on the M2 revision.
+Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; M3 was published through pull request #1 and its real GitHub CI gate passed before merge. The production Netlify build, live academic setup journey and Supabase connectivity passed against the published M3 source using Node.js 24.
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
 ## M4 readiness
 
-Not ready. M3 must pass the full local gate, GitHub CI, Netlify deployment and live academic setup verification first.
+Ready. M3 has passed its local, database/security, GitHub CI, Netlify deployment and live verification gates. The next approved milestone is M4 Student & Guardian Core; no M4 implementation has started.

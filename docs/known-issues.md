@@ -2,8 +2,6 @@
 
 ## Open
 
-- Owner password recovery is blocked until the hosted Supabase Auth Site URL and redirect allow-list are changed from localhost to the deployed SchoolFlow origin. The application and Netlify URL fixes are implemented and tested; a new recovery email must be issued only after the hosted Auth setting is verified.
-
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 - Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.
 - Supabase security advisor reports intentional warnings for authenticated `SECURITY DEFINER` functions. Each has a fixed empty search path, explicit authenticated grant, revoked anonymous/public execution and caller/scope validation.
@@ -14,6 +12,8 @@
 - M3 performance advisor findings are informational missing/unused-index and permissive-policy-overlap recommendations. Operational indexes cover the primary school/session/level access paths; remaining indexes should be driven by measured workloads.
 
 ## Closed
+
+- The permanent owner password-recovery flow no longer falls back to localhost. Hosted Supabase Auth uses the production Site URL and approved callback, Netlify has an explicit production site URL, expired links return a useful recovery state, and the owner verified password setup, login, dashboard and academic access, logout, and repeat login without sharing the password.
 
 - M3 Academic Structure & Setup passed the local quality/security gate, remote constraint/RLS/lock denial matrix, GitHub CI, Netlify production deployment and live authenticated academic setup journey. Disposable QA identity and academic records were removed.
 

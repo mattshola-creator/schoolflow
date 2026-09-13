@@ -442,10 +442,11 @@ export type Database = {
             referencedColumns: ["id", "organization_id", "school_id"];
           },
           {
-            foreignKeyName: "class_memberships_enrollment_id_student_id_organization_id_fkey";
+            foreignKeyName: "class_memberships_enrollment_identity_session_fkey";
             columns: [
               "enrollment_id",
               "student_id",
+              "academic_session_id",
               "organization_id",
               "school_id",
             ];
@@ -454,6 +455,7 @@ export type Database = {
             referencedColumns: [
               "id",
               "student_id",
+              "academic_session_id",
               "organization_id",
               "school_id",
             ];
@@ -1811,6 +1813,15 @@ export type Database = {
         };
         Returns: string;
       };
+      create_student_import_preview: {
+        Args: {
+          preview_rows: Json;
+          source_name: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: string;
+      };
       create_student_record: {
         Args: {
           enrollment_date: string;
@@ -1829,15 +1840,6 @@ export type Database = {
           target_school_id: string;
           target_session_id: string;
           target_student_number: string;
-        };
-        Returns: string;
-      };
-      create_student_import_preview: {
-        Args: {
-          preview_rows: Json;
-          source_name: string;
-          target_organization_id: string;
-          target_school_id: string;
         };
         Returns: string;
       };

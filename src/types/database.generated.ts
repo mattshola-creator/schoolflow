@@ -14,6 +14,359 @@ export type Database = {
   };
   public: {
     Tables: {
+      academic_locks: {
+        Row: {
+          id: string;
+          locked_at: string;
+          locked_by: string;
+          organization_id: string;
+          period_id: string | null;
+          reason: string;
+          school_id: string;
+          scope: Database["public"]["Enums"]["academic_lock_scope"];
+          session_id: string | null;
+          unlock_reason: string | null;
+          unlocked_at: string | null;
+          unlocked_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          locked_at?: string;
+          locked_by?: string;
+          organization_id: string;
+          period_id?: string | null;
+          reason: string;
+          school_id: string;
+          scope: Database["public"]["Enums"]["academic_lock_scope"];
+          session_id?: string | null;
+          unlock_reason?: string | null;
+          unlocked_at?: string | null;
+          unlocked_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          locked_at?: string;
+          locked_by?: string;
+          organization_id?: string;
+          period_id?: string | null;
+          reason?: string;
+          school_id?: string;
+          scope?: Database["public"]["Enums"]["academic_lock_scope"];
+          session_id?: string | null;
+          unlock_reason?: string | null;
+          unlocked_at?: string | null;
+          unlocked_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "academic_locks_period_id_session_id_organization_id_school_fkey";
+            columns: [
+              "period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "academic_locks_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "academic_locks_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      academic_periods: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          end_date: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sequence: number;
+          session_id: string;
+          start_date: string;
+          status: Database["public"]["Enums"]["academic_period_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          end_date: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sequence: number;
+          session_id: string;
+          start_date: string;
+          status?: Database["public"]["Enums"]["academic_period_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          end_date?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          sequence?: number;
+          session_id?: string;
+          start_date?: string;
+          status?: Database["public"]["Enums"]["academic_period_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "academic_periods_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      academic_sections: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sort_order: number;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "academic_sections_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      academic_sessions: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          end_date: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          start_date: string;
+          status: Database["public"]["Enums"]["academic_session_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          end_date: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          start_date: string;
+          status?: Database["public"]["Enums"]["academic_session_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          end_date?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          start_date?: string;
+          status?: Database["public"]["Enums"]["academic_session_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "academic_sessions_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      class_arms: {
+        Row: {
+          class_level_id: string;
+          code: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sort_order: number;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          class_level_id: string;
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          class_level_id?: string;
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "class_arms_class_level_id_organization_id_school_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "class_arms_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      class_levels: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          section_id: string | null;
+          sort_order: number;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          section_id?: string | null;
+          sort_order: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          section_id?: string | null;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "class_levels_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "class_levels_section_id_organization_id_school_id_fkey";
+            columns: ["section_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sections";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       invitations: {
         Row: {
           accepted_at: string | null;
@@ -765,6 +1118,47 @@ export type Database = {
           },
         ];
       };
+      school_academic_settings: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          organization_id: string;
+          period_label: string;
+          school_id: string;
+          updated_at: string;
+          updated_by: string;
+          week_starts_on: number;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          organization_id: string;
+          period_label?: string;
+          school_id: string;
+          updated_at?: string;
+          updated_by?: string;
+          week_starts_on?: number;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          organization_id?: string;
+          period_label?: string;
+          school_id?: string;
+          updated_at?: string;
+          updated_by?: string;
+          week_starts_on?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "school_academic_settings_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: true;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       school_memberships: {
         Row: {
           created_at: string;
@@ -871,12 +1265,121 @@ export type Database = {
           },
         ];
       };
+      subject_level_applicability: {
+        Row: {
+          class_level_id: string;
+          classification: Database["public"]["Enums"]["subject_classification"];
+          created_at: string;
+          created_by: string;
+          organization_id: string;
+          school_id: string;
+          sort_order: number;
+          subject_id: string;
+        };
+        Insert: {
+          class_level_id: string;
+          classification?: Database["public"]["Enums"]["subject_classification"];
+          created_at?: string;
+          created_by?: string;
+          organization_id: string;
+          school_id: string;
+          sort_order?: number;
+          subject_id: string;
+        };
+        Update: {
+          class_level_id?: string;
+          classification?: Database["public"]["Enums"]["subject_classification"];
+          created_at?: string;
+          created_by?: string;
+          organization_id?: string;
+          school_id?: string;
+          sort_order?: number;
+          subject_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subject_level_applicability_class_level_id_organization_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "subject_level_applicability_subject_id_organization_id_sch_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      subjects: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sort_order: number;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          sort_order?: number;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subjects_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       accept_invitation: { Args: { p_token_hash: string }; Returns: string };
+      can_access_academic_setup: {
+        Args: {
+          permission_key: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: boolean;
+      };
       create_organization_with_school: {
         Args: {
           p_location_name: string;
@@ -887,9 +1390,25 @@ export type Database = {
         };
         Returns: string;
       };
+      create_school_subject: {
+        Args: {
+          subject_classification?: Database["public"]["Enums"]["subject_classification"];
+          subject_code?: string;
+          subject_name: string;
+          subject_sort_order?: number;
+          target_level_id?: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: string;
+      };
       get_my_authorization: {
         Args: { target_organization_id: string; target_school_id?: string };
         Returns: Json;
+      };
+      has_module_entitlement: {
+        Args: { module_key: string; target_organization_id: string };
+        Returns: boolean;
       };
       has_org_membership: {
         Args: { target_organization_id: string };
@@ -907,12 +1426,28 @@ export type Database = {
         Args: { target_organization_id: string; target_school_id: string };
         Returns: boolean;
       };
+      is_feature_enabled: {
+        Args: { feature_key: string; target_organization_id: string };
+        Returns: boolean;
+      };
+      set_current_academic_period: {
+        Args: { target_period_id: string };
+        Returns: undefined;
+      };
+      set_current_academic_session: {
+        Args: { target_session_id: string };
+        Returns: undefined;
+      };
     };
     Enums: {
+      academic_lock_scope: "school_setup" | "session" | "period";
+      academic_period_status: "planned" | "current" | "closed" | "archived";
+      academic_session_status: "planned" | "current" | "closed" | "archived";
       assignment_scope: "organization" | "management_group" | "school";
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
       lifecycle_status: "active" | "inactive" | "archived";
       membership_status: "invited" | "active" | "suspended" | "ended";
+      subject_classification: "core" | "elective";
       subscription_status: "trialing" | "active" | "suspended" | "expired";
     };
     CompositeTypes: {
@@ -1041,10 +1576,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      academic_lock_scope: ["school_setup", "session", "period"],
+      academic_period_status: ["planned", "current", "closed", "archived"],
+      academic_session_status: ["planned", "current", "closed", "archived"],
       assignment_scope: ["organization", "management_group", "school"],
       invitation_status: ["pending", "accepted", "revoked", "expired"],
       lifecycle_status: ["active", "inactive", "archived"],
       membership_status: ["invited", "active", "suspended", "ended"],
+      subject_classification: ["core", "elective"],
       subscription_status: ["trialing", "active", "suspended", "expired"],
     },
   },

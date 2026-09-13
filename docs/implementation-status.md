@@ -4,7 +4,7 @@ Last updated: 13 September 2026
 
 ## Current milestone
 
-M2 Authorization & Entitlements — Completed — Deployed & Verified
+M3 Academic Structure & Setup — In Progress
 
 ## Implemented
 
@@ -20,6 +20,10 @@ M2 Authorization & Entitlements — Completed — Deployed & Verified
 - Secure `/api/authorization` inspection endpoint and reusable server capability guard
 - Platform module/feature catalog, configurable plans, tenant plan state and operational feature flags
 - Permission- and entitlement-aware authenticated navigation with distinct denied/unavailable states
+- School-scoped academic preferences, sessions, configurable periods, sections, class levels and class arms
+- School subject catalog with atomic level applicability and core/elective classification
+- Database-enforced school/session/period academic locks with immutable release history
+- Persisted academic setup readiness and resumable setup administration experience
 
 ## Verified
 
@@ -51,6 +55,9 @@ M2 Authorization & Entitlements — Completed — Deployed & Verified
 - Live authenticated dashboard loaded the QA school context; `/api/authorization` returned 26 effective permissions and nine module states without exposing a user identifier
 - Live Students capability passed with permission + entitlement + enabled module; the same route rendered an unavailable state after its entitlement was disabled, then passed again after restoration
 - Invalid capability state failed safely; disposable QA identity and organization records were removed and absence verified
+- Remote M3 migration syntax was exercised in a rollback transaction before application
+- M3 database transaction passed valid session/period/structure/subject creation, invalid-date denial, duplicate denial, lock enforcement/release, immutable lock history, viewer mutation denial and cross-organization denial; all fixtures rolled back
+- M3 entitlement integration transaction denied setup access and writes when the academics module entitlement was disabled; all fixtures rolled back
 
 ## Migrations
 
@@ -61,10 +68,13 @@ M2 Authorization & Entitlements — Completed — Deployed & Verified
 - `20260912000500_restrict_private_trigger_functions.sql` — remote `20260912220010` / `restrict_private_trigger_functions`
 - `20260913052337_authorization_entitlements.sql` — remote `20260913052820` / `authorization_entitlements`
 - `20260913052955_harden_entitlement_catalog.sql` — remote `20260913053032` / `harden_entitlement_catalog`
+- `20260913085906_academic_foundation.sql` — remote `20260913090309` / `academic_foundation`
+- `20260913090742_harden_academic_mutations.sql` — remote `20260913090839` / `harden_academic_mutations`
+- `20260913091415_preserve_academic_history.sql` — remote migration applied / `preserve_academic_history`
 
 ## Blockers
 
-- None for M2 completion or M3 commencement.
+- None for M3 implementation. Final local gate, publication, CI, deployment and live verification remain pending.
 
 ## Deployment state
 
@@ -72,6 +82,6 @@ Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical rep
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
-## M3 readiness
+## M4 readiness
 
-Ready. M3 is Academic Foundation: sessions/periods, class levels/arms, subjects, academic locks and the setup-wizard foundation. No M3 implementation has begun.
+Not ready. M3 must pass the full local gate, GitHub CI, Netlify deployment and live academic setup verification first.

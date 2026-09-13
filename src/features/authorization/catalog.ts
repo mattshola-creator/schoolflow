@@ -3,6 +3,7 @@ import type { CapabilityRequirement } from "./evaluator";
 export type ModuleNavigationItem = CapabilityRequirement & {
   label: string;
   description: string;
+  href?: string;
 };
 
 export const moduleNavigation: ModuleNavigationItem[] = [
@@ -32,9 +33,11 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   },
   {
     module: "academics",
-    permission: "academics.view",
+    permission: "academics.setup.view",
+    feature: "academics.academic_setup",
     label: "Academics",
     description: "Academic operations",
+    href: "/academic-setup",
   },
   {
     module: "finance",

@@ -61,7 +61,7 @@ export default async function AppLayout({
           {visibleModules.map((item) => (
             <Link
               key={item.module}
-              href={`/capabilities/${item.module}`}
+              href={item.href ?? `/capabilities/${item.module}`}
               className="block shrink-0 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-white hover:text-slate-950"
             >
               {item.label}

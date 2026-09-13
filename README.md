@@ -35,6 +35,8 @@ pnpm types:database
 
 Every tenant-owned table must include an organization boundary, constraints, indexes and tested RLS. Never use privileged secrets in browser code.
 
+Academic setup is available at `/academic-setup` for an active school context with the `academics.setup.view` permission, academics entitlement and `academics.academic_setup` feature enabled. Management permissions are split across sessions, periods, class structure, subjects and locks.
+
 ## Deployment
 
 The intended flow is GitHub pull request, CI, Netlify preview, verification and controlled production promotion. Configure public Supabase values in the appropriate Netlify contexts. Do not commit secrets.

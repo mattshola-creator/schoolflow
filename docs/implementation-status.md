@@ -1,72 +1,60 @@
 # SchoolFlow Implementation Status
 
-Last updated: 12 September 2026
+Last updated: 13 September 2026
 
 ## Current milestone
 
-M1 Identity & Tenancy — In Progress (implementation recovered; final gate pending)
+M1 Identity & Tenancy — Completed — Deployed & Verified
 
 ## Implemented
 
-- Strict Next.js App Router foundation and Tailwind CSS
-- Supabase clients and migration structure
-- Environment validation, health endpoint and honest status UI
-- Bounded runtime Supabase connectivity probe in `/api/health`
-- Vitest foundation, CI and Netlify configuration
-- Architecture and continuation records
+- Verified M0 Next.js, Supabase, CI and Netlify foundation
 - Supabase Auth signup, login, logout, email confirmation callback and password recovery/update routes
 - Person/profile model, organization tenant boundary, management groups, reusable locations and schools
 - Organization/school memberships, configurable roles, permissions and scoped assignments
 - Atomic organization/first-school onboarding and token-hash invitation acceptance
 - Operation-specific RLS, permission helpers and cross-tenant foreign-key constraints
 - Protected application shell, membership-backed dashboard and server-validated active tenant/school context
+- Restricted trigger-only functions and fixed-search-path privileged RPCs
 
 ## Verified
 
-- Dependency installation succeeded from the lockfile
-- Formatting check passed
-- ESLint passed with zero warnings
-- Strict application TypeScript check passed
-- 5 unit/component tests passed across 3 test files
-- Next.js production build passed
-- Production server returned HTTP 200 from `/` and `/api/health`
-- Health response included no-store caching and configured security headers
-- Dependency peer check passed
-- Repository secrets scan found no committed credentials
-- Canonical GitHub repository populated through the authenticated connector
-- GitHub Actions passed the full CI quality job on deployed remote commit `1087bd3`
-- Remote workflow and health endpoint contents verified on `main`
-- Supabase project `SchoolFlow` (`bgnmvfktscofbwpyougd`) confirmed active and healthy in the expected organization
-- M0 `private` schema and its access restrictions verified remotely
-- Supabase security and performance advisors returned no findings
-- Supabase Auth health endpoint returned HTTP 200 using the active publishable key
-- Netlify production deploy `6aa5a572b311610008ff633a` completed from `main` commit `1087bd3`
-- Live homepage returned HTTP 200 with the SchoolFlow application rendered
-- Live `/api/health` returned HTTP 200 with Supabase status `connected`
-- Production response headers include HSTS, frame denial, content-type protection, strict referrer policy and no-store health caching
+- Final `pnpm check`: formatting, zero-warning ESLint, strict TypeScript, 14 tests across 6 files and Next.js production build passed
+- Production dependency audit returned no known vulnerabilities
+- Secrets review found no committed service-role, secret key, private key or environment credential
+- RLS tests passed for tenant-scoped SELECT, INSERT, UPDATE and DELETE plus cross-tenant privilege-escalation denial
+- Invitation integration assertions passed for email binding, membership/role assignment and single-use token enforcement
+- GitHub Actions run `34722031763` passed on M1 commit `4dd8760`
+- Netlify production deploy `6aa5cdf898e72100082cc73f` succeeded from the same M1 commit using Node.js 24
+- Live homepage, login, signup, recovery and password-update pages returned HTTP 200
+- Live unauthenticated `/dashboard` and `/accept-invitation` redirected to login
+- Live valid login redirected to `/dashboard`; invalid login returned a generic safe error
+- Live authenticated dashboard showed the no-membership state
+- Live onboarding atomically created an organization, location and school and rendered the active organization/school context
+- Live invitation acceptance rendered the invited context; token reuse was rejected
+- Live logout succeeded and the subsequent dashboard request was redirected to login
+- Live password-recovery initiation returned the non-enumerating confirmation response
+- Live `/api/health` returned HTTP 200 with Supabase `connected`
+- All disposable live QA users and tenant data were removed and absence verified
 
 ## Migrations
 
-- `20260912000100_bootstrap_private_schema.sql` — applied remotely as migration version `20260912173038` / `bootstrap_private_schema`
-- `20260912000200_identity_tenancy.sql` — applied remotely as `20260912202428` / `identity_tenancy`
-- `20260912000300_tenant_onboarding.sql` — applied remotely as `20260912202856` / `tenant_onboarding`
-- `20260912000400_fix_tenant_onboarding.sql` — applied remotely as `20260912203053` / `fix_tenant_onboarding`
-- `20260912000500_restrict_private_trigger_functions.sql` — applied remotely as `20260912220010` / `restrict_private_trigger_functions`
-
-## Pending
-
-- Final combined quality gate, GitHub publication/CI, Netlify deployment and live M1 verification
+- `20260912000100_bootstrap_private_schema.sql` — remote `20260912173038` / `bootstrap_private_schema`
+- `20260912000200_identity_tenancy.sql` — remote `20260912202428` / `identity_tenancy`
+- `20260912000300_tenant_onboarding.sql` — remote `20260912202856` / `tenant_onboarding`
+- `20260912000400_fix_tenant_onboarding.sql` — remote `20260912203053` / `fix_tenant_onboarding`
+- `20260912000500_restrict_private_trigger_functions.sql` — remote `20260912220010` / `restrict_private_trigger_functions`
 
 ## Blockers
 
-- None for M0 completion or M1 commencement
+- None for M1 completion or M2 commencement.
 
 ## Deployment state
 
-Deployed and verified at `https://schoolflow-app.netlify.app`. GitHub CI, the production Netlify build, live application, health endpoint and Supabase connectivity all passed.
+Deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; GitHub CI, Netlify production build, live Auth/application journeys and Supabase connectivity passed on the M1 revision.
 
-The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These non-runtime specification and agent-instruction files remain in the private continuation checkpoint and were not disclosed to the public repository.
+The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
-## Next action
+## M2 readiness
 
-Run the complete M1 quality gate, publish through the authenticated GitHub connector, verify CI and Netlify, then execute live authentication and tenancy smoke tests.
+Ready. M2 is Authorization & Entitlements: complete the effective-permission evaluator and inspection endpoint, module entitlement/feature-flag model, and integration of permission/entitlement checks with navigation and server operations. The foundational role, permission and scoped-assignment tables were brought forward into M1 by the latest approved instruction and must be extended rather than rebuilt.

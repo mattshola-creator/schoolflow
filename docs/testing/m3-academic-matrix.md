@@ -12,3 +12,5 @@
 | Setup         | Persisted records derive fresh, partial, ready and locked states | No client-writable completion flag exists                             |
 
 Remote tests run inside transactions and roll back every fixture. The application journey uses disposable QA identities and removes them after live verification.
+
+GitHub CI runs the same formatting, zero-warning lint, strict TypeScript, unit-test and production-build gate for every pull request and `main` update.

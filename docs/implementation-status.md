@@ -1,10 +1,10 @@
 # SchoolFlow Implementation Status
 
-Last updated: 13 September 2026
+Last updated: 14 September 2026
 
 ## Current milestone
 
-M4 Student & Guardian Core — Deployed; authenticated live M4 journey verification pending
+M4 Student & Guardian Core — Completed — Deployed & Verified
 
 ## Implemented
 
@@ -80,6 +80,12 @@ M4 Student & Guardian Core — Deployed; authenticated live M4 journey verificat
 - Netlify production deploy `6aa729e179cd9500096dc278` succeeded from the exact M4 merge revision using Node.js 24
 - Live homepage and `/api/health` passed; health reported Supabase `connected`, and unauthenticated `/students` redirected safely to login
 - Disposable M4 QA identities and tenant/student/import fixtures were removed and their absence was verified; the permanent owner account was untouched
+- Live M4 confirmed QA login and repeat login succeeded through the supported Supabase Auth flow
+- Live onboarding created the disposable organization/school context; the student register loaded in that active school
+- Live atomic creation persisted student identity, guardian, enrollment and Primary 4 · Gold placement; Student 360 and register search rendered the result
+- Live import preview persisted two rows, flagged the existing student number as a possible duplicate and created no student records
+- After the deliberately inaccessible tenant's auto-bootstrap assignment was removed, its student direct-ID route returned a safe 404 and the tenant disappeared from the QA context
+- Live logout redirected to login, and all QA Auth, tenant, student and import records were deleted; the permanent owner remained present
 
 ## Migrations
 
@@ -99,14 +105,14 @@ M4 Student & Guardian Core — Deployed; authenticated live M4 journey verificat
 
 ## Blockers
 
-- Authenticated live verification of the deployed M4 register, Student 360, create-student and import-preview pages remains. The connected Supabase capability does not expose the supported Auth Admin user-creation API, and the SQL-seeded disposable credential was rejected by the hosted Auth API. Supabase Auth internals were not altered to bypass that control.
+- None for M4.
 
 ## Deployment state
 
-M4 is deployed at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; M4 was published through pull request #5, GitHub CI passed, and Netlify deployed the exact merge revision `2f8cd66`. Public live health and protected-route behavior passed; authenticated M4 page verification remains open.
+M4 is deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; M4 was published through pull request #5 and its verification record through pull request #6. GitHub CI, exact-revision Netlify deployment, public health, authenticated student/guardian workflows, authorization denial and QA cleanup passed.
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
 ## M5 readiness
 
-Not ready. M4 requires an authenticated live M4 journey with a supported disposable QA identity before it can be marked Completed — Deployed & Verified.
+Ready. M4 has passed its local, database/RLS, GitHub CI, Netlify deployment, authenticated live journey, cross-tenant denial and cleanup gates. The next approved milestone is M5.

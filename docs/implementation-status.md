@@ -4,7 +4,7 @@ Last updated: 14 September 2026
 
 ## Current milestone
 
-M4 Student & Guardian Core — Completed — Deployed & Verified
+M5 Staff Foundation — In Progress
 
 ## Implemented
 
@@ -30,6 +30,12 @@ M4 Student & Guardian Core — Completed — Deployed & Verified
 - Atomic authorized student/enrollment/placement/guardian creation
 - Paginated student register, Student 360 profile and enrollment/class history
 - Atomic student/guardian CSV import validation and persisted preview batches
+- Organization staff identity linked to shared Person records
+- Effective-dated employment and multi-school staff assignment history
+- School-specific departments, positions and reporting-line constraints
+- Atomic staff creation, school transfer and employment exit workflows
+- Optional staff-to-existing-user and school-role linkage without a second auth system
+- Permission-, entitlement- and feature-aware staff register, setup, creation and Staff 360 UI
 
 ## Verified
 
@@ -86,6 +92,10 @@ M4 Student & Guardian Core — Completed — Deployed & Verified
 - Live import preview persisted two rows, flagged the existing student number as a possible duplicate and created no student records
 - After the deliberately inaccessible tenant's auto-bootstrap assignment was removed, its student direct-ID route returned a safe 404 and the tenant disappeared from the QA context
 - Live logout redirected to login, and all QA Auth, tenant, student and import records were deleted; the permanent owner remained present
+- M5 database migrations passed rollback-only syntax rehearsals and were applied to the SchoolFlow development project
+- M5 remote transaction passed atomic staff creation, same-organization school transfer, employment exit, non-member/direct-ID denial, cross-organization denial, tenant-identity rewrite denial and historical-delete denial; all fixtures rolled back
+- M5 explicit privilege review confirmed `anon` has no staff table privileges and `authenticated` lacks DELETE, TRUNCATE, REFERENCES and TRIGGER privileges
+- M5 local schema tests cover staff setup, creation, access-link completeness, exit and transfer validation
 
 ## Migrations
 
@@ -102,10 +112,13 @@ M4 Student & Guardian Core — Completed — Deployed & Verified
 - `20260913200401_student_guardian_core.sql` — remote `20260913200706` / `student_guardian_core`
 - `20260913201126_harden_student_history.sql` — remote `20260913201233` / `harden_student_history`
 - `20260913201645_atomic_student_import_preview.sql` — remote `20260913201747` / `atomic_student_import_preview`
+- `20260914112000_staff_foundation.sql` — remote `20260914100213` / `staff_foundation`
+- `20260914123000_staff_access_and_transfer.sql` — remote `20260914100715` / `staff_access_and_transfer`
+- `20260914124500_harden_staff_privileges.sql` — remote `20260914101310` / `harden_staff_privileges`
 
 ## Blockers
 
-- None for M4.
+- Final GitHub CI, Netlify deployment and authenticated M5 production journey remain pending.
 
 ## Deployment state
 
@@ -113,6 +126,6 @@ M4 is deployed and verified at `https://schoolflow-app.netlify.app`. The canonic
 
 The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
 
-## M5 readiness
+## M6 readiness
 
-Ready. M4 has passed its local, database/RLS, GitHub CI, Netlify deployment, authenticated live journey, cross-tenant denial and cleanup gates. The next approved milestone is M5.
+Not ready. M5 must pass its final production quality gate, GitHub CI, exact-revision Netlify deployment and authenticated live staff journey before M6 begins.

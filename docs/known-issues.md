@@ -12,8 +12,12 @@
 - M3 performance advisor findings are informational missing/unused-index and permissive-policy-overlap recommendations. Operational indexes cover the primary school/session/level access paths; remaining indexes should be driven by measured workloads.
 - M4 adds four intentional caller-bound `SECURITY DEFINER` functions for student capability evaluation, row visibility, atomic record creation and atomic import preview. They use fixed empty search paths, derive identity from `auth.uid()`, validate school scope through M1/M2 controls, and revoke anonymous/public execution.
 - M4 performance advisor findings remain informational foreign-key/index and permissive-policy observations. Operational indexes cover student register, student history, guardian history and import preview access paths; further indexes require measured workloads.
+- M5 adds five intentional caller-bound `SECURITY DEFINER` functions for staff capability/visibility, atomic creation, privacy-limited access candidates, transfer and exit. They use fixed empty search paths, derive identity from `auth.uid()`, validate both source and destination scope where applicable, and revoke anonymous/public execution.
+- M5 performance advisor findings are informational missing/unused-index recommendations. Register, employment-status and assignment-history access paths have operational indexes; further indexing should follow measured workloads.
 
 ## Closed
+
+- M5 verification found and removed broad project-default API table privileges. Staff tables now explicitly grant only required SELECT/INSERT and column-level UPDATE operations; `anon` has no access and historical DELETE/TRUNCATE is unavailable.
 
 - M4 Student & Guardian Core passed its authenticated production journey: confirmed QA login, active tenant/school context, student register, atomic student/guardian/enrollment/placement creation, Student 360, search, duplicate-aware import preview, logout and cross-tenant direct-ID denial. All disposable Auth and tenant records were removed; the permanent owner was untouched.
 

@@ -12,9 +12,10 @@
 - M3 performance advisor findings are informational missing/unused-index and permissive-policy-overlap recommendations. Operational indexes cover the primary school/session/level access paths; remaining indexes should be driven by measured workloads.
 - M4 adds four intentional caller-bound `SECURITY DEFINER` functions for student capability evaluation, row visibility, atomic record creation and atomic import preview. They use fixed empty search paths, derive identity from `auth.uid()`, validate school scope through M1/M2 controls, and revoke anonymous/public execution.
 - M4 performance advisor findings remain informational foreign-key/index and permissive-policy observations. Operational indexes cover student register, student history, guardian history and import preview access paths; further indexes require measured workloads.
-- M4 is published, CI-passing and deployed, but its authenticated production UI journey remains unverified. The connector lacks a supported Supabase Auth Admin user-creation operation; an attempted disposable SQL-seeded credential was rejected by hosted Auth and was removed rather than weakening Auth controls.
 
 ## Closed
+
+- M4 Student & Guardian Core passed its authenticated production journey: confirmed QA login, active tenant/school context, student register, atomic student/guardian/enrollment/placement creation, Student 360, search, duplicate-aware import preview, logout and cross-tenant direct-ID denial. All disposable Auth and tenant records were removed; the permanent owner was untouched.
 
 - The permanent owner password-recovery flow no longer falls back to localhost. Hosted Supabase Auth uses the production Site URL and approved callback, Netlify has an explicit production site URL, expired links return a useful recovery state, and the owner verified password setup, login, dashboard and academic access, logout, and repeat login without sharing the password.
 

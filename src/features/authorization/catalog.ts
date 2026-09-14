@@ -24,8 +24,10 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   {
     module: "staff",
     permission: "staff.view",
+    feature: "staff.staff_records",
     label: "Staff",
     description: "Staff operations",
+    href: "/staff",
   },
   {
     module: "attendance",

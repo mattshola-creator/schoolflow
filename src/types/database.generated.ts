@@ -462,6 +462,109 @@ export type Database = {
           },
         ];
       };
+      departments: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "departments_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      employments: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          employment_type: Database["public"]["Enums"]["employment_type"];
+          ended_on: string | null;
+          exit_reason: string | null;
+          id: string;
+          organization_id: string;
+          staff_profile_id: string;
+          started_on: string;
+          status: Database["public"]["Enums"]["employment_status"];
+          updated_at: string;
+          updated_by: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          employment_type: Database["public"]["Enums"]["employment_type"];
+          ended_on?: string | null;
+          exit_reason?: string | null;
+          id?: string;
+          organization_id: string;
+          staff_profile_id: string;
+          started_on: string;
+          status?: Database["public"]["Enums"]["employment_status"];
+          updated_at?: string;
+          updated_by?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          employment_type?: Database["public"]["Enums"]["employment_type"];
+          ended_on?: string | null;
+          exit_reason?: string | null;
+          id?: string;
+          organization_id?: string;
+          staff_profile_id?: string;
+          started_on?: string;
+          status?: Database["public"]["Enums"]["employment_status"];
+          updated_at?: string;
+          updated_by?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "employments_staff_profile_id_organization_id_fkey";
+            columns: ["staff_profile_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_profiles";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       guardian_relationships: {
         Row: {
           created_at: string;
@@ -1122,6 +1225,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      positions: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          created_by: string;
+          department_id: string | null;
+          id: string;
+          is_teaching: boolean;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          department_id?: string | null;
+          id?: string;
+          is_teaching?: boolean;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          created_by?: string;
+          department_id?: string | null;
+          id?: string;
+          is_teaching?: boolean;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "positions_department_id_organization_id_school_id_fkey";
+            columns: ["department_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "departments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "positions_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       product_features: {
         Row: {
           created_at: string;
@@ -1536,6 +1699,175 @@ export type Database = {
           },
         ];
       };
+      staff_assignments: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          department_id: string | null;
+          employment_id: string;
+          ended_on: string | null;
+          id: string;
+          is_primary: boolean;
+          organization_id: string;
+          position_id: string;
+          reports_to_assignment_id: string | null;
+          role_assignment_id: string | null;
+          school_id: string;
+          staff_profile_id: string;
+          started_on: string;
+          status: Database["public"]["Enums"]["staff_assignment_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          department_id?: string | null;
+          employment_id: string;
+          ended_on?: string | null;
+          id?: string;
+          is_primary?: boolean;
+          organization_id: string;
+          position_id: string;
+          reports_to_assignment_id?: string | null;
+          role_assignment_id?: string | null;
+          school_id: string;
+          staff_profile_id: string;
+          started_on: string;
+          status?: Database["public"]["Enums"]["staff_assignment_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          department_id?: string | null;
+          employment_id?: string;
+          ended_on?: string | null;
+          id?: string;
+          is_primary?: boolean;
+          organization_id?: string;
+          position_id?: string;
+          reports_to_assignment_id?: string | null;
+          role_assignment_id?: string | null;
+          school_id?: string;
+          staff_profile_id?: string;
+          started_on?: string;
+          status?: Database["public"]["Enums"]["staff_assignment_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_assignments_department_id_organization_id_school_id_fkey";
+            columns: ["department_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "departments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_assignments_employment_id_staff_profile_id_organizat_fkey";
+            columns: ["employment_id", "staff_profile_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "employments";
+            referencedColumns: ["id", "staff_profile_id", "organization_id"];
+          },
+          {
+            foreignKeyName: "staff_assignments_position_id_organization_id_school_id_fkey";
+            columns: ["position_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "positions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_assignments_reports_to_assignment_id_fkey";
+            columns: ["reports_to_assignment_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_assignments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_assignments_role_assignment_id_fkey";
+            columns: ["role_assignment_id"];
+            isOneToOne: false;
+            referencedRelation: "role_assignments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_assignments_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      staff_profiles: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          emergency_contact_name: string | null;
+          emergency_contact_phone: string | null;
+          id: string;
+          organization_id: string;
+          person_id: string;
+          phone: string | null;
+          qualifications: string[];
+          staff_number: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+          work_email: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          emergency_contact_name?: string | null;
+          emergency_contact_phone?: string | null;
+          id?: string;
+          organization_id: string;
+          person_id: string;
+          phone?: string | null;
+          qualifications?: string[];
+          staff_number: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+          work_email?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          emergency_contact_name?: string | null;
+          emergency_contact_phone?: string | null;
+          id?: string;
+          organization_id?: string;
+          person_id?: string;
+          phone?: string | null;
+          qualifications?: string[];
+          staff_number?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+          work_email?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_profiles_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_profiles_person_id_fkey";
+            columns: ["person_id"];
+            isOneToOne: false;
+            referencedRelation: "people";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       student_enrollments: {
         Row: {
           academic_session_id: string;
@@ -1778,6 +2110,15 @@ export type Database = {
         };
         Returns: boolean;
       };
+      can_access_staff: {
+        Args: {
+          feature_key?: string;
+          permission_key: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: boolean;
+      };
       can_access_students: {
         Args: {
           feature_key?: string;
@@ -1785,6 +2126,10 @@ export type Database = {
           target_organization_id: string;
           target_school_id: string;
         };
+        Returns: boolean;
+      };
+      can_view_staff: {
+        Args: { target_staff_profile_id: string };
         Returns: boolean;
       };
       can_view_student: {
@@ -1810,6 +2155,24 @@ export type Database = {
           target_level_id?: string;
           target_organization_id: string;
           target_school_id: string;
+        };
+        Returns: string;
+      };
+      create_staff_record: {
+        Args: {
+          linked_role_id?: string;
+          linked_user_id?: string;
+          staff_first_name: string;
+          staff_last_name: string;
+          target_department_id: string;
+          target_employment_type: Database["public"]["Enums"]["employment_type"];
+          target_organization_id: string;
+          target_phone?: string;
+          target_position_id: string;
+          target_school_id: string;
+          target_staff_number: string;
+          target_started_on: string;
+          target_work_email?: string;
         };
         Returns: string;
       };
@@ -1843,6 +2206,14 @@ export type Database = {
         };
         Returns: string;
       };
+      end_staff_employment: {
+        Args: {
+          target_employment_id: string;
+          target_ended_on: string;
+          target_reason: string;
+        };
+        Returns: undefined;
+      };
       get_my_authorization: {
         Args: { target_organization_id: string; target_school_id?: string };
         Returns: Json;
@@ -1871,6 +2242,14 @@ export type Database = {
         Args: { feature_key: string; target_organization_id: string };
         Returns: boolean;
       };
+      list_staff_access_candidates: {
+        Args: { target_organization_id: string; target_school_id: string };
+        Returns: {
+          display_name: string;
+          email: string;
+          user_id: string;
+        }[];
+      };
       set_current_academic_period: {
         Args: { target_period_id: string };
         Returns: undefined;
@@ -1879,6 +2258,16 @@ export type Database = {
         Args: { target_session_id: string };
         Returns: undefined;
       };
+      transfer_staff_assignment: {
+        Args: {
+          target_assignment_id: string;
+          target_department_id: string;
+          target_position_id: string;
+          target_school_id: string;
+          target_started_on: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       academic_lock_scope: "school_setup" | "session" | "period";
@@ -1886,6 +2275,15 @@ export type Database = {
       academic_session_status: "planned" | "current" | "closed" | "archived";
       assignment_scope: "organization" | "management_group" | "school";
       class_membership_status: "active" | "ended" | "cancelled";
+      employment_status:
+        "onboarding" | "active" | "suspended" | "on_leave" | "ended";
+      employment_type:
+        | "permanent"
+        | "probationary"
+        | "contract"
+        | "temporary"
+        | "part_time"
+        | "volunteer";
       enrollment_status:
         | "pending"
         | "active"
@@ -1900,6 +2298,7 @@ export type Database = {
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
       lifecycle_status: "active" | "inactive" | "archived";
       membership_status: "invited" | "active" | "suspended" | "ended";
+      staff_assignment_status: "planned" | "active" | "ended" | "cancelled";
       student_lifecycle_status:
         | "pending_enrollment"
         | "active"
@@ -2043,6 +2442,21 @@ export const Constants = {
       academic_session_status: ["planned", "current", "closed", "archived"],
       assignment_scope: ["organization", "management_group", "school"],
       class_membership_status: ["active", "ended", "cancelled"],
+      employment_status: [
+        "onboarding",
+        "active",
+        "suspended",
+        "on_leave",
+        "ended",
+      ],
+      employment_type: [
+        "permanent",
+        "probationary",
+        "contract",
+        "temporary",
+        "part_time",
+        "volunteer",
+      ],
       enrollment_status: [
         "pending",
         "active",
@@ -2064,6 +2478,7 @@ export const Constants = {
       invitation_status: ["pending", "accepted", "revoked", "expired"],
       lifecycle_status: ["active", "inactive", "archived"],
       membership_status: ["invited", "active", "suspended", "ended"],
+      staff_assignment_status: ["planned", "active", "ended", "cancelled"],
       student_lifecycle_status: [
         "pending_enrollment",
         "active",

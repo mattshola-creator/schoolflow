@@ -8,6 +8,30 @@ export type ModuleNavigationItem = CapabilityRequirement & {
 
 export const moduleNavigation: ModuleNavigationItem[] = [
   {
+    module: "foundation",
+    permission: "shared.tasks.view",
+    feature: "foundation.action_center",
+    label: "Action Center",
+    description: "Tasks and approvals",
+    href: "/action-center",
+  },
+  {
+    module: "foundation",
+    permission: "shared.documents.view",
+    feature: "foundation.document_storage",
+    label: "Documents",
+    description: "Secure school documents",
+    href: "/documents",
+  },
+  {
+    module: "foundation",
+    permission: "shared.audit.view",
+    feature: "foundation.shared_services",
+    label: "Audit",
+    description: "Protected activity history",
+    href: "/audit",
+  },
+  {
     module: "admissions",
     permission: "admissions.view",
     label: "Admissions",

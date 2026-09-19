@@ -247,6 +247,314 @@ export type Database = {
           },
         ];
       };
+      action_tasks: {
+        Row: {
+          completed_at: string | null;
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          due_at: string | null;
+          id: string;
+          organization_id: string;
+          owner_user_id: string | null;
+          priority: Database["public"]["Enums"]["action_task_priority"];
+          school_id: string;
+          source_id: string | null;
+          source_type: string | null;
+          status: Database["public"]["Enums"]["action_task_status"];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          due_at?: string | null;
+          id?: string;
+          organization_id: string;
+          owner_user_id?: string | null;
+          priority?: Database["public"]["Enums"]["action_task_priority"];
+          school_id: string;
+          source_id?: string | null;
+          source_type?: string | null;
+          status?: Database["public"]["Enums"]["action_task_status"];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          due_at?: string | null;
+          id?: string;
+          organization_id?: string;
+          owner_user_id?: string | null;
+          priority?: Database["public"]["Enums"]["action_task_priority"];
+          school_id?: string;
+          source_id?: string | null;
+          source_type?: string | null;
+          status?: Database["public"]["Enums"]["action_task_status"];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "action_tasks_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      approval_decisions: {
+        Row: {
+          comment: string | null;
+          decided_at: string;
+          decided_by: string;
+          decision: Database["public"]["Enums"]["approval_decision_kind"];
+          id: string;
+          organization_id: string;
+          request_id: string;
+          school_id: string;
+          step: number;
+        };
+        Insert: {
+          comment?: string | null;
+          decided_at?: string;
+          decided_by?: string;
+          decision: Database["public"]["Enums"]["approval_decision_kind"];
+          id?: string;
+          organization_id: string;
+          request_id: string;
+          school_id: string;
+          step: number;
+        };
+        Update: {
+          comment?: string | null;
+          decided_at?: string;
+          decided_by?: string;
+          decision?: Database["public"]["Enums"]["approval_decision_kind"];
+          id?: string;
+          organization_id?: string;
+          request_id?: string;
+          school_id?: string;
+          step?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "approval_decisions_request_id_organization_id_school_id_fkey";
+            columns: ["request_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "approval_requests";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      approval_policies: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          id: string;
+          is_active: boolean;
+          key: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          id?: string;
+          is_active?: boolean;
+          key: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          id?: string;
+          is_active?: boolean;
+          key?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "approval_policies_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      approval_policy_steps: {
+        Row: {
+          approver_role_id: string;
+          created_at: string;
+          id: string;
+          organization_id: string;
+          policy_id: string;
+          school_id: string;
+          sequence: number;
+        };
+        Insert: {
+          approver_role_id: string;
+          created_at?: string;
+          id?: string;
+          organization_id: string;
+          policy_id: string;
+          school_id: string;
+          sequence: number;
+        };
+        Update: {
+          approver_role_id?: string;
+          created_at?: string;
+          id?: string;
+          organization_id?: string;
+          policy_id?: string;
+          school_id?: string;
+          sequence?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "approval_policy_steps_approver_role_id_organization_id_fkey";
+            columns: ["approver_role_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "roles";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "approval_policy_steps_policy_id_organization_id_school_id_fkey";
+            columns: ["policy_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "approval_policies";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      approval_requests: {
+        Row: {
+          created_at: string;
+          current_step: number;
+          decided_at: string | null;
+          id: string;
+          organization_id: string;
+          policy_id: string;
+          requested_by: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["approval_request_status"];
+          subject_id: string;
+          subject_type: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          current_step?: number;
+          decided_at?: string | null;
+          id?: string;
+          organization_id: string;
+          policy_id: string;
+          requested_by?: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["approval_request_status"];
+          subject_id: string;
+          subject_type: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          current_step?: number;
+          decided_at?: string | null;
+          id?: string;
+          organization_id?: string;
+          policy_id?: string;
+          requested_by?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["approval_request_status"];
+          subject_id?: string;
+          subject_type?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "approval_requests_policy_id_organization_id_school_id_fkey";
+            columns: ["policy_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "approval_policies";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      audit_events: {
+        Row: {
+          action: string;
+          actor_user_id: string | null;
+          entity_id: string | null;
+          entity_type: string;
+          id: number;
+          metadata: Json;
+          occurred_at: string;
+          organization_id: string;
+          request_id: string | null;
+          school_id: string | null;
+        };
+        Insert: {
+          action: string;
+          actor_user_id?: string | null;
+          entity_id?: string | null;
+          entity_type: string;
+          id?: never;
+          metadata?: Json;
+          occurred_at?: string;
+          organization_id: string;
+          request_id?: string | null;
+          school_id?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor_user_id?: string | null;
+          entity_id?: string | null;
+          entity_type?: string;
+          id?: never;
+          metadata?: Json;
+          occurred_at?: string;
+          organization_id?: string;
+          request_id?: string | null;
+          school_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "audit_events_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "audit_events_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       class_arms: {
         Row: {
           class_level_id: string;
@@ -502,6 +810,65 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "departments_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      documents: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          entity_id: string | null;
+          entity_type: string | null;
+          id: string;
+          mime_type: string;
+          object_path: string;
+          organization_id: string;
+          original_filename: string;
+          school_id: string;
+          size_bytes: number;
+          status: Database["public"]["Enums"]["document_status"];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          entity_id?: string | null;
+          entity_type?: string | null;
+          id?: string;
+          mime_type: string;
+          object_path: string;
+          organization_id: string;
+          original_filename: string;
+          school_id: string;
+          size_bytes: number;
+          status?: Database["public"]["Enums"]["document_status"];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          entity_id?: string | null;
+          entity_type?: string | null;
+          id?: string;
+          mime_type?: string;
+          object_path?: string;
+          organization_id?: string;
+          original_filename?: string;
+          school_id?: string;
+          size_bytes?: number;
+          status?: Database["public"]["Enums"]["document_status"];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "documents_school_id_organization_id_fkey";
             columns: ["school_id", "organization_id"];
             isOneToOne: false;
             referencedRelation: "schools";
@@ -947,6 +1314,67 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "organizations";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      notifications: {
+        Row: {
+          body: string | null;
+          created_at: string;
+          href: string | null;
+          id: string;
+          kind: Database["public"]["Enums"]["notification_kind"];
+          organization_id: string;
+          read_at: string | null;
+          recipient_user_id: string;
+          school_id: string | null;
+          title: string;
+        };
+        Insert: {
+          body?: string | null;
+          created_at?: string;
+          href?: string | null;
+          id?: string;
+          kind?: Database["public"]["Enums"]["notification_kind"];
+          organization_id: string;
+          read_at?: string | null;
+          recipient_user_id: string;
+          school_id?: string | null;
+          title: string;
+        };
+        Update: {
+          body?: string | null;
+          created_at?: string;
+          href?: string | null;
+          id?: string;
+          kind?: Database["public"]["Enums"]["notification_kind"];
+          organization_id?: string;
+          read_at?: string | null;
+          recipient_user_id?: string;
+          school_id?: string | null;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
           },
         ];
       };
@@ -2110,6 +2538,15 @@ export type Database = {
         };
         Returns: boolean;
       };
+      can_access_shared: {
+        Args: {
+          feature_key?: string;
+          permission_key: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: boolean;
+      };
       can_access_staff: {
         Args: {
           feature_key?: string;
@@ -2135,6 +2572,17 @@ export type Database = {
       can_view_student: {
         Args: { target_student_id: string };
         Returns: boolean;
+      };
+      create_approval_policy: {
+        Args: {
+          first_approver_role_id: string;
+          policy_description: string;
+          policy_key: string;
+          policy_name: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: string;
       };
       create_organization_with_school: {
         Args: {
@@ -2206,6 +2654,14 @@ export type Database = {
         };
         Returns: string;
       };
+      decide_approval_request: {
+        Args: {
+          target_comment?: string;
+          target_decision: Database["public"]["Enums"]["approval_decision_kind"];
+          target_request_id: string;
+        };
+        Returns: Database["public"]["Enums"]["approval_request_status"];
+      };
       end_staff_employment: {
         Args: {
           target_employment_id: string;
@@ -2258,6 +2714,17 @@ export type Database = {
         Args: { target_session_id: string };
         Returns: undefined;
       };
+      submit_approval_request: {
+        Args: {
+          target_organization_id: string;
+          target_policy_id: string;
+          target_school_id: string;
+          target_subject_id: string;
+          target_subject_type: string;
+          target_title: string;
+        };
+        Returns: string;
+      };
       transfer_staff_assignment: {
         Args: {
           target_assignment_id: string;
@@ -2273,8 +2740,15 @@ export type Database = {
       academic_lock_scope: "school_setup" | "session" | "period";
       academic_period_status: "planned" | "current" | "closed" | "archived";
       academic_session_status: "planned" | "current" | "closed" | "archived";
+      action_task_priority: "low" | "normal" | "high" | "urgent";
+      action_task_status: "open" | "in_progress" | "completed" | "cancelled";
+      approval_decision_kind: "approved" | "rejected" | "returned";
+      approval_request_status:
+        "pending" | "approved" | "rejected" | "returned" | "cancelled";
       assignment_scope: "organization" | "management_group" | "school";
       class_membership_status: "active" | "ended" | "cancelled";
+      document_status:
+        "pending_upload" | "available" | "archived" | "quarantined";
       employment_status:
         "onboarding" | "active" | "suspended" | "on_leave" | "ended";
       employment_type:
@@ -2298,6 +2772,7 @@ export type Database = {
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
       lifecycle_status: "active" | "inactive" | "archived";
       membership_status: "invited" | "active" | "suspended" | "ended";
+      notification_kind: "system" | "action_required" | "approval" | "document";
       staff_assignment_status: "planned" | "active" | "ended" | "cancelled";
       student_lifecycle_status:
         | "pending_enrollment"
@@ -2440,8 +2915,24 @@ export const Constants = {
       academic_lock_scope: ["school_setup", "session", "period"],
       academic_period_status: ["planned", "current", "closed", "archived"],
       academic_session_status: ["planned", "current", "closed", "archived"],
+      action_task_priority: ["low", "normal", "high", "urgent"],
+      action_task_status: ["open", "in_progress", "completed", "cancelled"],
+      approval_decision_kind: ["approved", "rejected", "returned"],
+      approval_request_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "returned",
+        "cancelled",
+      ],
       assignment_scope: ["organization", "management_group", "school"],
       class_membership_status: ["active", "ended", "cancelled"],
+      document_status: [
+        "pending_upload",
+        "available",
+        "archived",
+        "quarantined",
+      ],
       employment_status: [
         "onboarding",
         "active",
@@ -2478,6 +2969,7 @@ export const Constants = {
       invitation_status: ["pending", "accepted", "revoked", "expired"],
       lifecycle_status: ["active", "inactive", "archived"],
       membership_status: ["invited", "active", "suspended", "ended"],
+      notification_kind: ["system", "action_required", "approval", "document"],
       staff_assignment_status: ["planned", "active", "ended", "cancelled"],
       student_lifecycle_status: [
         "pending_enrollment",

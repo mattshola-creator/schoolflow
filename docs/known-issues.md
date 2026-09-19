@@ -2,6 +2,7 @@
 
 ## Open
 
+- M6 production deployment is externally blocked: Netlify skipped deploy `6aaefc1cb83e9e49fa9c7bc1` with `Skipped due to account credit usage exceeded`. The exact M6 revision passed GitHub CI and its Netlify deploy preview, but M6 cannot be marked deployed until production build credits are available and authenticated live verification passes.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 - Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.
 - Supabase security advisor reports intentional warnings for authenticated `SECURITY DEFINER` functions. Each has a fixed empty search path, explicit authenticated grant, revoked anonymous/public execution and caller/scope validation.
@@ -14,6 +15,8 @@
 - M4 performance advisor findings remain informational foreign-key/index and permissive-policy observations. Operational indexes cover student register, student history, guardian history and import preview access paths; further indexes require measured workloads.
 - M5 adds five intentional caller-bound `SECURITY DEFINER` functions for staff capability/visibility, atomic creation, privacy-limited access candidates, transfer and exit. They use fixed empty search paths, derive identity from `auth.uid()`, validate both source and destination scope where applicable, and revoke anonymous/public execution.
 - M5 performance advisor findings are informational missing/unused-index recommendations. Register, employment-status and assignment-history access paths have operational indexes; further indexing should follow measured workloads.
+- M6 adds four intentional caller-bound `SECURITY DEFINER` functions for shared capability evaluation, atomic approval policy/request creation and role-scoped decisions. They have fixed empty search paths, derive the caller from `auth.uid()`, validate membership, school scope, permission, entitlement and feature state, and revoke anonymous/public execution.
+- M6 performance advisor findings are informational index/policy observations. The M6 init-plan findings were corrected and operational audit, document, task, approval and notification indexes are present; further optimization should follow measured workloads.
 
 ## Closed
 

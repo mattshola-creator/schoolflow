@@ -4,7 +4,7 @@ Last updated: 19 September 2026
 
 ## Current milestone
 
-M5 Staff Foundation — Completed — Deployed & Verified
+M6 Shared Services — In Progress
 
 ## Completed milestones
 
@@ -56,8 +56,12 @@ The public repository intentionally excludes private product specifications and 
 
 ## Blockers
 
-None for M5.
+None for implementation. GitHub CI, Netlify deployment and authenticated production verification remain before M6 completion.
 
-## M6 readiness
+## M6 progress
 
-Ready. M5 passed its local quality gate, database/RLS and denial matrix, GitHub CI, exact-revision Netlify deployment, authenticated live staff journey and disposable-data cleanup gate.
+- Shared audit, private documents, Action Center tasks, reusable approvals and in-app notification foundations are implemented.
+- `shared_services` and `harden_shared_services` are applied to the Supabase development project.
+- The rollback-only database authorization matrix passed for allowed operations, audit immutability, cross-tenant reads and unauthorized inserts.
+- Generated database types are synchronized.
+- Final local quality gate, publication, CI, deployment and authenticated live verification are pending.

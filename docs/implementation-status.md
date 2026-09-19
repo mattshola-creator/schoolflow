@@ -1,131 +1,63 @@
 # SchoolFlow Implementation Status
 
-Last updated: 14 September 2026
+Last updated: 19 September 2026
 
 ## Current milestone
 
-M5 Staff Foundation — In Progress
+M5 Staff Foundation — Completed — Deployed & Verified
+
+## Completed milestones
+
+- M0 Bootstrap — Completed — Deployed & Verified
+- M1 Identity & Tenancy — Completed — Deployed & Verified
+- M2 Authorization & Entitlements — Completed — Deployed & Verified
+- M3 Academic Structure & Setup — Completed — Deployed & Verified
+- M4 Student & Guardian Core — Completed — Deployed & Verified
+- M5 Staff Foundation — Completed — Deployed & Verified
 
 ## Implemented
 
-- Verified M0 Next.js, Supabase, CI and Netlify foundation
-- Supabase Auth signup, login, logout, email confirmation callback and password recovery/update routes
-- Person/profile model, organization tenant boundary, management groups, reusable locations and schools
-- Organization/school memberships, configurable roles, permissions and scoped assignments
-- Atomic organization/first-school onboarding and token-hash invitation acceptance
-- Operation-specific RLS, permission helpers and cross-tenant foreign-key constraints
-- Protected application shell, membership-backed dashboard and server-validated active tenant/school context
-- Restricted trigger-only functions and fixed-search-path privileged RPCs
-- Caller-bound effective-permission and product-availability evaluator
-- Secure `/api/authorization` inspection endpoint and reusable server capability guard
-- Platform module/feature catalog, configurable plans, tenant plan state and operational feature flags
-- Permission- and entitlement-aware authenticated navigation with distinct denied/unavailable states
-- School-scoped academic preferences, sessions, configurable periods, sections, class levels and class arms
-- School subject catalog with atomic level applicability and core/elective classification
-- Database-enforced school/session/period academic locks with immutable release history
-- Persisted academic setup readiness and resumable setup administration experience
-- Organization-level student profiles linked to shared Person identity
-- Historical school/session enrollments and dated class memberships
-- Historical guardian relationships with contact, portal-access and financial-responsibility attributes
-- Atomic authorized student/enrollment/placement/guardian creation
-- Paginated student register, Student 360 profile and enrollment/class history
-- Atomic student/guardian CSV import validation and persisted preview batches
-- Organization staff identity linked to shared Person records
-- Effective-dated employment and multi-school staff assignment history
-- School-specific departments, positions and reporting-line constraints
-- Atomic staff creation, school transfer and employment exit workflows
-- Optional staff-to-existing-user and school-role linkage without a second auth system
-- Permission-, entitlement- and feature-aware staff register, setup, creation and Staff 360 UI
+- Production Next.js, Supabase, GitHub CI and Netlify foundation
+- Supabase Auth, protected application shell and recovery flows
+- Multi-organization and multi-school tenancy with server-validated active context
+- Configurable roles, permissions, scoped assignments, plans, entitlements and feature flags
+- Academic sessions, periods, class structure, subjects, setup readiness and academic locks
+- Student, guardian, enrollment, placement, Student 360 and import-preview foundation
+- Staff identity, employment, departments, positions, multi-school assignments and Staff 360
+- Atomic staff creation, transfer and employment-exit workflows
+- Optional staff-to-existing-user and school-role linkage through the established identity model
+- Operation-specific RLS, cross-tenant constraints and least-privilege API grants
 
-## Verified
+## M5 verification
 
-- Final M3 `pnpm check`: formatting, zero-warning ESLint, strict TypeScript, 28 tests across 10 files and Next.js production build passed
-- Production dependency audit returned no known vulnerabilities
-- Secrets review found no committed service-role, secret key, private key or environment credential
-- RLS tests passed for tenant-scoped SELECT, INSERT, UPDATE and DELETE plus cross-tenant privilege-escalation denial
-- Invitation integration assertions passed for email binding, membership/role assignment and single-use token enforcement
-- GitHub Actions run `34722031763` passed on M1 commit `4dd8760`
-- Netlify production deploy `6aa5cdf898e72100082cc73f` succeeded from the same M1 commit using Node.js 24
-- Live homepage, login, signup, recovery and password-update pages returned HTTP 200
-- Live unauthenticated `/dashboard` and `/accept-invitation` redirected to login
-- Live valid login redirected to `/dashboard`; invalid login returned a generic safe error
-- Live authenticated dashboard showed the no-membership state
-- Live onboarding atomically created an organization, location and school and rendered the active organization/school context
-- Live invitation acceptance rendered the invited context; token reuse was rejected
-- Live logout succeeded and the subsequent dashboard request was redirected to login
-- Live password-recovery initiation returned the non-enumerating confirmation response
-- Live `/api/health` returned HTTP 200 with Supabase `connected`
-- All disposable live QA users and tenant data were removed and absence verified
-- M2 local `pnpm check` passed formatting, zero-warning lint, strict TypeScript, 22 tests across 8 files and production build
-- M2 production dependency audit returned no known vulnerabilities
-- Remote M2 authorization transaction passed allowed scoped access, non-member/cross-tenant/invalid-school denial, self-role-escalation denial, plan/flag mutation denial, non-entitled module, disabled feature and suspended-membership cases; all fixtures rolled back
-- All six M2 configuration tables have RLS, explicit deny policies and no `anon` or `authenticated` table privileges
-- GitHub Actions run `34740709673` passed on M2 commit `43d9d8a`
-- Netlify production deploy `6aa63652f05cd5000928ac5b` succeeded from the same M2 commit using Node.js 24
-- Live homepage and `/api/health` passed; health reported Supabase `connected`
-- Live unauthenticated authorization inspection returned a safe 401 response and the protected dashboard redirected to login
-- Live authenticated dashboard loaded the QA school context; `/api/authorization` returned 26 effective permissions and nine module states without exposing a user identifier
-- Live Students capability passed with permission + entitlement + enabled module; the same route rendered an unavailable state after its entitlement was disabled, then passed again after restoration
-- Invalid capability state failed safely; disposable QA identity and organization records were removed and absence verified
-- Remote M3 migration syntax was exercised in a rollback transaction before application
-- M3 database transaction passed valid session/period/structure/subject creation, invalid-date denial, duplicate denial, lock enforcement/release, immutable lock history, viewer mutation denial and cross-organization denial; all fixtures rolled back
-- M3 entitlement integration transaction denied setup access and writes when the academics module entitlement was disabled; all fixtures rolled back
-- GitHub Actions run `34749847928` passed the full M3 production gate on tested head `f1f4e41`
-- Live M3 QA created a complete school academic setup through real authenticated Supabase requests: current session and period, section, configurable level, custom arm and level-scoped subject
-- Live setup status resolved to `ready`; the authenticated dashboard and academic setup page rendered the active school context and persisted records
-- Live direct-ID cross-tenant mutation returned HTTP 403; an active school lock blocked mutation, authorized release succeeded and the post-release mutation succeeded
-- Live valid login, invalid-login rejection and logout passed; unauthenticated protected routes redirected safely
-- Live `/api/health` returned HTTP 200 with Supabase `connected`
-- All disposable M3 QA identity and tenant/academic records were removed and absence verified
-- Permanent organization-owner recovery was corrected and verified on the live application: production password setup, login, dashboard and academic setup access, logout and repeat login passed; the account remains protected from QA cleanup
-- M4 local `pnpm check` passed formatting, zero-warning lint, strict TypeScript, 35 tests across 12 files and the Next.js production build
-- M4 production dependency audit returned no known vulnerabilities
-- M4 database migrations passed rollback-only syntax rehearsals and were applied to the SchoolFlow development project
-- M4 remote transaction passed atomic student/guardian creation, own-school visibility, outsider/cross-tenant denial, identity-rewrite denial and historical-delete denial; all disposable fixtures rolled back
-- M4 GitHub Actions run `34788141367` passed on published head `bbdd677`; pull request #5 merged to `main` as `2f8cd66`
-- Netlify production deploy `6aa729e179cd9500096dc278` succeeded from the exact M4 merge revision using Node.js 24
-- Live homepage and `/api/health` passed; health reported Supabase `connected`, and unauthenticated `/students` redirected safely to login
-- Disposable M4 QA identities and tenant/student/import fixtures were removed and their absence was verified; the permanent owner account was untouched
-- Live M4 confirmed QA login and repeat login succeeded through the supported Supabase Auth flow
-- Live onboarding created the disposable organization/school context; the student register loaded in that active school
-- Live atomic creation persisted student identity, guardian, enrollment and Primary 4 · Gold placement; Student 360 and register search rendered the result
-- Live import preview persisted two rows, flagged the existing student number as a possible duplicate and created no student records
-- After the deliberately inaccessible tenant's auto-bootstrap assignment was removed, its student direct-ID route returned a safe 404 and the tenant disappeared from the QA context
-- Live logout redirected to login, and all QA Auth, tenant, student and import records were deleted; the permanent owner remained present
-- M5 database migrations passed rollback-only syntax rehearsals and were applied to the SchoolFlow development project
-- M5 remote transaction passed atomic staff creation, same-organization school transfer, employment exit, non-member/direct-ID denial, cross-organization denial, tenant-identity rewrite denial and historical-delete denial; all fixtures rolled back
-- M5 explicit privilege review confirmed `anon` has no staff table privileges and `authenticated` lacks DELETE, TRUNCATE, REFERENCES and TRIGGER privileges
-- M5 local schema tests cover staff setup, creation, access-link completeness, exit and transfer validation
+- Formatting, zero-warning lint, strict TypeScript, 40 tests and production build passed
+- Production dependency audit reported no known vulnerabilities
+- Staff migrations are applied to the connected Supabase development project
+- Authorized creation, transfer, exit and staff-linked Person visibility passed
+- Non-member, cross-tenant, direct-ID, privilege-escalation and historical-delete denial passed
+- The deployed staff register, search, setup and Staff 360 journey passed
+- GitHub Actions passed and the final revision was deployed through GitHub to Netlify
+- Homepage, login, protected-route behavior and `/api/health` passed after deployment
+- Disposable QA Auth and tenant/staff fixtures were removed and their absence verified
+- The permanent owner account remained present and was not modified
 
-## Migrations
+## M5 migrations
 
-- `20260912000100_bootstrap_private_schema.sql` — remote `20260912173038` / `bootstrap_private_schema`
-- `20260912000200_identity_tenancy.sql` — remote `20260912202428` / `identity_tenancy`
-- `20260912000300_tenant_onboarding.sql` — remote `20260912202856` / `tenant_onboarding`
-- `20260912000400_fix_tenant_onboarding.sql` — remote `20260912203053` / `fix_tenant_onboarding`
-- `20260912000500_restrict_private_trigger_functions.sql` — remote `20260912220010` / `restrict_private_trigger_functions`
-- `20260913052337_authorization_entitlements.sql` — remote `20260913052820` / `authorization_entitlements`
-- `20260913052955_harden_entitlement_catalog.sql` — remote `20260913053032` / `harden_entitlement_catalog`
-- `20260913085906_academic_foundation.sql` — remote `20260913090309` / `academic_foundation`
-- `20260913090742_harden_academic_mutations.sql` — remote `20260913090839` / `harden_academic_mutations`
-- `20260913091415_preserve_academic_history.sql` — remote `20260913091437` / `preserve_academic_history`
-- `20260913200401_student_guardian_core.sql` — remote `20260913200706` / `student_guardian_core`
-- `20260913201126_harden_student_history.sql` — remote `20260913201233` / `harden_student_history`
-- `20260913201645_atomic_student_import_preview.sql` — remote `20260913201747` / `atomic_student_import_preview`
-- `20260914112000_staff_foundation.sql` — remote `20260914100213` / `staff_foundation`
-- `20260914123000_staff_access_and_transfer.sql` — remote `20260914100715` / `staff_access_and_transfer`
-- `20260914124500_harden_staff_privileges.sql` — remote `20260914101310` / `harden_staff_privileges`
-
-## Blockers
-
-- Final GitHub CI, Netlify deployment and authenticated M5 production journey remain pending.
+- `staff_foundation`
+- `staff_access_and_transfer`
+- `harden_staff_privileges`
+- `allow_staff_person_visibility`
 
 ## Deployment state
 
-M4 is deployed and verified at `https://schoolflow-app.netlify.app`. The canonical repository is `mattshola-creator/schoolflow`; M4 was published through pull request #5 and its verification record through pull request #6. GitHub CI, exact-revision Netlify deployment, public health, authenticated student/guardian workflows, authorization denial and QA cleanup passed.
+The canonical repository is `mattshola-creator/schoolflow`. The production application is deployed at `https://schoolflow-app.netlify.app` from the final M5 main-branch revision. Supabase connectivity is healthy.
 
-The public GitHub repository intentionally excludes `docs/product/*`, `AGENTS.md` and `CLAUDE.md`. These private specification and agent-instruction files are not disclosed.
+The public repository intentionally excludes private product specifications and agent-instruction files.
+
+## Blockers
+
+None for M5.
 
 ## M6 readiness
 
-Not ready. M5 must pass its final production quality gate, GitHub CI, exact-revision Netlify deployment and authenticated live staff journey before M6 begins.
+Ready. M5 passed its local quality gate, database/RLS and denial matrix, GitHub CI, exact-revision Netlify deployment, authenticated live staff journey and disposable-data cleanup gate.

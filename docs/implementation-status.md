@@ -61,7 +61,11 @@ None for implementation. GitHub CI, Netlify deployment and authenticated product
 ## M6 progress
 
 - Shared audit, private documents, Action Center tasks, reusable approvals and in-app notification foundations are implemented.
-- `shared_services` and `harden_shared_services` are applied to the Supabase development project.
+- `shared_services`, `harden_shared_services` and `optimize_shared_policies` are applied to the Supabase development project.
 - The rollback-only database authorization matrix passed for allowed operations, audit immutability, cross-tenant reads and unauthorized inserts.
 - Generated database types are synchronized.
-- Final local quality gate, publication, CI, deployment and authenticated live verification are pending.
+- The final local quality gate passed formatting, zero-warning lint, strict TypeScript, 44 tests across 14 files and the production build.
+- The production dependency audit reported no known vulnerabilities and the secrets review found no privileged credentials.
+- Pull request #12 merged M6 to `main`; GitHub Actions run #37 passed on the exact M6 head revision.
+- Netlify deploy preview `6aaefafd7fe898000856a4e8` succeeded for the exact M6 head revision.
+- Netlify skipped production deploy `6aaefc1cb83e9e49fa9c7bc1` because account build-credit usage is exceeded. Production and authenticated live M6 verification remain blocked.

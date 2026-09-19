@@ -17,6 +17,8 @@
 
 ## Closed
 
+- Final M5 live verification found that staff-profile RLS did not also disclose the linked shared Person row. `people_select_staff` now delegates to the caller-bound `can_view_staff` evaluator; the staff register and Staff 360 render for authorized users while an outsider remains denied.
+
 - M5 verification found and removed broad project-default API table privileges. Staff tables now explicitly grant only required SELECT/INSERT and column-level UPDATE operations; `anon` has no access and historical DELETE/TRUNCATE is unavailable.
 
 - M4 Student & Guardian Core passed its authenticated production journey: confirmed QA login, active tenant/school context, student register, atomic student/guardian/enrollment/placement creation, Student 360, search, duplicate-aware import preview, logout and cross-tenant direct-ID denial. All disposable Auth and tenant records were removed; the permanent owner was untouched.

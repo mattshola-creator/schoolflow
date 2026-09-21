@@ -31,6 +31,17 @@ describe("shared-service validation", () => {
     ).toBe(true);
   });
 
+  it("accepts a task form that omits the optional assignee field", () => {
+    expect(
+      taskSchema.safeParse({
+        title: "Review production deployment",
+        description: "Disposable QA task",
+        priority: "high",
+        dueAt: "2026-09-30T12:00",
+      }).success,
+    ).toBe(true);
+  });
+
   it("rejects ambiguous document entity references", () => {
     expect(
       documentMetadataSchema.safeParse({

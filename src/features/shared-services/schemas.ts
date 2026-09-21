@@ -4,7 +4,8 @@ const optionalUuid = z
   .string()
   .trim()
   .transform((value) => value || undefined)
-  .pipe(z.uuid().optional());
+  .pipe(z.uuid().optional())
+  .optional();
 
 export const taskSchema = z.object({
   title: z.string().trim().min(3).max(160),

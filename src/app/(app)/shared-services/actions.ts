@@ -3,12 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
-  allowedDocumentTypes,
   approvalDecisionSchema,
   approvalPolicySchema,
   approvalRequestSchema,
-  documentMetadataSchema,
-  maxDocumentBytes,
   taskSchema,
   taskStatusSchema,
 } from "@/features/shared-services/schemas";
@@ -128,62 +125,6 @@ export async function decideApproval(formData: FormData) {
       "This approval is unavailable or not assigned to your role",
     );
   done("/action-center", "Approval decision recorded");
-}
-
-export async function uploadDocument(formData: FormData) {
-  const parsed = documentMetadataSchema.safeParse(Object.fromEntries(formData));
-  const file = formData.get("file");
-  if (!parsed.success || !(file instanceof File))
-    failed("/documents", "Choose a valid document and title");
-  if (
-    !file.size ||
-    file.size > maxDocumentBytes ||
-    !allowedDocumentTypes.has(file.type)
-  )
-    failed("/documents", "Use a PDF, JPEG, PNG or CSV file up to 10 MiB");
-  if (Boolean(parsed.data.entityType) !== Boolean(parsed.data.entityId))
-    failed("/documents", "A linked record requires both its type and ID");
-  const { supabase, active } = await requireSharedContext(
-    "shared.documents.manage",
-    "foundation.document_storage",
-  );
-  const documentId = crypto.randomUUID();
-  const safeName =
-    file.name.replace(/[^A-Za-z0-9._-]/g, "_").slice(-120) || "document";
-  const objectPath = `${active.organizationId}/${active.schoolId}/${documentId}/${safeName}`;
-  const metadata = await supabase.from("documents").insert({
-    id: documentId,
-    organization_id: active.organizationId,
-    school_id: active.schoolId!,
-    title: parsed.data.title,
-    original_filename: file.name.slice(0, 240),
-    object_path: objectPath,
-    mime_type: file.type,
-    size_bytes: file.size,
-    entity_type: parsed.data.entityType || null,
-    entity_id: parsed.data.entityId ?? null,
-  });
-  if (metadata.error)
-    failed("/documents", "Document metadata could not be saved");
-  const uploaded = await supabase.storage
-    .from("schoolflow-documents")
-    .upload(objectPath, file, {
-      contentType: file.type,
-      upsert: false,
-    });
-  if (uploaded.error)
-    failed(
-      "/documents",
-      "Upload failed; the pending record remains visible for review",
-    );
-  const finalized = await supabase
-    .from("documents")
-    .update({ status: "available" })
-    .eq("id", documentId)
-    .eq("organization_id", active.organizationId);
-  if (finalized.error)
-    failed("/documents", "The upload completed but could not be finalized");
-  done("/documents", "Document uploaded securely");
 }
 
 export async function downloadDocument(formData: FormData) {

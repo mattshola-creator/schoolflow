@@ -15,7 +15,7 @@ export const taskSchema = z.object({
     .string()
     .trim()
     .transform((value) => value || undefined)
-    .pipe(z.iso.datetime({ local: true }).optional()),
+    .pipe(z.iso.datetime({ local: true, precision: -1 }).optional()),
 });
 
 export const taskStatusSchema = z.object({

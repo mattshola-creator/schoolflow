@@ -1,4 +1,4 @@
-import { downloadDocument, uploadDocument } from "../shared-services/actions";
+import { downloadDocument } from "../shared-services/actions";
 import { loadDocuments } from "@/features/shared-services/service";
 
 export default async function DocumentsPage({
@@ -32,7 +32,9 @@ export default async function DocumentsPage({
       <section className="rounded-xl border bg-white p-5">
         <h2 className="font-semibold">Upload document</h2>
         <form
-          action={uploadDocument}
+          action="/api/documents/upload"
+          method="post"
+          encType="multipart/form-data"
           className="mt-4 grid gap-3 sm:grid-cols-2"
         >
           <input

@@ -19,6 +19,18 @@ describe("shared-service validation", () => {
     ).toBe(true);
   });
 
+  it("accepts the minute-precision value emitted by datetime-local inputs", () => {
+    expect(
+      taskSchema.safeParse({
+        title: "Review production deployment",
+        description: "",
+        priority: "high",
+        ownerUserId: "",
+        dueAt: "2026-09-30T12:00",
+      }).success,
+    ).toBe(true);
+  });
+
   it("rejects ambiguous document entity references", () => {
     expect(
       documentMetadataSchema.safeParse({

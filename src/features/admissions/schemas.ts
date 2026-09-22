@@ -142,6 +142,7 @@ export const offerResponseSchema = z.object({
 });
 
 export const checklistSchema = z.object({
+  applicationId: z.uuid(),
   itemId: z.uuid(),
   status: z.enum(["pending", "complete", "waived"]),
 });

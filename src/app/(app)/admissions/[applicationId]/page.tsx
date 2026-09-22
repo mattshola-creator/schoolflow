@@ -8,7 +8,6 @@ import {
   issueOffer,
   recordAssessment,
   recordDecision,
-  respondToOffer,
   transitionAdmission,
   updateChecklist,
 } from "../actions";
@@ -335,7 +334,7 @@ export default async function AdmissionPage({
           )}
           {canManage && result.application.status === "admission_offered" && (
             <div className="mt-4 flex gap-2">
-              <form action={respondToOffer}>
+              <form action="/api/admissions/offers/respond" method="post">
                 <input
                   type="hidden"
                   name="applicationId"
@@ -346,7 +345,7 @@ export default async function AdmissionPage({
                   Record acceptance
                 </button>
               </form>
-              <form action={respondToOffer}>
+              <form action="/api/admissions/offers/respond" method="post">
                 <input
                   type="hidden"
                   name="applicationId"

@@ -137,7 +137,7 @@ export async function loadAdmission(applicationId: string) {
       .from("admission_checklist_items")
       .select("*")
       .eq("application_id", applicationId)
-      .order("created_at"),
+      .order("label"),
     loadAdmissionOptions("admissions.view"),
     application.data.enrolled_student_id
       ? context.supabase

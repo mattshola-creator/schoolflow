@@ -96,4 +96,7 @@ Yes. M6 has no unresolved Critical or High blocker and is formally recorded as C
 - `admissions`, `fix_admission_assessment_transition`, `fix_admission_offer_response` and `optimize_admissions_indexes` are applied to the Supabase development project.
 - A rollback-only remote lifecycle and denial matrix passed, including two assessment attempts, Person reuse during conversion, outsider invisibility and API deletion denial.
 - The local combined gate passed formatting, zero-warning lint, strict TypeScript, 52 tests across 16 files and the production build. The production dependency audit found no known vulnerabilities and the credential-shaped secret scan found no matches.
-- Publication, CI, Netlify deployment and authenticated production verification remain.
+- Pull request #18 passed GitHub Actions run #49 and merged as application revision `d49335dac20a31a435aad6538f301026f5cdc6ef`.
+- Netlify production deploy `6ab20bc11ce6210008c0ac41` is ready for that exact revision; enhanced secret scanning reported zero matches.
+- Live `/api/health` returned `ok` with Supabase connected, and unauthenticated `/admissions` redirected safely to login.
+- Authenticated production application creation, assessment, decision, offer, conversion and cleanup remain before M7 can be marked Completed — Deployed & Verified. A confirmed disposable Supabase Auth QA identity is required; the permanent owner account will not be used for disposable testing.

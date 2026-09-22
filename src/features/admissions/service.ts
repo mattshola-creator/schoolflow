@@ -88,24 +88,27 @@ export async function loadAdmissionOptions(permission = "admissions.manage") {
 
 export async function loadAdmission(applicationId: string) {
   const context = await requireAdmissionsContext();
+  const application = await context.supabase
+    .from("admission_applications")
+    .select(
+      "*, applicant:people!admission_applications_applicant_person_id_fkey(first_name,last_name,preferred_name), academic_sessions(name), class_levels(name)",
+    )
+    .eq("id", applicationId)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (application.error || !application.data)
+    throw new Error("Admission record is unavailable");
+
   const [
-    application,
     guardians,
     assessments,
     decisions,
     offer,
     checklist,
     options,
+    enrolledStudent,
   ] = await Promise.all([
-    context.supabase
-      .from("admission_applications")
-      .select(
-        "*, applicant:people!admission_applications_applicant_person_id_fkey(first_name,last_name,preferred_name), academic_sessions(name), class_levels(name), student_profiles(id,student_number)",
-      )
-      .eq("id", applicationId)
-      .eq("organization_id", context.active.organizationId)
-      .eq("school_id", context.active.schoolId!)
-      .maybeSingle(),
     context.supabase
       .from("admission_guardians")
       .select(
@@ -136,20 +139,30 @@ export async function loadAdmission(applicationId: string) {
       .eq("application_id", applicationId)
       .order("created_at"),
     loadAdmissionOptions("admissions.view"),
+    application.data.enrolled_student_id
+      ? context.supabase
+          .from("student_profiles")
+          .select("id,student_number")
+          .eq("id", application.data.enrolled_student_id)
+          .eq("organization_id", context.active.organizationId)
+          .maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
   ]);
   if (
-    application.error ||
-    !application.data ||
     guardians.error ||
     assessments.error ||
     decisions.error ||
     offer.error ||
-    checklist.error
+    checklist.error ||
+    enrolledStudent.error
   )
     throw new Error("Admission record is unavailable");
   return {
     ...context,
-    application: application.data,
+    application: {
+      ...application.data,
+      student_profiles: enrolledStudent.data,
+    },
     guardians: guardians.data ?? [],
     assessments: assessments.data ?? [],
     decisions: decisions.data ?? [],

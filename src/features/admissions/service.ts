@@ -2,7 +2,7 @@ import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import type { z } from "zod";
-import { offerResponseSchema } from "./schemas";
+import { checklistSchema, offerResponseSchema } from "./schemas";
 
 export async function requireAdmissionsContext(
   permission = "admissions.view",
@@ -216,4 +216,26 @@ export async function recordAdmissionOfferResponse(
     accept_offer: response.response === "accept",
   });
   if (error) throw new Error("Offer is unavailable");
+}
+
+export async function updateAdmissionChecklistItem(
+  update: z.infer<typeof checklistSchema>,
+) {
+  const context = await requireAdmissionsContext("admissions.enroll");
+  const item = await context.supabase
+    .from("admission_checklist_items")
+    .select("id,application_id")
+    .eq("id", update.itemId)
+    .eq("application_id", update.applicationId)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (item.error || !item.data)
+    throw new Error("Checklist item is unavailable");
+
+  const { error } = await context.supabase.rpc("set_admission_checklist_item", {
+    target_item_id: update.itemId,
+    target_status: update.status,
+  });
+  if (error) throw new Error("Checklist item is unavailable");
 }

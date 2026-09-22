@@ -9,7 +9,6 @@ import {
   recordAssessment,
   recordDecision,
   transitionAdmission,
-  updateChecklist,
 } from "../actions";
 
 const label = (value: string) =>
@@ -121,7 +120,11 @@ export default async function AdmissionPage({
                   {item.required ? " *" : ""}
                 </span>
                 {canEnroll ? (
-                  <form action={updateChecklist} className="flex gap-2">
+                  <form
+                    action="/api/admissions/checklist"
+                    method="post"
+                    className="flex gap-2"
+                  >
                     <input
                       type="hidden"
                       name="applicationId"

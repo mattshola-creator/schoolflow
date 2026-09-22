@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import {
   admissionApplicationSchema,
   assessmentSchema,
-  checklistSchema,
   decisionSchema,
   enrollmentConversionSchema,
   offerSchema,
@@ -122,21 +121,6 @@ export async function issueOffer(formData: FormData) {
       "The offer could not be issued",
     );
   revalidatePath(`/admissions/${parsed.data.applicationId}`);
-}
-
-export async function updateChecklist(formData: FormData) {
-  const parsed = checklistSchema.safeParse(Object.fromEntries(formData));
-  const applicationId = String(formData.get("applicationId") ?? "");
-  if (!parsed.success)
-    fail(`/admissions/${applicationId}`, "Invalid checklist update");
-  const { supabase } = await requireAdmissionsContext("admissions.enroll");
-  const { error } = await supabase.rpc("set_admission_checklist_item", {
-    target_item_id: parsed.data.itemId,
-    target_status: parsed.data.status,
-  });
-  if (error)
-    fail(`/admissions/${applicationId}`, "The checklist could not be updated");
-  revalidatePath(`/admissions/${applicationId}`);
 }
 
 export async function convertAdmission(formData: FormData) {

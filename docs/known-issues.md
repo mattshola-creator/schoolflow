@@ -2,7 +2,7 @@
 
 ## Open
 
-- M7 is implemented and remotely migration-tested but is not yet published, deployed or authenticated-live verified. It remains In Progress until the complete release gate passes.
+- M7 application revision `d49335dac20a31a435aad6538f301026f5cdc6ef` is deployed and passed live health/route-protection checks, but authenticated production workflow verification and QA cleanup remain. A confirmed disposable Supabase Auth QA identity is required; do not use the permanent owner identity for this testing.
 
 - A historical Auth identity named `M1 Live QA` remains in the development project even though the M1 record says disposable identities were removed. It was not part of the authorized M6 cleanup and has no identified M6 tenant access. Confirm its ownership before any later deletion.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.

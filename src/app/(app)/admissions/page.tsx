@@ -51,15 +51,27 @@ export default async function AdmissionsPage({
             stages without duplicating student records.
           </p>
         </div>
-        {canManage && (
-          <Link
-            href="/admissions/new"
-            className="inline-flex items-center gap-2 self-start rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white"
-          >
-            <UserPlus className="size-4" />
-            New application
-          </Link>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {result.authorization.permissions.includes(
+            "admissions.documents.configure",
+          ) && (
+            <Link
+              href="/admissions/document-policy"
+              className="rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold"
+            >
+              Document policy
+            </Link>
+          )}
+          {canManage && (
+            <Link
+              href="/admissions/new"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white"
+            >
+              <UserPlus className="size-4" />
+              New application
+            </Link>
+          )}
+        </div>
       </div>
       <form
         className="mt-7 grid gap-2 sm:max-w-3xl sm:grid-cols-[1fr_14rem_auto]"

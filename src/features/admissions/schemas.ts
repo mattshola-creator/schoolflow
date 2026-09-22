@@ -147,6 +147,33 @@ export const checklistSchema = z.object({
   status: z.enum(["pending", "complete", "waived"]),
 });
 
+export const admissionDocumentPolicySchema = z.object({
+  categoryKey: z
+    .string()
+    .trim()
+    .regex(/^[a-z]+(?:_[a-z]+)*$/),
+  label: z.string().trim().min(2).max(120),
+  required: z.preprocess((value) => value === "on", z.boolean()),
+  enabled: z.preprocess((value) => value === "on", z.boolean()),
+});
+
+export const admissionDocumentInitializeSchema = z.object({
+  applicationId: z.uuid(),
+});
+
+export const admissionDocumentSubmitSchema = z.object({
+  applicationId: z.uuid(),
+  requirementId: z.uuid(),
+  documentId: z.uuid(),
+});
+
+export const admissionDocumentReviewSchema = z.object({
+  applicationId: z.uuid(),
+  requirementId: z.uuid(),
+  status: z.enum(["verified", "rejected", "not_applicable"]),
+  comment: optionalText(1000),
+});
+
 export const enrollmentConversionSchema = z.object({
   applicationId: z.uuid(),
   studentNumber: z

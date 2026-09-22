@@ -2,7 +2,14 @@ import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import type { z } from "zod";
-import { checklistSchema, offerResponseSchema } from "./schemas";
+import {
+  admissionDocumentInitializeSchema,
+  admissionDocumentPolicySchema,
+  admissionDocumentReviewSchema,
+  admissionDocumentSubmitSchema,
+  checklistSchema,
+  offerResponseSchema,
+} from "./schemas";
 
 export async function requireAdmissionsContext(
   permission = "admissions.view",
@@ -108,6 +115,8 @@ export async function loadAdmission(applicationId: string) {
     decisions,
     offer,
     checklist,
+    documentRequirements,
+    admissionDocuments,
     options,
     enrolledStudent,
   ] = await Promise.all([
@@ -140,6 +149,20 @@ export async function loadAdmission(applicationId: string) {
       .select("*")
       .eq("application_id", applicationId)
       .order("label"),
+    context.supabase
+      .from("admission_application_documents")
+      .select("*, documents(id,title,original_filename,status)")
+      .eq("application_id", applicationId)
+      .order("label"),
+    context.supabase
+      .from("documents")
+      .select("id,title,original_filename,status")
+      .eq("organization_id", context.active.organizationId)
+      .eq("school_id", context.active.schoolId!)
+      .eq("entity_type", "admission_application")
+      .eq("entity_id", applicationId)
+      .eq("status", "available")
+      .order("created_at", { ascending: false }),
     loadAdmissionOptions("admissions.view"),
     application.data.enrolled_student_id
       ? context.supabase
@@ -156,6 +179,8 @@ export async function loadAdmission(applicationId: string) {
     decisions.error ||
     offer.error ||
     checklist.error ||
+    documentRequirements.error ||
+    admissionDocuments.error ||
     enrolledStudent.error
   )
     throw new Error("Admission record is unavailable");
@@ -170,10 +195,112 @@ export async function loadAdmission(applicationId: string) {
     decisions: decisions.data ?? [],
     offer: offer.data,
     checklist: checklist.data ?? [],
+    documentRequirements: documentRequirements.data ?? [],
+    admissionDocuments: admissionDocuments.data ?? [],
     sessions: options.sessions,
     levels: options.levels,
     arms: options.arms,
   };
+}
+
+export async function loadAdmissionDocumentPolicy() {
+  const context = await requireAdmissionsContext();
+  const result = await context.supabase
+    .from("admission_document_policies")
+    .select(
+      "id,category_key,label,required,enabled,not_applicable_allowed,version,updated_at",
+    )
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .order("label");
+  if (result.error) throw new Error("Document policy could not be loaded");
+  return { ...context, policies: result.data ?? [] };
+}
+
+export async function configureAdmissionDocumentPolicy(
+  input: z.infer<typeof admissionDocumentPolicySchema>,
+) {
+  const context = await requireAdmissionsContext(
+    "admissions.documents.configure",
+  );
+  const { error } = await context.supabase.rpc(
+    "configure_admission_document_policy",
+    {
+      target_school_id: context.active.schoolId!,
+      target_category_key: input.categoryKey,
+      target_label: input.label,
+      target_required: input.required,
+      target_enabled: input.enabled,
+    },
+  );
+  if (error) throw new Error("Document policy could not be updated");
+}
+
+export async function initializeAdmissionDocumentRequirements(
+  input: z.infer<typeof admissionDocumentInitializeSchema>,
+) {
+  const context = await requireAdmissionsContext(
+    "admissions.documents.configure",
+  );
+  const application = await context.supabase
+    .from("admission_applications")
+    .select("id")
+    .eq("id", input.applicationId)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (application.error || !application.data)
+    throw new Error("Application is unavailable");
+  const { error } = await context.supabase.rpc(
+    "initialize_admission_document_requirements",
+    {
+      target_application_id: input.applicationId,
+    },
+  );
+  if (error) throw new Error("Requirements could not be initialized");
+}
+
+export async function submitAdmissionDocument(
+  input: z.infer<typeof admissionDocumentSubmitSchema>,
+) {
+  const context = await requireAdmissionsContext("admissions.documents.submit");
+  const requirement = await context.supabase
+    .from("admission_application_documents")
+    .select("id")
+    .eq("id", input.requirementId)
+    .eq("application_id", input.applicationId)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (requirement.error || !requirement.data)
+    throw new Error("Requirement is unavailable");
+  const { error } = await context.supabase.rpc("submit_admission_document", {
+    target_requirement_id: input.requirementId,
+    target_document_id: input.documentId,
+  });
+  if (error) throw new Error("Evidence could not be submitted");
+}
+
+export async function reviewAdmissionDocument(
+  input: z.infer<typeof admissionDocumentReviewSchema>,
+) {
+  const context = await requireAdmissionsContext("admissions.documents.review");
+  const requirement = await context.supabase
+    .from("admission_application_documents")
+    .select("id")
+    .eq("id", input.requirementId)
+    .eq("application_id", input.applicationId)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (requirement.error || !requirement.data)
+    throw new Error("Requirement is unavailable");
+  const { error } = await context.supabase.rpc("review_admission_document", {
+    target_requirement_id: input.requirementId,
+    target_status: input.status,
+    target_comment: input.comment,
+  });
+  if (error) throw new Error("Review could not be recorded");
 }
 
 export async function recordAdmissionOfferResponse(

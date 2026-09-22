@@ -309,6 +309,94 @@ export type Database = {
           },
         ];
       };
+      admission_application_documents: {
+        Row: {
+          application_id: string;
+          category_key: string;
+          created_at: string;
+          document_id: string | null;
+          id: string;
+          label: string;
+          not_applicable_allowed: boolean;
+          organization_id: string;
+          policy_id: string | null;
+          policy_version: number;
+          required: boolean;
+          review_comment: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          school_id: string;
+          status: Database["public"]["Enums"]["admission_document_status"];
+          submitted_at: string | null;
+          submitted_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          application_id: string;
+          category_key: string;
+          created_at?: string;
+          document_id?: string | null;
+          id?: string;
+          label: string;
+          not_applicable_allowed?: boolean;
+          organization_id: string;
+          policy_id?: string | null;
+          policy_version: number;
+          required?: boolean;
+          review_comment?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          school_id: string;
+          status?: Database["public"]["Enums"]["admission_document_status"];
+          submitted_at?: string | null;
+          submitted_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          application_id?: string;
+          category_key?: string;
+          created_at?: string;
+          document_id?: string | null;
+          id?: string;
+          label?: string;
+          not_applicable_allowed?: boolean;
+          organization_id?: string;
+          policy_id?: string | null;
+          policy_version?: number;
+          required?: boolean;
+          review_comment?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["admission_document_status"];
+          submitted_at?: string | null;
+          submitted_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admission_application_documen_application_id_organization__fkey";
+            columns: ["application_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "admission_applications";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "admission_application_documen_document_id_organization_id__fkey";
+            columns: ["document_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "documents";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "admission_application_documen_policy_id_organization_id_sc_fkey";
+            columns: ["policy_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "admission_document_policies";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       admission_applications: {
         Row: {
           academic_session_id: string;
@@ -523,6 +611,62 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "class_levels";
             referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      admission_document_policies: {
+        Row: {
+          category_key: string;
+          created_at: string;
+          created_by: string | null;
+          enabled: boolean;
+          id: string;
+          label: string;
+          not_applicable_allowed: boolean;
+          organization_id: string;
+          required: boolean;
+          school_id: string;
+          updated_at: string;
+          updated_by: string | null;
+          version: number;
+        };
+        Insert: {
+          category_key: string;
+          created_at?: string;
+          created_by?: string | null;
+          enabled?: boolean;
+          id?: string;
+          label: string;
+          not_applicable_allowed?: boolean;
+          organization_id: string;
+          required?: boolean;
+          school_id: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          version?: number;
+        };
+        Update: {
+          category_key?: string;
+          created_at?: string;
+          created_by?: string | null;
+          enabled?: boolean;
+          id?: string;
+          label?: string;
+          not_applicable_allowed?: boolean;
+          organization_id?: string;
+          required?: boolean;
+          school_id?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admission_document_policies_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
           },
         ];
       };
@@ -2992,6 +3136,16 @@ export type Database = {
         Args: { target_student_id: string };
         Returns: boolean;
       };
+      configure_admission_document_policy: {
+        Args: {
+          target_category_key: string;
+          target_enabled: boolean;
+          target_label: string;
+          target_required: boolean;
+          target_school_id: string;
+        };
+        Returns: string;
+      };
       convert_admission_to_student: {
         Args: {
           enrollment_date: string;
@@ -3142,6 +3296,10 @@ export type Database = {
         Args: { target_organization_id: string; target_school_id: string };
         Returns: boolean;
       };
+      initialize_admission_document_requirements: {
+        Args: { target_application_id: string };
+        Returns: number;
+      };
       is_feature_enabled: {
         Args: { feature_key: string; target_organization_id: string };
         Returns: boolean;
@@ -3187,6 +3345,14 @@ export type Database = {
         Args: { accept_offer: boolean; target_application_id: string };
         Returns: Database["public"]["Enums"]["offer_status"];
       };
+      review_admission_document: {
+        Args: {
+          target_comment?: string;
+          target_requirement_id: string;
+          target_status: Database["public"]["Enums"]["admission_document_status"];
+        };
+        Returns: Database["public"]["Enums"]["admission_document_status"];
+      };
       set_admission_checklist_item: {
         Args: {
           target_item_id: string;
@@ -3201,6 +3367,10 @@ export type Database = {
       set_current_academic_session: {
         Args: { target_session_id: string };
         Returns: undefined;
+      };
+      submit_admission_document: {
+        Args: { target_document_id: string; target_requirement_id: string };
+        Returns: Database["public"]["Enums"]["admission_document_status"];
       };
       submit_approval_request: {
         Args: {
@@ -3257,6 +3427,8 @@ export type Database = {
         | "incomplete"
         | "expired";
       admission_decision_kind: "approved" | "rejected" | "retake";
+      admission_document_status:
+        "required" | "submitted" | "verified" | "rejected" | "not_applicable";
       admission_source: "enquiry" | "staff" | "parent_online" | "import";
       approval_decision_kind: "approved" | "rejected" | "returned";
       approval_request_status:
@@ -3458,6 +3630,13 @@ export const Constants = {
         "expired",
       ],
       admission_decision_kind: ["approved", "rejected", "retake"],
+      admission_document_status: [
+        "required",
+        "submitted",
+        "verified",
+        "rejected",
+        "not_applicable",
+      ],
       admission_source: ["enquiry", "staff", "parent_online", "import"],
       approval_decision_kind: ["approved", "rejected", "returned"],
       approval_request_status: [

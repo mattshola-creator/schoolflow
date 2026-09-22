@@ -30,6 +30,11 @@ export default async function AdmissionPage({
   const canAssess = permissions.has("admissions.assess");
   const canDecide = permissions.has("admissions.decide");
   const canEnroll = permissions.has("admissions.enroll");
+  const canConfigureDocuments = permissions.has(
+    "admissions.documents.configure",
+  );
+  const canSubmitDocuments = permissions.has("admissions.documents.submit");
+  const canReviewDocuments = permissions.has("admissions.documents.review");
   return (
     <main className="py-10 sm:py-12">
       <Link href="/admissions" className="text-sm font-medium text-emerald-800">
@@ -150,6 +155,153 @@ export default async function AdmissionPage({
               </li>
             ))}
           </ul>
+        </section>
+        <section className="rounded-xl border bg-white p-5 lg:col-span-2">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold">Required admission documents</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Only reviewed evidence can satisfy enrollment readiness.
+              </p>
+            </div>
+            <Link
+              href="/documents"
+              className="text-sm font-semibold text-emerald-800"
+            >
+              Upload private evidence
+            </Link>
+          </div>
+          {result.documentRequirements.length === 0 ? (
+            <div className="mt-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">
+              <p>
+                This existing application has no document-policy snapshot.
+                Initialize it explicitly from the current school policy.
+              </p>
+              {canConfigureDocuments && (
+                <form
+                  action="/api/admissions/documents"
+                  method="post"
+                  className="mt-3"
+                >
+                  <input type="hidden" name="operation" value="initialize" />
+                  <input
+                    type="hidden"
+                    name="applicationId"
+                    value={applicationId}
+                  />
+                  <button className="rounded-lg border border-amber-300 bg-white px-3 py-2 font-semibold">
+                    Initialize requirements
+                  </button>
+                </form>
+              )}
+            </div>
+          ) : (
+            <ul className="mt-4 space-y-4">
+              {result.documentRequirements.map((requirement) => (
+                <li key={requirement.id} className="rounded-lg border p-4">
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <div>
+                      <p className="font-medium">
+                        {requirement.label}
+                        {requirement.required ? " *" : ""}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {label(requirement.status)} · policy version{" "}
+                        {requirement.policy_version}
+                      </p>
+                      {requirement.documents && (
+                        <p className="mt-1 text-sm">
+                          Evidence: {requirement.documents.title} (
+                          {requirement.documents.original_filename})
+                        </p>
+                      )}
+                      {requirement.review_comment && (
+                        <p className="mt-1 text-sm">
+                          Review: {requirement.review_comment}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {canSubmitDocuments &&
+                    ["required", "rejected"].includes(requirement.status) &&
+                    result.admissionDocuments.length > 0 && (
+                      <form
+                        action="/api/admissions/documents"
+                        method="post"
+                        className="mt-3 flex flex-wrap gap-2"
+                      >
+                        <input type="hidden" name="operation" value="submit" />
+                        <input
+                          type="hidden"
+                          name="applicationId"
+                          value={applicationId}
+                        />
+                        <input
+                          type="hidden"
+                          name="requirementId"
+                          value={requirement.id}
+                        />
+                        <select
+                          name="documentId"
+                          required
+                          className="rounded-lg border px-3 py-2 text-sm"
+                        >
+                          <option value="">Choose linked document</option>
+                          {result.admissionDocuments.map((document) => (
+                            <option key={document.id} value={document.id}>
+                              {document.title} · {document.original_filename}
+                            </option>
+                          ))}
+                        </select>
+                        <button className="rounded-lg border px-3 py-2 text-sm font-semibold">
+                          Submit evidence
+                        </button>
+                      </form>
+                    )}
+                  {canReviewDocuments && requirement.status === "submitted" && (
+                    <form
+                      action="/api/admissions/documents"
+                      method="post"
+                      className="mt-3 grid gap-2 sm:grid-cols-[auto_1fr_auto]"
+                    >
+                      <input type="hidden" name="operation" value="review" />
+                      <input
+                        type="hidden"
+                        name="applicationId"
+                        value={applicationId}
+                      />
+                      <input
+                        type="hidden"
+                        name="requirementId"
+                        value={requirement.id}
+                      />
+                      <select
+                        name="status"
+                        className="rounded-lg border px-3 py-2 text-sm"
+                      >
+                        <option value="verified">Verify</option>
+                        <option value="rejected">
+                          Reject / needs replacement
+                        </option>
+                      </select>
+                      <input
+                        name="comment"
+                        placeholder="Review comment"
+                        className="rounded-lg border px-3 py-2 text-sm"
+                      />
+                      <button className="rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white">
+                        Record review
+                      </button>
+                    </form>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-4 text-xs text-slate-500">
+            Upload with linked record type <code>admission_application</code>{" "}
+            and linked record ID <code>{applicationId}</code>.
+          </p>
         </section>
         <section className="rounded-xl border bg-white p-5">
           <h2 className="font-semibold">Entrance assessments</h2>

@@ -4,7 +4,7 @@ Last updated: 22 September 2026
 
 ## Current milestone
 
-M7 — Scope confirmation and planning
+M7 Admissions — In Progress
 
 ## Completed milestones
 
@@ -88,3 +88,12 @@ None. M7 may begin from the verified M6 checkpoint.
 ## M7 readiness
 
 Yes. M6 has no unresolved Critical or High blocker and is formally recorded as Completed — Deployed & Verified.
+
+## M7 progress
+
+- The approved M7 scope is applications, manual entrance assessments and retakes, decisions, offers and controlled enrollment conversion.
+- The admissions schema, caller-bound mutation functions, school-scoped RLS, authorization/entitlement integration, generated types and application UI are implemented.
+- `admissions`, `fix_admission_assessment_transition`, `fix_admission_offer_response` and `optimize_admissions_indexes` are applied to the Supabase development project.
+- A rollback-only remote lifecycle and denial matrix passed, including two assessment attempts, Person reuse during conversion, outsider invisibility and API deletion denial.
+- The local combined gate passed formatting, zero-warning lint, strict TypeScript, 52 tests across 16 files and the production build. The production dependency audit found no known vulnerabilities and the credential-shaped secret scan found no matches.
+- Publication, CI, Netlify deployment and authenticated production verification remain.

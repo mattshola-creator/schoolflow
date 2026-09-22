@@ -34,8 +34,10 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   {
     module: "admissions",
     permission: "admissions.view",
+    feature: "admissions.application_workflow",
     label: "Admissions",
     description: "Applicant lifecycle",
+    href: "/admissions",
   },
   {
     module: "students",

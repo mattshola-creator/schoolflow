@@ -1,10 +1,10 @@
 # SchoolFlow Implementation Status
 
-Last updated: 19 September 2026
+Last updated: 22 September 2026
 
 ## Current milestone
 
-M6 Shared Services — In Progress
+M7 — Scope confirmation and planning
 
 ## Completed milestones
 
@@ -14,6 +14,7 @@ M6 Shared Services — In Progress
 - M3 Academic Structure & Setup — Completed — Deployed & Verified
 - M4 Student & Guardian Core — Completed — Deployed & Verified
 - M5 Staff Foundation — Completed — Deployed & Verified
+- M6 Shared Services — Completed — Deployed & Verified
 
 ## Implemented
 
@@ -56,16 +57,34 @@ The public repository intentionally excludes private product specifications and 
 
 ## Blockers
 
-None for implementation. GitHub CI, Netlify deployment and authenticated production verification remain before M6 completion.
+None. M7 may begin from the verified M6 checkpoint.
 
-## M6 progress
+## M6 completion evidence
 
 - Shared audit, private documents, Action Center tasks, reusable approvals and in-app notification foundations are implemented.
 - `shared_services`, `harden_shared_services` and `optimize_shared_policies` are applied to the Supabase development project.
 - The rollback-only database authorization matrix passed for allowed operations, audit immutability, cross-tenant reads and unauthorized inserts.
 - Generated database types are synchronized.
-- The final local quality gate passed formatting, zero-warning lint, strict TypeScript, 44 tests across 14 files and the production build.
+- The final local quality gate passed formatting, zero-warning lint, strict TypeScript, 48 tests across 15 files and the production build.
 - The production dependency audit reported no known vulnerabilities and the secrets review found no privileged credentials.
 - Pull request #12 merged M6 to `main`; GitHub Actions run #37 passed on the exact M6 head revision.
 - Netlify deploy preview `6aaefafd7fe898000856a4e8` succeeded for the exact M6 head revision.
-- Netlify skipped production deploy `6aaefc1cb83e9e49fa9c7bc1` because account build-credit usage is exceeded. Production and authenticated live M6 verification remain blocked.
+- Corrective pull requests #14 and #15 fixed production task deadline precision and optional assignee handling. Their GitHub Actions runs passed and the fixes were deployed before the final shared-services verification.
+- Pull request #16 replaced the production-failing multipart Server Action transport with a same-origin upload route while preserving the existing permission, entitlement, RLS, private Storage, validation and audit controls. GitHub Actions run #45 passed.
+- Netlify production deploy `6ab193383c4c3e0008593f7c` succeeded from merge revision `5a91fdf75ea27459b75e169d0728238d29407196`; its enhanced secret scan reported zero matches.
+- `/api/health` returned `ok` with Supabase connected after the final deployment.
+- Authenticated production verification passed login, protected dashboard, active organization/school context, task creation/assignment fields/deadline/status, approval policy/request/decision, recipient notification, document upload/download and protected audit history.
+- The private `schoolflow-documents` bucket remained non-public, enforced the 10 MiB/MIME allowlist and retained permission-scoped SELECT/INSERT/DELETE policies.
+- The remote authorization matrix passed authorized operations, audit immutability, outsider and cross-tenant denial, direct-ID denial and entitlement/feature restrictions.
+- Both uploaded QA objects produced document insert/finalization audit events, and the authorized signed-download path worked in production.
+- Disposable QA Auth identity, organization, school, records and Storage objects were deleted; follow-up checks returned zero for every QA target. The permanent owner Auth identity remained present and unchanged.
+
+## M6 migrations
+
+- `shared_services`
+- `harden_shared_services`
+- `optimize_shared_policies`
+
+## M7 readiness
+
+Yes. M6 has no unresolved Critical or High blocker and is formally recorded as Completed — Deployed & Verified.

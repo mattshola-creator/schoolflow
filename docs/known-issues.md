@@ -2,7 +2,7 @@
 
 ## Open
 
-- M6 production deployment is externally blocked: Netlify skipped deploy `6aaefc1cb83e9e49fa9c7bc1` with `Skipped due to account credit usage exceeded`. The exact M6 revision passed GitHub CI and its Netlify deploy preview, but M6 cannot be marked deployed until production build credits are available and authenticated live verification passes.
+- A historical Auth identity named `M1 Live QA` remains in the development project even though the M1 record says disposable identities were removed. It was not part of the authorized M6 cleanup and has no identified M6 tenant access. Confirm its ownership before any later deletion.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 - Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.
 - Supabase security advisor reports intentional warnings for authenticated `SECURITY DEFINER` functions. Each has a fixed empty search path, explicit authenticated grant, revoked anonymous/public execution and caller/scope validation.
@@ -19,6 +19,12 @@
 - M6 performance advisor findings are informational index/policy observations. The M6 init-plan findings were corrected and operational audit, document, task, approval and notification indexes are present; further optimization should follow measured workloads.
 
 ## Closed
+
+- M6 Shared Services passed its complete production gate. GitHub Actions run #45 passed, Netlify deploy `6ab193383c4c3e0008593f7c` published revision `5a91fdf75ea27459b75e169d0728238d29407196`, `/api/health` reported Supabase connected, and authenticated Action Center, approvals, notifications, private document upload/download and audit-history checks passed. Cross-tenant/direct-ID/privilege denial remained verified, all M6 QA data and Storage objects were removed, and the permanent owner account remained intact.
+
+- Production verification exposed three transport/validation defects that were corrected without weakening controls: minute-precision task deadlines, an omitted optional task assignee, and multipart document upload through a Next.js Server Action on Netlify. The final upload uses a same-origin route and retains the established server authorization, RLS, private Storage, validation and audit controls.
+
+- The Netlify extension-fetch 403 and later build-credit skip no longer block M6. Subsequent production deploys completed successfully on the existing site.
 
 - Final M5 live verification found that staff-profile RLS did not also disclose the linked shared Person row. `people_select_staff` now delegates to the caller-bound `can_view_staff` evaluator; the staff register and Staff 360 render for authorized users while an outsider remains denied.
 

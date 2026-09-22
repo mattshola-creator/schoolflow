@@ -3,6 +3,7 @@ import {
   admissionApplicationSchema,
   allowedAdmissionTransitions,
   assessmentSchema,
+  offerResponseSchema,
 } from "./schemas";
 
 const validApplication = {
@@ -49,5 +50,25 @@ describe("admissions schemas", () => {
       "enrollment_pending",
     ]);
     expect(allowedAdmissionTransitions("enrolled")).toEqual([]);
+  });
+
+  it("requires an explicit supported offer response", () => {
+    const applicationId = "33333333-3333-4333-8333-333333333333";
+
+    expect(
+      offerResponseSchema.safeParse({ applicationId, response: "accept" })
+        .success,
+    ).toBe(true);
+    expect(
+      offerResponseSchema.safeParse({ applicationId, response: "decline" })
+        .success,
+    ).toBe(true);
+    expect(offerResponseSchema.safeParse({ applicationId }).success).toBe(
+      false,
+    );
+    expect(
+      offerResponseSchema.safeParse({ applicationId, response: "accepted" })
+        .success,
+    ).toBe(false);
   });
 });

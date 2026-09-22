@@ -136,6 +136,11 @@ export const offerSchema = z.object({
   expiresAt: z.iso.datetime({ local: true }),
 });
 
+export const offerResponseSchema = z.object({
+  applicationId: z.uuid(),
+  response: z.enum(["accept", "decline"]),
+});
+
 export const checklistSchema = z.object({
   itemId: z.uuid(),
   status: z.enum(["pending", "complete", "waived"]),

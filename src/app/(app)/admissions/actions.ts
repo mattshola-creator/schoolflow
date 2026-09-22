@@ -9,7 +9,6 @@ import {
   decisionSchema,
   enrollmentConversionSchema,
   offerSchema,
-  offerResponseSchema,
   statusTransitionSchema,
 } from "@/features/admissions/schemas";
 import { requireAdmissionsContext } from "@/features/admissions/service";
@@ -123,20 +122,6 @@ export async function issueOffer(formData: FormData) {
       "The offer could not be issued",
     );
   revalidatePath(`/admissions/${parsed.data.applicationId}`);
-}
-
-export async function respondToOffer(formData: FormData) {
-  const parsed = offerResponseSchema.safeParse(Object.fromEntries(formData));
-  const id = String(formData.get("applicationId") ?? "");
-  if (!parsed.success) fail(`/admissions/${id}`, "Invalid offer response");
-  const { supabase } = await requireAdmissionsContext("admissions.manage");
-  const { error } = await supabase.rpc("respond_to_admission_offer", {
-    target_application_id: parsed.data.applicationId,
-    accept_offer: parsed.data.response === "accept",
-  });
-  if (error)
-    fail(`/admissions/${id}`, "The offer response could not be recorded");
-  revalidatePath(`/admissions/${id}`);
 }
 
 export async function updateChecklist(formData: FormData) {

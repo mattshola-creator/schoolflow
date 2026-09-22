@@ -1,6 +1,8 @@
 import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
+import type { z } from "zod";
+import { offerResponseSchema } from "./schemas";
 
 export async function requireAdmissionsContext(
   permission = "admissions.view",
@@ -172,4 +174,46 @@ export async function loadAdmission(applicationId: string) {
     levels: options.levels,
     arms: options.arms,
   };
+}
+
+export async function recordAdmissionOfferResponse(
+  response: z.infer<typeof offerResponseSchema>,
+) {
+  const context = await requireAdmissionsContext("admissions.manage");
+  const [application, offer] = await Promise.all([
+    context.supabase
+      .from("admission_applications")
+      .select("id,status")
+      .eq("id", response.applicationId)
+      .eq("organization_id", context.active.organizationId)
+      .eq("school_id", context.active.schoolId!)
+      .maybeSingle(),
+    context.supabase
+      .from("admission_offers")
+      .select("status,expires_at")
+      .eq("application_id", response.applicationId)
+      .eq("organization_id", context.active.organizationId)
+      .eq("school_id", context.active.schoolId!)
+      .maybeSingle(),
+  ]);
+  const expired =
+    offer.data?.expires_at !== null &&
+    offer.data?.expires_at !== undefined &&
+    new Date(offer.data.expires_at).getTime() <= Date.now();
+  if (
+    application.error ||
+    !application.data ||
+    application.data.status !== "admission_offered" ||
+    offer.error ||
+    !offer.data ||
+    offer.data.status !== "issued" ||
+    expired
+  )
+    throw new Error("Offer is unavailable");
+
+  const { error } = await context.supabase.rpc("respond_to_admission_offer", {
+    target_application_id: response.applicationId,
+    accept_offer: response.response === "accept",
+  });
+  if (error) throw new Error("Offer is unavailable");
 }

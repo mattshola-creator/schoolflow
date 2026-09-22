@@ -334,23 +334,30 @@ export default async function AdmissionPage({
             </form>
           )}
           {canManage && result.application.status === "admission_offered" && (
-            <form action={respondToOffer} className="mt-4 flex gap-2">
-              <input type="hidden" name="applicationId" value={applicationId} />
-              <button
-                name="response"
-                value="accept"
-                className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white"
-              >
-                Record acceptance
-              </button>
-              <button
-                name="response"
-                value="decline"
-                className="rounded-lg border px-4 py-2 text-sm font-semibold"
-              >
-                Record decline
-              </button>
-            </form>
+            <div className="mt-4 flex gap-2">
+              <form action={respondToOffer}>
+                <input
+                  type="hidden"
+                  name="applicationId"
+                  value={applicationId}
+                />
+                <input type="hidden" name="response" value="accept" />
+                <button className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white">
+                  Record acceptance
+                </button>
+              </form>
+              <form action={respondToOffer}>
+                <input
+                  type="hidden"
+                  name="applicationId"
+                  value={applicationId}
+                />
+                <input type="hidden" name="response" value="decline" />
+                <button className="rounded-lg border px-4 py-2 text-sm font-semibold">
+                  Record decline
+                </button>
+              </form>
+            </div>
           )}
           {canEnroll &&
             ["accepted", "enrollment_pending"].includes(

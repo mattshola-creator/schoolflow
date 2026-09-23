@@ -46,6 +46,18 @@ describe("POST /api/admissions/convert", () => {
     expect(mocks.convert).not.toHaveBeenCalled();
   });
 
+  it("accepts the forwarded public origin used by Netlify", () => {
+    const request = new Request("https://internal.netlify/convert", {
+      headers: {
+        origin: "https://schoolflow-app.netlify.app",
+        "x-forwarded-host": "schoolflow-app.netlify.app",
+        "x-forwarded-proto": "https",
+      },
+    });
+
+    expect(hasValidConversionOrigin(request)).toBe(true);
+  });
+
   it("uses the atomic conversion service and redirects to Student 360 with HTTP 303", async () => {
     const result = await POST(request() as never);
     expect(mocks.convert).toHaveBeenCalledWith({

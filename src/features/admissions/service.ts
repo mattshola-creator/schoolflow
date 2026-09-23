@@ -8,6 +8,7 @@ import {
   admissionDocumentReviewSchema,
   admissionDocumentSubmitSchema,
   checklistSchema,
+  enrollmentConversionSchema,
   offerResponseSchema,
 } from "./schemas";
 
@@ -365,4 +366,21 @@ export async function updateAdmissionChecklistItem(
     target_status: update.status,
   });
   if (error) throw new Error("Checklist item is unavailable");
+}
+
+export async function convertAdmissionToStudent(
+  input: z.infer<typeof enrollmentConversionSchema>,
+) {
+  const context = await requireAdmissionsContext("admissions.enroll");
+  const { data, error } = await context.supabase.rpc(
+    "convert_admission_to_student",
+    {
+      target_application_id: input.applicationId,
+      target_student_number: input.studentNumber,
+      enrollment_date: input.enrolledOn,
+    },
+  );
+  if (error || !data)
+    throw new Error("Application is unavailable for enrollment");
+  return data;
 }

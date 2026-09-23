@@ -4,7 +4,6 @@ import { fieldClass } from "@/components/auth-card";
 import { allowedAdmissionTransitions } from "@/features/admissions/schemas";
 import { loadAdmission } from "@/features/admissions/service";
 import {
-  convertAdmission,
   issueOffer,
   recordAssessment,
   recordDecision,
@@ -518,7 +517,8 @@ export default async function AdmissionPage({
               result.application.status,
             ) && (
               <form
-                action={convertAdmission}
+                action="/api/admissions/convert"
+                method="post"
                 className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]"
               >
                 <input

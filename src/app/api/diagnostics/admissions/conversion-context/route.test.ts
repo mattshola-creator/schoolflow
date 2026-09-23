@@ -37,6 +37,31 @@ function enableProbe() {
   vi.stubEnv("CONTEXT", "production");
 }
 
+function expectConfigurationRejection(category: string) {
+  expect(console.error).toHaveBeenCalledOnce();
+  const serialized = vi.mocked(console.error).mock.calls[0]?.[0];
+  expect(typeof serialized).toBe("string");
+  const entry = JSON.parse(String(serialized));
+  expect(entry).toEqual({
+    event: "conversion_context_probe",
+    correlationId: expect.any(String),
+    occurredAt: expect.any(String),
+    stage: "configuration_rejected",
+    rejectionCategory: category,
+    operation: "admissions_conversion_context",
+  });
+  expect(Object.keys(entry).sort()).toEqual(
+    [
+      "correlationId",
+      "event",
+      "occurredAt",
+      "operation",
+      "rejectionCategory",
+      "stage",
+    ].sort(),
+  );
+}
+
 describe("GET conversion context probe", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -65,6 +90,93 @@ describe("GET conversion context probe", () => {
   it("is disabled by default and does not resolve authentication", async () => {
     const response = await GET();
     expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Not found" });
+    expectConfigurationRejection("missing_or_disabled");
+    expect(mocks.context).not.toHaveBeenCalled();
+    expect(mocks.read).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      "disabled configuration",
+      "missing_or_disabled",
+      () => vi.stubEnv("SCHOOLFLOW_CONVERSION_PROBE_ENABLED", "false"),
+    ],
+    [
+      "wrong deployment context",
+      "wrong_deployment_context",
+      () => vi.stubEnv("CONTEXT", "deploy-preview"),
+    ],
+    [
+      "missing binding",
+      "missing_binding",
+      () => vi.stubEnv("SCHOOLFLOW_CONVERSION_PROBE_SCHOOL_ID", ""),
+    ],
+    [
+      "malformed binding",
+      "malformed_binding",
+      () =>
+        vi.stubEnv(
+          "SCHOOLFLOW_CONVERSION_PROBE_ACTOR_ID",
+          "PROTECTED_ACTOR_VALUE",
+        ),
+    ],
+    [
+      "invalid expiry",
+      "invalid_expiry",
+      () =>
+        vi.stubEnv(
+          "SCHOOLFLOW_CONVERSION_PROBE_EXPIRES_AT",
+          "PROTECTED_EXPIRY_VALUE",
+        ),
+    ],
+    [
+      "expired window",
+      "expired",
+      () =>
+        vi.stubEnv(
+          "SCHOOLFLOW_CONVERSION_PROBE_EXPIRES_AT",
+          new Date(Date.now() - 60 * 1000).toISOString(),
+        ),
+    ],
+    [
+      "excessive window",
+      "excessive_window",
+      () =>
+        vi.stubEnv(
+          "SCHOOLFLOW_CONVERSION_PROBE_EXPIRES_AT",
+          new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
+        ),
+    ],
+  ])("logs a sanitized category for %s", async (_label, category, mutate) => {
+    enableProbe();
+    mutate();
+
+    const response = await GET();
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Not found" });
+    expectConfigurationRejection(category);
+    const log = String(vi.mocked(console.error).mock.calls[0]?.[0]);
+    expect(log).not.toContain("PROTECTED_ACTOR_VALUE");
+    expect(log).not.toContain("PROTECTED_EXPIRY_VALUE");
+    expect(log).not.toContain(ids.actor);
+    expect(log).not.toContain(ids.application);
+    expect(log).not.toContain(ids.organization);
+    expect(log).not.toContain(ids.school);
+    expect(mocks.context).not.toHaveBeenCalled();
+    expect(mocks.read).not.toHaveBeenCalled();
+  });
+
+  it("remains fail-closed if protected logging fails", async () => {
+    vi.mocked(console.error).mockImplementationOnce(() => {
+      throw new Error("log unavailable");
+    });
+
+    const response = await GET();
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Not found" });
     expect(mocks.context).not.toHaveBeenCalled();
     expect(mocks.read).not.toHaveBeenCalled();
   });

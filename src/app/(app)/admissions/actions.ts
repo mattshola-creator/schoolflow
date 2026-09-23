@@ -6,7 +6,6 @@ import {
   admissionApplicationSchema,
   assessmentSchema,
   decisionSchema,
-  enrollmentConversionSchema,
   offerSchema,
   statusTransitionSchema,
 } from "@/features/admissions/schemas";
@@ -121,25 +120,4 @@ export async function issueOffer(formData: FormData) {
       "The offer could not be issued",
     );
   revalidatePath(`/admissions/${parsed.data.applicationId}`);
-}
-
-export async function convertAdmission(formData: FormData) {
-  const parsed = enrollmentConversionSchema.safeParse(
-    Object.fromEntries(formData),
-  );
-  const id = String(formData.get("applicationId") ?? "");
-  if (!parsed.success)
-    fail(`/admissions/${id}`, "Check the enrollment details");
-  const { supabase } = await requireAdmissionsContext("admissions.enroll");
-  const { data, error } = await supabase.rpc("convert_admission_to_student", {
-    target_application_id: parsed.data.applicationId,
-    target_student_number: parsed.data.studentNumber,
-    enrollment_date: parsed.data.enrolledOn,
-  });
-  if (error || !data)
-    fail(
-      `/admissions/${parsed.data.applicationId}`,
-      "Enrollment requirements are incomplete or invalid",
-    );
-  redirect(`/students/${data}?message=Applicant+enrolled`);
 }

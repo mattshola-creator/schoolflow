@@ -22,7 +22,7 @@ export async function requireAdmissionsContext(
     feature,
   });
   if (!authorization.schoolId) throw new Error("A school context is required");
-  const [{ supabase }, { active }] = await Promise.all([
+  const [{ supabase, user }, { active }] = await Promise.all([
     requireUser(),
     loadTenantContext(),
   ]);
@@ -32,7 +32,7 @@ export async function requireAdmissionsContext(
     active.schoolId !== authorization.schoolId
   )
     throw new Error("The active school context is invalid");
-  return { supabase, active, authorization };
+  return { supabase, user, active, authorization };
 }
 
 export async function loadAdmissions(query = "", status?: string, page = 1) {

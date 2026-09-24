@@ -132,7 +132,11 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   consistent focus behavior and the first shared button, page-header and
   status primitives. Adoption is intentionally limited to representative
   public, dashboard and admissions-register surfaces in this focused phase.
+- Phase C1 remediates the Admissions detail and Student 360 mobile surfaces:
+  detail grids stack at narrow widths, checklist and offer controls reflow,
+  and long application, student, evidence and record identifiers wrap without
+  requiring page-level horizontal scrolling. Workflow behavior is unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
-  checklist/document stacking, broader component adoption, accessibility and
+  component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges
   obscuring actionable content.

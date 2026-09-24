@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Button, ButtonLink, buttonClassName } from "./button";
+import { DetailItem, DetailList } from "./detail-list";
 import { PageHeader } from "./page-header";
 import { StatusBadge } from "./status-badge";
 
@@ -44,5 +45,18 @@ describe("UI primitives", () => {
     render(<StatusBadge tone="success">Enrolled</StatusBadge>);
 
     expect(screen.getByText("Enrolled")).toHaveClass("text-brand-strong");
+  });
+
+  it("keeps detail data semantic and mobile-first", () => {
+    const { container } = render(
+      <DetailList>
+        <DetailItem label="Student number">M7-QA-STUDENT-001</DetailItem>
+      </DetailList>,
+    );
+
+    expect(container.querySelector("dl")).toHaveClass("grid-cols-1");
+    expect(container.querySelector("dl")).toHaveClass("sm:grid-cols-2");
+    expect(screen.getByText("Student number").tagName).toBe("DT");
+    expect(screen.getByText("M7-QA-STUDENT-001").tagName).toBe("DD");
   });
 });

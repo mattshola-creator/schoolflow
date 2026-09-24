@@ -20,7 +20,7 @@ vi.mock("@/lib/tenant-context", () => ({
   loadTenantContext: mocks.loadTenantContext,
 }));
 
-import { convertAdmissionToStudent } from "./service";
+import { AdmissionConversionError, convertAdmissionToStudent } from "./service";
 
 describe("convertAdmissionToStudent", () => {
   beforeEach(() => {
@@ -53,14 +53,95 @@ describe("convertAdmissionToStudent", () => {
     });
   });
 
-  it("propagates authorization, readiness, and duplicate denial safely", async () => {
-    mocks.rpc.mockResolvedValue({ data: null, error: new Error("denied") });
+  it("classifies context rejection without invoking the RPC", async () => {
+    mocks.requireCapability.mockRejectedValueOnce(new Error("denied"));
     await expect(
       convertAdmissionToStudent({
         applicationId,
         studentNumber: "QA-STUDENT-001",
         enrolledOn: "2026-09-23",
       }),
-    ).rejects.toThrow("Application is unavailable for enrollment");
+    ).rejects.toMatchObject({
+      diagnostic: {
+        stage: "context_resolution",
+        category: "authentication_authorization_or_context_rejected",
+        rpcInvoked: false,
+        rpcReturnedError: false,
+      },
+    } satisfies Partial<AdmissionConversionError>);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["42501", "rpc_business_rule_rejected"],
+    ["22023", "rpc_business_rule_rejected"],
+    ["23505", "rpc_constraint_rejected"],
+    ["40001", "rpc_transaction_failed"],
+    ["PGRST116", "rpc_transport_failed"],
+  ])("classifies safe RPC code %s as %s", async (code, category) => {
+    mocks.rpc.mockResolvedValue({
+      data: null,
+      error: { code, message: "sensitive database message" },
+    });
+    await expect(
+      convertAdmissionToStudent({
+        applicationId,
+        studentNumber: "QA-STUDENT-001",
+        enrolledOn: "2026-09-23",
+      }),
+    ).rejects.toMatchObject({
+      diagnostic: {
+        stage: "rpc_response",
+        category,
+        rpcInvoked: true,
+        rpcReturnedError: true,
+        rpcCode: code,
+      },
+    });
+    expect(mocks.rpc).toHaveBeenCalledOnce();
+  });
+
+  it("does not invent or copy an unsafe RPC code", async () => {
+    mocks.rpc.mockResolvedValue({
+      data: null,
+      error: { code: "secret-value", message: "sensitive database message" },
+    });
+    let failure: unknown;
+    try {
+      await convertAdmissionToStudent({
+        applicationId,
+        studentNumber: "QA-STUDENT-001",
+        enrolledOn: "2026-09-23",
+      });
+    } catch (error) {
+      failure = error;
+    }
+    expect(failure).toBeInstanceOf(AdmissionConversionError);
+    expect((failure as AdmissionConversionError).diagnostic).toEqual({
+      stage: "rpc_response",
+      category: "rpc_returned_error",
+      rpcInvoked: true,
+      rpcReturnedError: true,
+    });
+    expect(mocks.rpc).toHaveBeenCalledOnce();
+  });
+
+  it("classifies a thrown RPC invocation without retrying", async () => {
+    mocks.rpc.mockRejectedValueOnce(new Error("network secret"));
+    await expect(
+      convertAdmissionToStudent({
+        applicationId,
+        studentNumber: "QA-STUDENT-001",
+        enrolledOn: "2026-09-23",
+      }),
+    ).rejects.toMatchObject({
+      diagnostic: {
+        stage: "rpc_invocation",
+        category: "rpc_invocation_failed",
+        rpcInvoked: true,
+        rpcReturnedError: false,
+      },
+    });
+    expect(mocks.rpc).toHaveBeenCalledOnce();
   });
 });

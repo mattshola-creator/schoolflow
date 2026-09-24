@@ -368,19 +368,97 @@ export async function updateAdmissionChecklistItem(
   if (error) throw new Error("Checklist item is unavailable");
 }
 
+export type AdmissionConversionFailure = {
+  stage: "context_resolution" | "rpc_invocation" | "rpc_response";
+  category:
+    | "authentication_authorization_or_context_rejected"
+    | "rpc_invocation_failed"
+    | "rpc_business_rule_rejected"
+    | "rpc_constraint_rejected"
+    | "rpc_transaction_failed"
+    | "rpc_transport_failed"
+    | "rpc_returned_error"
+    | "rpc_invalid_result";
+  rpcInvoked: boolean;
+  rpcReturnedError: boolean;
+  rpcCode?: string;
+};
+
+export class AdmissionConversionError extends Error {
+  constructor(public readonly diagnostic: AdmissionConversionFailure) {
+    super("Application is unavailable for enrollment");
+    this.name = "AdmissionConversionError";
+  }
+}
+
+function safeRpcCode(error: unknown) {
+  if (!error || typeof error !== "object" || !("code" in error))
+    return undefined;
+  const code = Reflect.get(error, "code");
+  if (typeof code !== "string") return undefined;
+  return /^(?:[0-9A-Z]{5}|PGRST[0-9A-Z]{3})$/.test(code) ? code : undefined;
+}
+
+function categorizeRpcError(code: string | undefined) {
+  if (code === "22023" || code === "42501" || code === "P0001")
+    return "rpc_business_rule_rejected" as const;
+  if (code?.startsWith("23")) return "rpc_constraint_rejected" as const;
+  if (code?.startsWith("40")) return "rpc_transaction_failed" as const;
+  if (code?.startsWith("08") || code?.startsWith("PGRST"))
+    return "rpc_transport_failed" as const;
+  return "rpc_returned_error" as const;
+}
+
 export async function convertAdmissionToStudent(
   input: z.infer<typeof enrollmentConversionSchema>,
 ) {
-  const context = await requireAdmissionsContext("admissions.enroll");
-  const { data, error } = await context.supabase.rpc(
-    "convert_admission_to_student",
-    {
+  let context: Awaited<ReturnType<typeof requireAdmissionsContext>>;
+  try {
+    context = await requireAdmissionsContext("admissions.enroll");
+  } catch {
+    throw new AdmissionConversionError({
+      stage: "context_resolution",
+      category: "authentication_authorization_or_context_rejected",
+      rpcInvoked: false,
+      rpcReturnedError: false,
+    });
+  }
+
+  let result: Awaited<
+    ReturnType<typeof context.supabase.rpc<"convert_admission_to_student">>
+  >;
+  try {
+    result = await context.supabase.rpc("convert_admission_to_student", {
       target_application_id: input.applicationId,
       target_student_number: input.studentNumber,
       enrollment_date: input.enrolledOn,
-    },
-  );
-  if (error || !data)
-    throw new Error("Application is unavailable for enrollment");
+    });
+  } catch {
+    throw new AdmissionConversionError({
+      stage: "rpc_invocation",
+      category: "rpc_invocation_failed",
+      rpcInvoked: true,
+      rpcReturnedError: false,
+    });
+  }
+
+  const { data, error } = result;
+  if (error) {
+    const rpcCode = safeRpcCode(error);
+    throw new AdmissionConversionError({
+      stage: "rpc_response",
+      category: categorizeRpcError(rpcCode),
+      rpcInvoked: true,
+      rpcReturnedError: true,
+      ...(rpcCode ? { rpcCode } : {}),
+    });
+  }
+  if (!data)
+    throw new AdmissionConversionError({
+      stage: "rpc_response",
+      category: "rpc_invalid_result",
+      rpcInvoked: true,
+      rpcReturnedError: false,
+    });
   return data;
 }

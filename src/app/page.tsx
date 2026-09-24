@@ -1,6 +1,6 @@
 import { ArrowRight, Building2, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
 import { SystemStatus } from "@/components/system-status";
-import Link from "next/link";
 
 export default function Home() {
   const principles = [
@@ -10,8 +10,8 @@ export default function Home() {
     "Auditable, migration-driven changes",
   ];
   return (
-    <main className="min-h-screen bg-[#f6f8f7] text-slate-950">
-      <header className="border-b border-slate-200 bg-white">
+    <main className="bg-background min-h-screen text-slate-950">
+      <header className="border-border bg-surface border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
           <div className="flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-xl bg-emerald-800 text-white">
@@ -19,17 +19,12 @@ export default function Home() {
             </span>
             <div>
               <p className="text-lg font-semibold tracking-tight">SchoolFlow</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-muted-foreground text-xs font-medium">
                 Multi-school operating platform
               </p>
             </div>
           </div>
-          <Link
-            href="/login"
-            className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white"
-          >
-            Sign in
-          </Link>
+          <ButtonLink href="/login">Sign in</ButtonLink>
         </div>
       </header>
       <div className="mx-auto grid max-w-6xl gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[1.2fr_0.8fr] lg:py-24">
@@ -44,27 +39,30 @@ export default function Home() {
           >
             Run every school with clarity and control.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+          <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-8 font-medium">
             SchoolFlow connects school operations, academics, finance, staff and
             parent services in one tenant-safe platform.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link
+            <ButtonLink
               href="/sign-up"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-emerald-800 px-5 font-semibold text-white shadow-sm"
+              size="large"
+              className="w-full sm:w-auto"
             >
               Create your workspace
               <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-            <a
-              className="inline-flex h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+            </ButtonLink>
+            <ButtonLink
+              variant="secondary"
+              size="large"
+              className="w-full sm:w-auto"
               href="/api/health"
             >
               View health endpoint
-            </a>
+            </ButtonLink>
           </div>
           <ul
-            className="mt-10 grid gap-3 text-sm text-slate-700 sm:grid-cols-2"
+            className="mt-10 grid gap-3 text-sm font-medium text-slate-700 sm:grid-cols-2"
             aria-label="Foundation principles"
           >
             {principles.map((item) => (

@@ -4,10 +4,10 @@ import { getPublicEnvironment } from "@/lib/env";
 export function SystemStatus() {
   const configured = getPublicEnvironment().success;
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_50px_-32px_rgba(15,23,42,0.45)]">
-      <div className="border-b border-slate-200 px-6 py-5">
+    <div className="border-border bg-surface overflow-hidden rounded-2xl border shadow-[0_18px_50px_-32px_rgba(15,23,42,0.45)]">
+      <div className="border-border border-b px-6 py-5">
         <p className="text-sm font-semibold text-slate-950">Platform status</p>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="text-muted-foreground mt-1 text-sm font-medium">
           Live configuration readiness
         </p>
       </div>
@@ -25,7 +25,7 @@ export function SystemStatus() {
           ready={configured}
         />
       </dl>
-      <div className="bg-slate-50 px-6 py-4 text-xs leading-5 text-slate-600">
+      <div className="bg-surface-subtle text-muted-foreground px-6 py-4 text-xs leading-5 font-medium">
         Identity and tenant foundations are connected. Operational school
         modules are introduced in later milestones.
       </div>

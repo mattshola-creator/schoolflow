@@ -136,6 +136,9 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   detail grids stack at narrow widths, checklist and offer controls reflow,
   and long application, student, evidence and record identifiers wrap without
   requiring page-level horizontal scrolling. Workflow behavior is unchanged.
+- Phase C2 remediates the Student and Staff registers with responsive header
+  actions and search controls, safe long-identifier wrapping and mobile-safe
+  record and pagination rows. Directory query behavior is unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fieldClass } from "@/components/auth-card";
+import { buttonClassName } from "@/components/ui/button";
+import { DetailItem, DetailList } from "@/components/ui/detail-list";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { loadStaffMember } from "@/features/staff/service";
 import { endEmployment, transferStaffAssignment } from "../actions";
 
-const panel = "rounded-xl border bg-white p-5 sm:p-6";
+const panel = "border-border bg-surface rounded-xl border p-5 sm:p-6";
 
 export default async function StaffMemberPage({
   params,
@@ -35,18 +39,28 @@ export default async function StaffMemberPage({
       <Link href="/staff" className="text-sm font-medium text-emerald-800">
         ← Staff
       </Link>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">Staff 360</p>
-          <h1 className="mt-1 text-3xl font-semibold">
-            {person.first_name} {person.last_name}
-          </h1>
-          <p className="mt-2 text-slate-600">
-            {record.profile.staff_number} ·{" "}
-            <span className="capitalize">{record.profile.status}</span>
-          </p>
-        </div>
-        <p className="text-sm text-slate-500">{record.active.schoolName}</p>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Staff 360"
+          title={
+            <span className="break-words">
+              {person.first_name} {person.last_name}
+            </span>
+          }
+          description={
+            <span className="block [overflow-wrap:anywhere]">
+              {record.profile.staff_number} · {record.active.schoolName}
+            </span>
+          }
+          actions={
+            <StatusBadge
+              tone={record.profile.status === "active" ? "success" : "neutral"}
+              className="capitalize"
+            >
+              {record.profile.status}
+            </StatusBadge>
+          }
+        />
       </div>
       {message && (
         <p
@@ -59,55 +73,50 @@ export default async function StaffMemberPage({
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
         <section className={panel}>
           <h2 className="text-lg font-semibold">Contact and profile</h2>
-          <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-slate-500">Work email</dt>
-              <dd className="font-medium">
+          <DetailList className="mt-4">
+            <DetailItem label="Work email">
+              <span className="[overflow-wrap:anywhere]">
                 {record.profile.work_email ?? "Not recorded"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Phone</dt>
-              <dd className="font-medium">
-                {record.profile.phone ?? "Not recorded"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Emergency contact</dt>
-              <dd className="font-medium">
-                {record.profile.emergency_contact_name ?? "Not recorded"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Qualifications</dt>
-              <dd className="font-medium">
-                {record.profile.qualifications.length
-                  ? record.profile.qualifications.join(", ")
-                  : "Not recorded"}
-              </dd>
-            </div>
-          </dl>
+              </span>
+            </DetailItem>
+            <DetailItem label="Phone">
+              {record.profile.phone ?? "Not recorded"}
+            </DetailItem>
+            <DetailItem label="Emergency contact">
+              {record.profile.emergency_contact_name ?? "Not recorded"}
+            </DetailItem>
+            <DetailItem label="Qualifications">
+              {record.profile.qualifications.length
+                ? record.profile.qualifications.join(", ")
+                : "Not recorded"}
+            </DetailItem>
+          </DetailList>
         </section>
         <section className={panel}>
           <h2 className="text-lg font-semibold">Employment</h2>
           {record.employments.map((item) => (
             <div
               key={item.id}
-              className="mt-4 rounded-lg bg-slate-50 p-4 text-sm"
+              className="bg-surface-subtle mt-4 rounded-lg p-4 text-sm"
             >
-              <div className="flex justify-between">
-                <span className="font-semibold capitalize">
+              <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                <span className="min-w-0 font-semibold break-words capitalize">
                   {item.employment_type.replace("_", " ")}
                 </span>
-                <span className="text-slate-500 capitalize">
+                <StatusBadge
+                  tone={item.status === "active" ? "success" : "neutral"}
+                  className="capitalize"
+                >
                   {item.status.replace("_", " ")}
-                </span>
+                </StatusBadge>
               </div>
-              <p className="mt-1 text-slate-500">
+              <p className="text-muted-foreground mt-1 font-medium">
                 {item.started_on}
                 {item.ended_on ? ` to ${item.ended_on}` : " to present"}
               </p>
-              {item.exit_reason && <p className="mt-2">{item.exit_reason}</p>}
+              {item.exit_reason && (
+                <p className="mt-2 break-words">{item.exit_reason}</p>
+              )}
             </div>
           ))}
         </section>
@@ -115,16 +124,22 @@ export default async function StaffMemberPage({
           <h2 className="text-lg font-semibold">School assignment history</h2>
           <ul className="mt-4 space-y-3">
             {record.assignments.map((item) => (
-              <li key={item.id} className="rounded-lg border p-4 text-sm">
-                <div className="flex justify-between gap-4">
-                  <span className="font-semibold">
+              <li
+                key={item.id}
+                className="border-border rounded-lg border p-4 text-sm"
+              >
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                  <span className="min-w-0 font-semibold break-words">
                     {item.positions.name} · {item.schools.name}
                   </span>
-                  <span className="text-slate-500 capitalize">
+                  <StatusBadge
+                    tone={item.status === "active" ? "success" : "neutral"}
+                    className="capitalize"
+                  >
                     {item.status}
-                  </span>
+                  </StatusBadge>
                 </div>
-                <p className="mt-1 text-slate-500">
+                <p className="text-muted-foreground mt-1 font-medium break-words">
                   {item.departments?.name ?? "School-wide"} · {item.started_on}
                   {item.ended_on ? ` to ${item.ended_on}` : " to present"}
                   {item.is_primary ? " · Primary assignment" : ""}
@@ -136,7 +151,7 @@ export default async function StaffMemberPage({
         {canTransfer && activeAssignment && (
           <section className={`${panel} lg:col-span-2`}>
             <h2 className="text-lg font-semibold">Transfer assignment</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-muted-foreground mt-1 text-sm font-medium">
               Ends the current dated assignment and starts a new one. Linked
               school-role access moves atomically when present.
             </p>
@@ -190,7 +205,7 @@ export default async function StaffMemberPage({
                   required
                 />
               </label>
-              <button className="rounded-lg border px-4 py-2.5 text-sm font-semibold">
+              <button className={buttonClassName({ variant: "secondary" })}>
                 Transfer assignment
               </button>
             </form>
@@ -199,7 +214,7 @@ export default async function StaffMemberPage({
         {canEnd && activeEmployment && (
           <section className={`${panel} border-red-200 lg:col-span-2`}>
             <h2 className="text-lg font-semibold">End employment</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-muted-foreground mt-1 text-sm font-medium">
               Preserves history and attribution while ending only staff-linked
               role assignments. Other identities, such as guardian access,
               remain intact.
@@ -233,7 +248,7 @@ export default async function StaffMemberPage({
                   required
                 />
               </label>
-              <button className="rounded-lg border border-red-300 px-4 py-2.5 text-sm font-semibold text-red-800">
+              <button className="min-h-11 rounded-lg border border-red-300 px-4 py-2.5 text-sm font-semibold text-red-800 transition-colors hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700">
                 End employment
               </button>
             </form>

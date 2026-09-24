@@ -2,7 +2,7 @@
 
 ## Open
 
-- M7.5 responsive UI/UX debt: real-phone verification found horizontal overflow, clipped navigation/text, occasional reliance on zooming out, weak secondary-text weight/contrast, dense checklist/document stacking and occasional Netlify badge obstruction. The M7 workflows remained functional with no dead ends; these visual issues require the separately approved M7.5 milestone.
+- M7.5 responsive UI/UX debt remains on module pages: real-phone verification found long-text overflow/clipping, occasional reliance on zooming out, dense checklist/document stacking and occasional Netlify badge obstruction. Phase A resolved the authenticated shell navigation, and Phase B begins the shared visual foundation; later focused phases must address the remaining page-level issues without changing workflow behavior.
 
 - The two converted M7 QA fixtures and their synthetic admissions evidence remain preserved pending a separately approved cleanup plan. Do not delete linked application, student, enrollment, class-membership, guardian, document or audit records ad hoc.
 
@@ -23,6 +23,8 @@
 - M6 performance advisor findings are informational index/policy observations. The M6 init-plan findings were corrected and operational audit, document, task, approval and notification indexes are present; further optimization should follow measured workloads.
 
 ## Closed
+
+- M7.5 Phase A replaced the clipped mobile module strip with an accessible drawer and retained the permission-filtered desktop sidebar. PR #34, CI run #81, production deploy `6ab574a671d9b50008854c35`, authenticated desktop checks and real-phone evidence all passed.
 
 - M7 Admissions passed its complete acceptance gate. PR #32 merged as revision `5d1160b61fdf169fa55895a68162a31d3a973048`, GitHub Actions run #77 passed 97 tests across 23 files and the production build, and Netlify deploy `6ab4ff7754d09810470c17a8` is Ready. Authenticated production verification covered application handling, offer acceptance, checklist and private-document evidence gating, final placement, atomic conversion and Student 360 navigation. Authorization, tenant isolation, duplicate protection and audit evidence remain verified. The QA account was signed out, the temporary diagnostic probe is disabled and the permanent owner account was untouched.
 

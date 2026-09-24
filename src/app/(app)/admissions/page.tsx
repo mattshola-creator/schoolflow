@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Search, UserPlus } from "lucide-react";
 import { fieldClass } from "@/components/auth-card";
+import { ButtonLink } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   admissionSearchSchema,
   applicationStatuses,
@@ -30,7 +33,7 @@ export default async function AdmissionsPage({
     return (
       <main className="py-16">
         <h1 className="text-3xl font-semibold">Admissions unavailable</h1>
-        <p className="mt-3 text-slate-600">
+        <p className="text-muted-foreground mt-3 font-medium">
           Select an authorized school with the Admissions entitlement enabled.
         </p>
       </main>
@@ -40,39 +43,31 @@ export default async function AdmissionsPage({
   const totalPages = Math.max(1, Math.ceil(result.count / result.pageSize));
   return (
     <main className="py-10 sm:py-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">Admissions</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
-            Applicants at {result.active.schoolName}
-          </h1>
-          <p className="mt-2 text-slate-600">
-            Manage application, assessment, decision, offer and enrollment
-            stages without duplicating student records.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {result.authorization.permissions.includes(
-            "admissions.documents.configure",
-          ) && (
-            <Link
-              href="/admissions/document-policy"
-              className="rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold"
-            >
-              Document policy
-            </Link>
-          )}
-          {canManage && (
-            <Link
-              href="/admissions/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white"
-            >
-              <UserPlus className="size-4" />
-              New application
-            </Link>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Admissions"
+        title={`Applicants at ${result.active.schoolName}`}
+        description="Manage application, assessment, decision, offer and enrollment stages without duplicating student records."
+        actions={
+          <>
+            {result.authorization.permissions.includes(
+              "admissions.documents.configure",
+            ) && (
+              <ButtonLink
+                href="/admissions/document-policy"
+                variant="secondary"
+              >
+                Document policy
+              </ButtonLink>
+            )}
+            {canManage && (
+              <ButtonLink href="/admissions/new">
+                <UserPlus className="size-4" />
+                New application
+              </ButtonLink>
+            )}
+          </>
+        }
+      />
       <form
         className="mt-7 grid gap-2 sm:max-w-3xl sm:grid-cols-[1fr_14rem_auto]"
         role="search"
@@ -105,7 +100,7 @@ export default async function AdmissionsPage({
           Filter
         </button>
       </form>
-      <div className="mt-6 overflow-hidden rounded-xl border bg-white">
+      <div className="border-border bg-surface mt-6 overflow-hidden rounded-xl border">
         {result.applications.length ? (
           <ul className="divide-y">
             {result.applications.map((application) => (
@@ -119,15 +114,19 @@ export default async function AdmissionsPage({
                       {application.applicant.first_name}{" "}
                       {application.applicant.last_name}
                     </span>
-                    <span className="mt-1 block text-sm text-slate-500">
+                    <span className="text-muted-foreground mt-1 block text-sm font-medium">
                       {application.application_number} ·{" "}
                       {application.class_levels.name} ·{" "}
                       {application.academic_sessions.name}
                     </span>
                   </span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                  <StatusBadge
+                    tone={
+                      application.status === "enrolled" ? "success" : "neutral"
+                    }
+                  >
                     {label(application.status)}
-                  </span>
+                  </StatusBadge>
                 </Link>
               </li>
             ))}
@@ -135,7 +134,7 @@ export default async function AdmissionsPage({
         ) : (
           <div className="p-10 text-center">
             <h2 className="font-semibold">No applications found</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="text-muted-foreground mt-1 text-sm font-medium">
               Create an application or adjust the filters.
             </p>
           </div>

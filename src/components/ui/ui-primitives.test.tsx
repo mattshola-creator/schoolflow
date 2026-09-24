@@ -57,6 +57,7 @@ describe("UI primitives", () => {
     expect(container.querySelector("dl")).toHaveClass("grid-cols-1");
     expect(container.querySelector("dl")).toHaveClass("sm:grid-cols-2");
     expect(screen.getByText("Student number").tagName).toBe("DT");
+    expect(screen.getByText("M7-QA-STUDENT-001")).toHaveClass("break-words");
     expect(screen.getByText("M7-QA-STUDENT-001").tagName).toBe("DD");
   });
 });

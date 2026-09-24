@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fieldClass } from "@/components/auth-card";
+import { buttonClassName } from "@/components/ui/button";
+import { DetailItem, DetailList } from "@/components/ui/detail-list";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { allowedAdmissionTransitions } from "@/features/admissions/schemas";
 import { loadAdmission } from "@/features/admissions/service";
 import {
@@ -39,23 +43,31 @@ export default async function AdmissionPage({
       <Link href="/admissions" className="text-sm font-medium text-emerald-800">
         ← Admissions
       </Link>
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">
-            {result.application.application_number}
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold">
-            {result.application.applicant.first_name}{" "}
-            {result.application.applicant.last_name}
-          </h1>
-          <p className="mt-2 text-slate-600">
-            {result.application.class_levels.name} ·{" "}
-            {result.application.academic_sessions.name}
-          </p>
-        </div>
-        <span className="self-start rounded-full bg-slate-200 px-3 py-1.5 text-sm font-semibold">
-          {label(result.application.status)}
-        </span>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow={
+            <span className="[overflow-wrap:anywhere]">
+              {result.application.application_number}
+            </span>
+          }
+          title={
+            <span className="break-words">
+              {result.application.applicant.first_name}{" "}
+              {result.application.applicant.last_name}
+            </span>
+          }
+          description={
+            <>
+              {result.application.class_levels.name} ·{" "}
+              {result.application.academic_sessions.name}
+            </>
+          }
+          actions={
+            <StatusBadge tone="success">
+              {label(result.application.status)}
+            </StatusBadge>
+          }
+        />
       </div>
       {notice.error && (
         <p
@@ -71,32 +83,29 @@ export default async function AdmissionPage({
         </p>
       )}
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border bg-white p-5">
+        <section className="border-border bg-surface rounded-xl border p-5">
           <h2 className="font-semibold">Application details</h2>
-          <dl className="mt-4 grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <dt className="text-slate-500">Date of birth</dt>
-              <dd>{result.application.date_of_birth}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Source</dt>
-              <dd>{label(result.application.source)}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Previous class</dt>
-              <dd>{result.application.previous_class ?? "Not provided"}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Guardian</dt>
-              <dd>
-                {result.guardians[0]
-                  ? `${result.guardians[0].guardian.first_name} ${result.guardians[0].guardian.last_name}`
-                  : "Not provided"}
-              </dd>
-            </div>
-          </dl>
+          <DetailList className="mt-4">
+            <DetailItem label="Date of birth">
+              {result.application.date_of_birth}
+            </DetailItem>
+            <DetailItem label="Source">
+              {label(result.application.source)}
+            </DetailItem>
+            <DetailItem label="Previous class">
+              {result.application.previous_class ?? "Not provided"}
+            </DetailItem>
+            <DetailItem label="Guardian">
+              {result.guardians[0]
+                ? `${result.guardians[0].guardian.first_name} ${result.guardians[0].guardian.last_name}`
+                : "Not provided"}
+            </DetailItem>
+          </DetailList>
           {canManage && transitions.length > 0 && (
-            <form action={transitionAdmission} className="mt-5 flex gap-2">
+            <form
+              action={transitionAdmission}
+              className="mt-5 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"
+            >
               <input type="hidden" name="applicationId" value={applicationId} />
               <select className={fieldClass} name="status">
                 {transitions.map((status) => (
@@ -105,19 +114,19 @@ export default async function AdmissionPage({
                   </option>
                 ))}
               </select>
-              <button className="rounded-lg border px-4 text-sm font-semibold">
+              <button className={buttonClassName({ variant: "secondary" })}>
                 Update
               </button>
             </form>
           )}
         </section>
-        <section className="rounded-xl border bg-white p-5">
+        <section className="border-border bg-surface rounded-xl border p-5">
           <h2 className="font-semibold">Enrollment checklist</h2>
           <ul className="mt-3 divide-y">
             {result.checklist.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-3 py-3 text-sm"
+                className="grid gap-2 py-3 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
               >
                 <span>
                   {item.label}
@@ -127,7 +136,7 @@ export default async function AdmissionPage({
                   <form
                     action="/api/admissions/checklist"
                     method="post"
-                    className="flex gap-2"
+                    className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2"
                   >
                     <input
                       type="hidden"
@@ -138,13 +147,13 @@ export default async function AdmissionPage({
                     <select
                       name="status"
                       defaultValue={item.status}
-                      className="rounded-md border px-2 py-1"
+                      className="border-border min-h-11 min-w-0 rounded-md border px-2 py-2"
                     >
                       <option value="pending">Pending</option>
                       <option value="complete">Complete</option>
                       <option value="waived">Waived</option>
                     </select>
-                    <button className="font-semibold text-emerald-800">
+                    <button className="text-brand min-h-11 px-2 font-semibold">
                       Save
                     </button>
                   </form>
@@ -155,7 +164,7 @@ export default async function AdmissionPage({
             ))}
           </ul>
         </section>
-        <section className="rounded-xl border bg-white p-5 lg:col-span-2">
+        <section className="border-border bg-surface rounded-xl border p-5 lg:col-span-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="font-semibold">Required admission documents</h2>
@@ -199,7 +208,7 @@ export default async function AdmissionPage({
               {result.documentRequirements.map((requirement) => (
                 <li key={requirement.id} className="rounded-lg border p-4">
                   <div className="flex flex-wrap justify-between gap-2">
-                    <div>
+                    <div className="min-w-0">
                       <p className="font-medium">
                         {requirement.label}
                         {requirement.required ? " *" : ""}
@@ -209,13 +218,13 @@ export default async function AdmissionPage({
                         {requirement.policy_version}
                       </p>
                       {requirement.documents && (
-                        <p className="mt-1 text-sm">
+                        <p className="mt-1 text-sm [overflow-wrap:anywhere]">
                           Evidence: {requirement.documents.title} (
                           {requirement.documents.original_filename})
                         </p>
                       )}
                       {requirement.review_comment && (
-                        <p className="mt-1 text-sm">
+                        <p className="mt-1 text-sm break-words">
                           Review: {requirement.review_comment}
                         </p>
                       )}
@@ -243,7 +252,7 @@ export default async function AdmissionPage({
                         <select
                           name="documentId"
                           required
-                          className="rounded-lg border px-3 py-2 text-sm"
+                          className="border-border min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm"
                         >
                           <option value="">Choose linked document</option>
                           {result.admissionDocuments.map((document) => (
@@ -297,9 +306,13 @@ export default async function AdmissionPage({
               ))}
             </ul>
           )}
-          <p className="mt-4 text-xs text-slate-500">
-            Upload with linked record type <code>admission_application</code>{" "}
-            and linked record ID <code>{applicationId}</code>.
+          <p className="text-muted-foreground mt-4 text-xs font-medium break-words">
+            Upload with linked record type{" "}
+            <code className="[overflow-wrap:anywhere]">
+              admission_application
+            </code>{" "}
+            and linked record ID{" "}
+            <code className="[overflow-wrap:anywhere]">{applicationId}</code>.
           </p>
         </section>
         <section className="rounded-xl border bg-white p-5">
@@ -487,7 +500,7 @@ export default async function AdmissionPage({
             </form>
           )}
           {canManage && result.application.status === "admission_offered" && (
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <form action="/api/admissions/offers/respond" method="post">
                 <input
                   type="hidden"
@@ -495,7 +508,9 @@ export default async function AdmissionPage({
                   value={applicationId}
                 />
                 <input type="hidden" name="response" value="accept" />
-                <button className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white">
+                <button
+                  className={buttonClassName({ className: "w-full sm:w-auto" })}
+                >
                   Record acceptance
                 </button>
               </form>
@@ -506,7 +521,12 @@ export default async function AdmissionPage({
                   value={applicationId}
                 />
                 <input type="hidden" name="response" value="decline" />
-                <button className="rounded-lg border px-4 py-2 text-sm font-semibold">
+                <button
+                  className={buttonClassName({
+                    className: "w-full sm:w-auto",
+                    variant: "secondary",
+                  })}
+                >
                   Record decline
                 </button>
               </form>
@@ -544,7 +564,7 @@ export default async function AdmissionPage({
               </form>
             )}
           {result.application.student_profiles && (
-            <p className="mt-4 text-sm">
+            <p className="mt-4 text-sm [overflow-wrap:anywhere]">
               <Link
                 className="font-semibold text-emerald-800"
                 href={`/students/${result.application.student_profiles.id}`}

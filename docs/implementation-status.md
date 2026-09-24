@@ -6,7 +6,7 @@ Last updated: 24 September 2026
 
 M7 Admissions — Completed — Deployed & Verified
 
-M7.5 UI/UX — Not Started
+M7.5 UI/UX — In Progress
 
 ## Completed milestones
 
@@ -121,9 +121,18 @@ applicant-to-student conversion. Parent self-service intake and controlled
 application imports described in the broader PRD are not represented as M7
 deliverables by ADR-0008 or the approved M7 implementation matrix.
 
-## M7.5 readiness
+## M7.5 progress
 
-M7.5 may begin only through a separately approved focused UI/UX session. Its
-initial backlog includes mobile overflow and clipping, responsive navigation,
-typography/contrast, checklist and document stacking, and prevention of
-floating status badges obscuring actionable content.
+- Phase A replaced the clipped mobile module strip with an accessible drawer
+  while retaining a permission-filtered desktop sidebar. PR #34 merged as
+  revision `a0092e3c78aa40b95564b87cd37787d0ba3c9948`, GitHub Actions run #81
+  passed, and Netlify deploy `6ab574a671d9b50008854c35` is Ready. Authenticated
+  desktop checks and real-phone verification passed.
+- Phase B establishes semantic design tokens, stronger secondary typography,
+  consistent focus behavior and the first shared button, page-header and
+  status primitives. Adoption is intentionally limited to representative
+  public, dashboard and admissions-register surfaces in this focused phase.
+- Remaining work includes module-page overflow and long-text handling, dense
+  checklist/document stacking, broader component adoption, accessibility and
+  responsive regression coverage, and prevention of floating status badges
+  obscuring actionable content.

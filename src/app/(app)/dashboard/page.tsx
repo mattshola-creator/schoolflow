@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import { switchContext } from "../actions";
@@ -12,29 +13,23 @@ export default async function DashboardPage() {
   if (!memberships?.length)
     return (
       <main className="mx-auto max-w-3xl px-5 py-16">
-        <p className="text-sm font-semibold text-emerald-800">Account ready</p>
-        <h1 className="mt-2 text-3xl font-semibold">
-          Create your organization
-        </h1>
-        <p className="mt-3 text-slate-600">
-          Set up the tenant boundary and first school to continue.
-        </p>
-        <Link
-          href="/onboarding"
-          className="mt-7 inline-flex rounded-lg bg-emerald-800 px-5 py-3 font-semibold text-white"
-        >
+        <PageHeader
+          eyebrow="Account ready"
+          title="Create your organization"
+          description="Set up the tenant boundary and first school to continue."
+        />
+        <ButtonLink href="/onboarding" size="large" className="mt-7">
           Start setup
-        </Link>
+        </ButtonLink>
       </main>
     );
   const { options, active } = await loadTenantContext();
   return (
     <main className="py-12">
-      <p className="text-sm font-semibold text-emerald-800">Secure workspace</p>
-      <h1 className="mt-2 text-3xl font-semibold">Your organizations</h1>
+      <PageHeader eyebrow="Secure workspace" title="Your organizations" />
       {active && (
-        <section className="mt-7 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-          <p className="text-xs font-semibold tracking-wide text-emerald-800 uppercase">
+        <section className="border-brand-border bg-brand-soft mt-7 rounded-xl border p-5 sm:p-6">
+          <p className="text-brand text-xs font-semibold tracking-wide uppercase">
             Active context
           </p>
           <p className="mt-1 font-semibold">
@@ -62,9 +57,7 @@ export default async function DashboardPage() {
                   </option>
                 ))}
               </select>
-              <button className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white">
-                Switch
-              </button>
+              <Button type="submit">Switch</Button>
             </form>
           )}
         </section>
@@ -73,10 +66,10 @@ export default async function DashboardPage() {
         {memberships.map((membership) => (
           <section
             key={membership.organization_id}
-            className="rounded-xl border bg-white p-6"
+            className="border-border bg-surface rounded-xl border p-6"
           >
             <h2 className="font-semibold">{membership.organizations?.name}</h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="text-muted-foreground mt-2 text-sm font-medium">
               Active membership · tenant-isolated
             </p>
           </section>

@@ -36,7 +36,7 @@ function loadProbeConfig(now = new Date()): ProbeConfigResult {
   if (process.env.SCHOOLFLOW_CONVERSION_PROBE_ENABLED !== "true")
     return { ok: false, rejectionCategory: "missing_or_disabled" };
 
-  if (process.env.CONTEXT !== "production")
+  if (process.env.SCHOOLFLOW_CONVERSION_PROBE_DEPLOY_CONTEXT !== "production")
     return { ok: false, rejectionCategory: "wrong_deployment_context" };
 
   const rawBindings = {

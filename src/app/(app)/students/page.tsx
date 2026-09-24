@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { Search, UserPlus } from "lucide-react";
-import { fieldClass } from "@/components/auth-card";
+import { UserPlus } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
+import { DirectorySearch } from "@/components/ui/directory-search";
+import { PageHeader } from "@/components/ui/page-header";
 import { studentSearchSchema } from "@/features/students/schemas";
 import { loadStudents } from "@/features/students/service";
 
@@ -27,52 +29,39 @@ export default async function StudentsPage({
   const totalPages = Math.max(1, Math.ceil(result.count / result.pageSize));
   return (
     <main className="py-10 sm:py-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">
-            Student records
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+      <PageHeader
+        eyebrow="Student records"
+        title={
+          <span className="break-words">
             Students at {result.active.schoolName}
-          </h1>
-          <p className="mt-2 text-slate-600">
+          </span>
+        }
+        description={
+          <>
             Organization identity with school enrollment and dated placement
             history.
-          </p>
-        </div>
-        {canManage && (
-          <div className="flex gap-2">
-            <Link
-              href="/students/import"
-              className="rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold"
-            >
-              Import preview
-            </Link>
-            <Link
-              href="/students/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white"
-            >
-              <UserPlus className="size-4" /> Add student
-            </Link>
-          </div>
-        )}
-      </div>
-      <form className="mt-7 flex max-w-xl gap-2" role="search">
-        <label className="sr-only" htmlFor="student-search">
-          Search by student number
-        </label>
-        <input
-          id="student-search"
-          className={fieldClass}
-          name="q"
-          defaultValue={parsed.query}
-          placeholder="Search student number"
-        />
-        <button className="inline-flex items-center gap-2 rounded-lg border bg-white px-4 text-sm font-medium">
-          <Search className="size-4" /> Search
-        </button>
-      </form>
-      <div className="mt-6 overflow-hidden rounded-xl border bg-white">
+          </>
+        }
+        actions={
+          canManage ? (
+            <>
+              <ButtonLink href="/students/import" variant="secondary">
+                Import preview
+              </ButtonLink>
+              <ButtonLink href="/students/new">
+                <UserPlus aria-hidden="true" className="size-4" /> Add student
+              </ButtonLink>
+            </>
+          ) : null
+        }
+      />
+      <DirectorySearch
+        id="student-search"
+        defaultValue={parsed.query}
+        label="Search by student number"
+        placeholder="Search student number"
+      />
+      <div className="border-border bg-surface mt-6 overflow-hidden rounded-xl border">
         {result.students.length ? (
           <ul className="divide-y">
             {result.students.map((enrollment) => {
@@ -87,16 +76,16 @@ export default async function StudentsPage({
                     href={`/students/${student.id}`}
                     className="grid gap-1 px-5 py-4 hover:bg-slate-50 sm:grid-cols-[1fr_auto] sm:items-center"
                   >
-                    <span>
-                      <span className="font-semibold">
+                    <span className="min-w-0">
+                      <span className="block font-semibold break-words">
                         {person.first_name} {person.last_name}
                       </span>
-                      <span className="mt-1 block text-sm text-slate-500">
+                      <span className="text-muted-foreground mt-1 block text-sm font-medium [overflow-wrap:anywhere]">
                         {student.student_number} ·{" "}
                         {enrollment.academic_sessions.name}
                       </span>
                     </span>
-                    <span className="text-sm text-slate-600">
+                    <span className="text-muted-foreground min-w-0 text-sm font-medium break-words sm:text-right">
                       {placement?.class_levels.name ?? "Unplaced"}
                       {placement?.class_arms
                         ? ` · ${placement.class_arms.name}`
@@ -119,7 +108,7 @@ export default async function StudentsPage({
       {totalPages > 1 && (
         <nav
           aria-label="Student pages"
-          className="mt-4 flex justify-between text-sm"
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm"
         >
           <span>
             Page {result.page} of {totalPages}

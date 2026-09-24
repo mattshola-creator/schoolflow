@@ -34,7 +34,7 @@ function enableProbe() {
     "SCHOOLFLOW_CONVERSION_PROBE_EXPIRES_AT",
     new Date(Date.now() + 60 * 60 * 1000).toISOString(),
   );
-  vi.stubEnv("CONTEXT", "production");
+  vi.stubEnv("SCHOOLFLOW_CONVERSION_PROBE_DEPLOY_CONTEXT", "production");
 }
 
 function expectConfigurationRejection(category: string) {
@@ -105,7 +105,11 @@ describe("GET conversion context probe", () => {
     [
       "wrong deployment context",
       "wrong_deployment_context",
-      () => vi.stubEnv("CONTEXT", "deploy-preview"),
+      () =>
+        vi.stubEnv(
+          "SCHOOLFLOW_CONVERSION_PROBE_DEPLOY_CONTEXT",
+          "deploy-preview",
+        ),
     ],
     [
       "missing binding",

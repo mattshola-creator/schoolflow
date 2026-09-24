@@ -1,10 +1,12 @@
 # SchoolFlow Implementation Status
 
-Last updated: 22 September 2026
+Last updated: 24 September 2026
 
 ## Current milestone
 
-M7 Admissions — In Progress
+M7 Admissions — Completed — Deployed & Verified
+
+M7.5 UI/UX — Not Started
 
 ## Completed milestones
 
@@ -15,6 +17,7 @@ M7 Admissions — In Progress
 - M4 Student & Guardian Core — Completed — Deployed & Verified
 - M5 Staff Foundation — Completed — Deployed & Verified
 - M6 Shared Services — Completed — Deployed & Verified
+- M7 Admissions — Completed — Deployed & Verified
 
 ## Implemented
 
@@ -57,7 +60,7 @@ The public repository intentionally excludes private product specifications and 
 
 ## Blockers
 
-None. M7 may begin from the verified M6 checkpoint.
+None for the accepted M7 scope. M7.5 has not started.
 
 ## M6 completion evidence
 
@@ -99,4 +102,28 @@ Yes. M6 has no unresolved Critical or High blocker and is formally recorded as C
 - Pull request #18 passed GitHub Actions run #49 and merged as application revision `d49335dac20a31a435aad6538f301026f5cdc6ef`.
 - Netlify production deploy `6ab20bc11ce6210008c0ac41` is ready for that exact revision; enhanced secret scanning reported zero matches.
 - Live `/api/health` returned `ok` with Supabase connected, and unauthenticated `/admissions` redirected safely to login.
-- Authenticated production application creation, assessment, decision, offer, conversion and cleanup remain before M7 can be marked Completed — Deployed & Verified. A confirmed disposable Supabase Auth QA identity is required; the permanent owner account will not be used for disposable testing.
+- Subsequent focused pull requests corrected the admissions detail relationship load, offer-response transport, checklist transport, document-review workflow, conversion transport/proxy-origin handling and protected conversion diagnostics without weakening the approved business rules.
+- Authenticated production verification passed application creation and retrieval, decision and offer acceptance, evidence-gated checklist completion, two-document private evidence review, final placement and controlled conversion.
+- Two QA applications converted successfully. Each retained exactly one student profile, active enrollment, class membership and guardian relationship, reused the applicant Person, and preserved its offer, document and checklist history.
+- The second conversion submitted once through the production form and the browser reached the correct new Student 360 route. Focused route tests independently assert the successful HTTP 303 response and destination.
+- Authorization, cross-tenant denial, origin enforcement, duplicate protection, atomicity, audit history and private Storage restrictions remain verified through the remote matrix, focused tests and production evidence.
+- PR #32 merged as revision `5d1160b61fdf169fa55895a68162a31d3a973048`; GitHub Actions run #77 passed 97 tests across 23 files and the production build.
+- Netlify production deploy `6ab4ff7754d09810470c17a8` is Ready and the temporary conversion-context diagnostic probe is disabled.
+- Desktop and real-phone production smoke tests found the M7 journey functional with no workflow dead ends. Horizontal overflow, clipped navigation/text, typography/contrast and dense mobile stacking are explicitly deferred to M7.5.
+- The authorized QA account was signed out. Both converted QA fixtures are preserved for separately approved cleanup, and the permanent owner account remains untouched.
+
+## M7 completion
+
+M7 Admissions is formally accepted as Completed — Deployed & Verified. The
+accepted milestone covers applications, manual entrance assessments and
+retakes, decisions, offers, enrollment-readiness evidence and controlled
+applicant-to-student conversion. Parent self-service intake and controlled
+application imports described in the broader PRD are not represented as M7
+deliverables by ADR-0008 or the approved M7 implementation matrix.
+
+## M7.5 readiness
+
+M7.5 may begin only through a separately approved focused UI/UX session. Its
+initial backlog includes mobile overflow and clipping, responsive navigation,
+typography/contrast, checklist and document stacking, and prevention of
+floating status badges obscuring actionable content.

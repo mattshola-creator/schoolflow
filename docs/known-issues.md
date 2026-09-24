@@ -2,7 +2,9 @@
 
 ## Open
 
-- M7 application revision `d49335dac20a31a435aad6538f301026f5cdc6ef` is deployed and passed live health/route-protection checks, but authenticated production workflow verification and QA cleanup remain. A confirmed disposable Supabase Auth QA identity is required; do not use the permanent owner identity for this testing.
+- M7.5 responsive UI/UX debt: real-phone verification found horizontal overflow, clipped navigation/text, occasional reliance on zooming out, weak secondary-text weight/contrast, dense checklist/document stacking and occasional Netlify badge obstruction. The M7 workflows remained functional with no dead ends; these visual issues require the separately approved M7.5 milestone.
+
+- The two converted M7 QA fixtures and their synthetic admissions evidence remain preserved pending a separately approved cleanup plan. Do not delete linked application, student, enrollment, class-membership, guardian, document or audit records ad hoc.
 
 - A historical Auth identity named `M1 Live QA` remains in the development project even though the M1 record says disposable identities were removed. It was not part of the authorized M6 cleanup and has no identified M6 tenant access. Confirm its ownership before any later deletion.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
@@ -21,6 +23,8 @@
 - M6 performance advisor findings are informational index/policy observations. The M6 init-plan findings were corrected and operational audit, document, task, approval and notification indexes are present; further optimization should follow measured workloads.
 
 ## Closed
+
+- M7 Admissions passed its complete acceptance gate. PR #32 merged as revision `5d1160b61fdf169fa55895a68162a31d3a973048`, GitHub Actions run #77 passed 97 tests across 23 files and the production build, and Netlify deploy `6ab4ff7754d09810470c17a8` is Ready. Authenticated production verification covered application handling, offer acceptance, checklist and private-document evidence gating, final placement, atomic conversion and Student 360 navigation. Authorization, tenant isolation, duplicate protection and audit evidence remain verified. The QA account was signed out, the temporary diagnostic probe is disabled and the permanent owner account was untouched.
 
 - M6 Shared Services passed its complete production gate. GitHub Actions run #45 passed, Netlify deploy `6ab193383c4c3e0008593f7c` published revision `5a91fdf75ea27459b75e169d0728238d29407196`, `/api/health` reported Supabase connected, and authenticated Action Center, approvals, notifications, private document upload/download and audit-history checks passed. Cross-tenant/direct-ID/privilege denial remained verified, all M6 QA data and Storage objects were removed, and the permanent owner account remained intact.
 

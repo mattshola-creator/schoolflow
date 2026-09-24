@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { Search, Settings2, UserPlus } from "lucide-react";
-import { fieldClass } from "@/components/auth-card";
+import { Settings2, UserPlus } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
+import { DirectorySearch } from "@/components/ui/directory-search";
+import { PageHeader } from "@/components/ui/page-header";
 import { staffSearchSchema } from "@/features/staff/schemas";
 import { loadStaff } from "@/features/staff/service";
 
@@ -31,37 +33,33 @@ export default async function StaffPage({
   const totalPages = Math.max(1, Math.ceil(result.count / result.pageSize));
   return (
     <main className="py-10 sm:py-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">
-            Staff records
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+      <PageHeader
+        eyebrow="Staff records"
+        title={
+          <span className="break-words">
             Staff at {result.active.schoolName}
-          </h1>
-          <p className="mt-2 text-slate-600">
-            Employment, school assignments, positions, and access linkage.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          {canSetup && (
-            <Link
-              href="/staff/setup"
-              className="inline-flex items-center gap-2 rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold"
-            >
-              <Settings2 className="size-4" /> Setup
-            </Link>
-          )}
-          {canManage && (
-            <Link
-              href="/staff/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white"
-            >
-              <UserPlus className="size-4" /> Add staff
-            </Link>
-          )}
-        </div>
-      </div>
+          </span>
+        }
+        description={
+          <>Employment, school assignments, positions, and access linkage.</>
+        }
+        actions={
+          canSetup || canManage ? (
+            <>
+              {canSetup && (
+                <ButtonLink href="/staff/setup" variant="secondary">
+                  <Settings2 aria-hidden="true" className="size-4" /> Setup
+                </ButtonLink>
+              )}
+              {canManage && (
+                <ButtonLink href="/staff/new">
+                  <UserPlus aria-hidden="true" className="size-4" /> Add staff
+                </ButtonLink>
+              )}
+            </>
+          ) : null
+        }
+      />
       {params.message && (
         <p
           role="status"
@@ -70,22 +68,13 @@ export default async function StaffPage({
           {params.message}
         </p>
       )}
-      <form className="mt-7 flex max-w-xl gap-2" role="search">
-        <label className="sr-only" htmlFor="staff-search">
-          Search by staff number
-        </label>
-        <input
-          id="staff-search"
-          className={fieldClass}
-          name="q"
-          defaultValue={parsed.query}
-          placeholder="Search staff number"
-        />
-        <button className="inline-flex items-center gap-2 rounded-lg border bg-white px-4 text-sm font-medium">
-          <Search className="size-4" /> Search
-        </button>
-      </form>
-      <div className="mt-6 overflow-hidden rounded-xl border bg-white">
+      <DirectorySearch
+        id="staff-search"
+        defaultValue={parsed.query}
+        label="Search by staff number"
+        placeholder="Search staff number"
+      />
+      <div className="border-border bg-surface mt-6 overflow-hidden rounded-xl border">
         {result.staff.length ? (
           <ul className="divide-y">
             {result.staff.map((assignment) => (
@@ -94,17 +83,17 @@ export default async function StaffPage({
                   href={`/staff/${assignment.staff_profiles.id}`}
                   className="grid gap-1 px-5 py-4 hover:bg-slate-50 sm:grid-cols-[1fr_auto] sm:items-center"
                 >
-                  <span>
-                    <span className="font-semibold">
+                  <span className="min-w-0">
+                    <span className="block font-semibold break-words">
                       {assignment.staff_profiles.people.first_name}{" "}
                       {assignment.staff_profiles.people.last_name}
                     </span>
-                    <span className="mt-1 block text-sm text-slate-500">
+                    <span className="text-muted-foreground mt-1 block text-sm font-medium [overflow-wrap:anywhere]">
                       {assignment.staff_profiles.staff_number} ·{" "}
                       {assignment.employments.employment_type.replace("_", " ")}
                     </span>
                   </span>
-                  <span className="text-sm text-slate-600">
+                  <span className="text-muted-foreground min-w-0 text-sm font-medium break-words sm:text-right">
                     {assignment.positions.name}
                     {assignment.departments
                       ? ` · ${assignment.departments.name}`
@@ -126,7 +115,7 @@ export default async function StaffPage({
       {totalPages > 1 && (
         <nav
           aria-label="Staff pages"
-          className="mt-4 flex justify-between text-sm"
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm"
         >
           <span>
             Page {result.page} of {totalPages}

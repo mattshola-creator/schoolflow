@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DetailItem, DetailList } from "@/components/ui/detail-list";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { loadStudent } from "@/features/students/service";
 
-const panel = "rounded-xl border bg-white p-5 sm:p-6";
+const panel = "border-border bg-surface rounded-xl border p-5 sm:p-6";
 
 export default async function StudentPage({
   params,
@@ -21,20 +24,25 @@ export default async function StudentPage({
       <Link href="/students" className="text-sm font-medium text-emerald-800">
         ← Students
       </Link>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">Student 360</p>
-          <h1 className="mt-1 text-3xl font-semibold">
-            {person.first_name} {person.last_name}
-          </h1>
-          <p className="mt-2 text-slate-600">
-            {record.profile.student_number} ·{" "}
-            <span className="capitalize">
-              {record.profile.status.replace("_", " ")}
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Student 360"
+          title={
+            <span className="break-words">
+              {person.first_name} {person.last_name}
             </span>
-          </p>
-        </div>
-        <p className="text-sm text-slate-500">{record.active.schoolName}</p>
+          }
+          description={
+            <span className="block [overflow-wrap:anywhere]">
+              {record.profile.student_number} · {record.active.schoolName}
+            </span>
+          }
+          actions={
+            <StatusBadge tone="success" className="capitalize">
+              {record.profile.status.replace("_", " ")}
+            </StatusBadge>
+          }
+        />
       </div>
       {message && (
         <p
@@ -47,20 +55,14 @@ export default async function StudentPage({
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
         <section className={panel}>
           <h2 className="text-lg font-semibold">Profile</h2>
-          <dl className="mt-4 grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <dt className="text-slate-500">Date of birth</dt>
-              <dd className="font-medium">
-                {record.profile.date_of_birth ?? "Not recorded"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Gender</dt>
-              <dd className="font-medium">
-                {record.profile.gender ?? "Not recorded"}
-              </dd>
-            </div>
-          </dl>
+          <DetailList className="mt-4">
+            <DetailItem label="Date of birth">
+              {record.profile.date_of_birth ?? "Not recorded"}
+            </DetailItem>
+            <DetailItem label="Gender">
+              {record.profile.gender ?? "Not recorded"}
+            </DetailItem>
+          </DetailList>
         </section>
         <section className={panel}>
           <h2 className="text-lg font-semibold">Guardians</h2>
@@ -69,12 +71,12 @@ export default async function StudentPage({
               {record.guardians.map((guardian) => (
                 <li
                   key={guardian.id}
-                  className="rounded-lg bg-slate-50 p-3 text-sm"
+                  className="bg-surface-subtle min-w-0 rounded-lg p-3 text-sm"
                 >
                   <span className="font-semibold">
                     {guardian.people.first_name} {guardian.people.last_name}
                   </span>
-                  <span className="block text-slate-500">
+                  <span className="text-muted-foreground block font-medium break-words">
                     {guardian.relationship_type}
                     {guardian.is_primary_contact ? " · Primary contact" : ""}
                     {guardian.is_financially_responsible
@@ -97,13 +99,13 @@ export default async function StudentPage({
           <ul className="mt-4 space-y-4">
             {record.enrollments.map((enrollment) => (
               <li key={enrollment.id} className="rounded-lg border p-4">
-                <div className="flex justify-between gap-3">
-                  <span className="font-semibold">
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                  <span className="min-w-0 font-semibold break-words">
                     {enrollment.academic_sessions.name}
                   </span>
-                  <span className="text-sm text-slate-500 capitalize">
+                  <StatusBadge tone="success" className="capitalize">
                     {enrollment.status}
-                  </span>
+                  </StatusBadge>
                 </div>
                 <p className="mt-1 text-sm text-slate-500">
                   Enrolled {enrollment.enrolled_on}
@@ -111,7 +113,10 @@ export default async function StudentPage({
                 </p>
                 <ul className="mt-3 space-y-2 text-sm">
                   {enrollment.class_memberships.map((placement) => (
-                    <li key={placement.id} className="bg-slate-50 px-3 py-2">
+                    <li
+                      key={placement.id}
+                      className="bg-surface-subtle px-3 py-2 break-words"
+                    >
                       {placement.class_levels.name}
                       {placement.class_arms
                         ? ` · ${placement.class_arms.name}`

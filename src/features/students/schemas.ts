@@ -15,15 +15,17 @@ export const studentSchema = z.object({
     .max(40)
     .regex(/^[A-Za-z0-9][A-Za-z0-9/_-]+$/),
   dateOfBirth: z.iso.date(),
-  gender: optionalText.pipe(z.string().max(40).nullable()),
+  gender: z.enum(["Female", "Male"]),
   sessionId: z.string().uuid(),
   levelId: z.string().uuid(),
   armId: optionalText.pipe(z.string().uuid().nullable()),
   enrolledOn: z.iso.date(),
-  guardianFirstName: optionalText.pipe(z.string().max(100).nullable()),
-  guardianLastName: optionalText.pipe(z.string().max(100).nullable()),
-  guardianRelationship: optionalText.pipe(z.string().max(60).nullable()),
-  guardianPrimary: z.preprocess((value) => value === "on", z.boolean()),
+  guardianFirstName: z.string().trim().min(1).max(100),
+  guardianLastName: z.string().trim().min(1).max(100),
+  guardianRelationship: z.string().trim().min(1).max(60),
+  guardianPrimary: z
+    .preprocess((value) => value === "on", z.boolean())
+    .refine((value) => value, "A primary guardian contact is required"),
   guardianFinancial: z.preprocess((value) => value === "on", z.boolean()),
 });
 

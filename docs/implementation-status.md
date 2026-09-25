@@ -142,6 +142,9 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
 - Phase C3 remediates Staff 360 with mobile-safe profile details, employment
   and assignment history rows, long contact/qualification text and accessible
   administrative form actions. Staff workflow behavior is unchanged.
+- Phase C4 remediates Staff setup and creation with responsive shared headers,
+  cards and buttons, overflow-safe form controls and setup rows, and a larger
+  accessible teaching-position checkbox target. Staff mutations are unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

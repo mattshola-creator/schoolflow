@@ -149,6 +149,10 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   headers and actions, overflow-safe form controls and checkbox targets, and a
   mobile card presentation for preview rows. Student and import behavior is
   unchanged.
+- The approved C5 follow-up requires a Female/Male gender selection and a
+  complete primary guardian when staff create a student directly. The form,
+  server schema and atomic creation RPC enforce the same rule; financial
+  responsibility remains optional.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

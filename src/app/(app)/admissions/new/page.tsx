@@ -104,7 +104,18 @@ export default async function NewAdmissionPage({
           </label>
           <label className="min-w-0 text-sm font-medium">
             Gender
-            <input className={`${fieldClass} mt-1`} name="gender" />
+            <select
+              className={`${fieldClass} mt-1`}
+              name="gender"
+              defaultValue=""
+              required
+            >
+              <option value="" disabled>
+                Select gender
+              </option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+            </select>
           </label>
           <label className="min-w-0 text-sm font-medium sm:col-span-2">
             Previous class (optional)
@@ -112,14 +123,22 @@ export default async function NewAdmissionPage({
           </label>
         </fieldset>
         <fieldset className="border-border bg-surface grid min-w-0 gap-4 rounded-xl border p-5 sm:grid-cols-2 sm:p-6">
-          <legend className="px-2 font-semibold">Guardian (optional)</legend>
+          <legend className="px-2 font-semibold">Primary guardian</legend>
           <label className="min-w-0 text-sm font-medium">
             First name
-            <input className={`${fieldClass} mt-1`} name="guardianFirstName" />
+            <input
+              className={`${fieldClass} mt-1`}
+              name="guardianFirstName"
+              required
+            />
           </label>
           <label className="min-w-0 text-sm font-medium">
             Last name
-            <input className={`${fieldClass} mt-1`} name="guardianLastName" />
+            <input
+              className={`${fieldClass} mt-1`}
+              name="guardianLastName"
+              required
+            />
           </label>
           <label className="min-w-0 text-sm font-medium">
             Relationship
@@ -127,6 +146,7 @@ export default async function NewAdmissionPage({
               className={`${fieldClass} mt-1`}
               name="guardianRelationship"
               placeholder="Mother, father, guardian"
+              required
             />
           </label>
           <label className="min-w-0 text-sm font-medium">

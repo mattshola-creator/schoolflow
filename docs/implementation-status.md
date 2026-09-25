@@ -156,7 +156,13 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
 - Phase C6 remediates Admissions application creation and document-policy
   setup with responsive shared headers and actions, overflow-safe fieldsets and
   labels, and larger policy checkbox targets. Admissions workflows and policy
-  versioning are unchanged.
+  versioning were unchanged by that presentation-only phase. Real-phone
+  verification passed both surfaces.
+- The approved C6 follow-up aligns Admissions application intake with direct
+  student creation: gender is a required Female/Male selection and a primary
+  guardian's first name, last name and relationship are mandatory. The form,
+  server schema and atomic application-creation RPC enforce the same rule;
+  existing applications are unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

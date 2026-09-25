@@ -15,6 +15,9 @@ const validApplication = {
   source: "staff",
   sessionId: "11111111-1111-4111-8111-111111111111",
   levelId: "22222222-2222-4222-8222-222222222222",
+  guardianFirstName: "Ngozi",
+  guardianLastName: "Okafor",
+  guardianRelationship: "Mother",
 };
 
 describe("admissions schemas", () => {
@@ -24,12 +27,37 @@ describe("admissions schemas", () => {
     );
   });
 
-  it("requires complete guardian identity when partially supplied", () => {
-    const result = admissionApplicationSchema.safeParse({
-      ...validApplication,
-      guardianFirstName: "Ngozi",
-    });
-    expect(result.success).toBe(false);
+  it("requires a supported gender and a complete primary guardian", () => {
+    expect(
+      admissionApplicationSchema.safeParse({
+        ...validApplication,
+        gender: "",
+      }).success,
+    ).toBe(false);
+    expect(
+      admissionApplicationSchema.safeParse({
+        ...validApplication,
+        gender: "Not specified",
+      }).success,
+    ).toBe(false);
+    expect(
+      admissionApplicationSchema.safeParse({
+        ...validApplication,
+        guardianFirstName: "",
+      }).success,
+    ).toBe(false);
+    expect(
+      admissionApplicationSchema.safeParse({
+        ...validApplication,
+        guardianLastName: "",
+      }).success,
+    ).toBe(false);
+    expect(
+      admissionApplicationSchema.safeParse({
+        ...validApplication,
+        guardianRelationship: "",
+      }).success,
+    ).toBe(false);
   });
 
   it("rejects impossible assessment scores", () => {

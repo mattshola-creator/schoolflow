@@ -32,7 +32,7 @@ export async function createAdmissionApplication(formData: FormData) {
     applicant_first_name: parsed.data.firstName,
     applicant_last_name: parsed.data.lastName,
     applicant_date_of_birth: parsed.data.dateOfBirth,
-    applicant_gender: parsed.data.gender ?? "",
+    applicant_gender: parsed.data.gender,
     application_source: parsed.data.source,
     previous_class_name: parsed.data.previousClass,
     guardian_first_name: parsed.data.guardianFirstName,

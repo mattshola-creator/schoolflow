@@ -28,48 +28,33 @@ export const applicationStatuses = [
   "expired",
 ] as const;
 
-export const admissionApplicationSchema = z
-  .object({
-    applicationNumber: z
-      .string()
-      .trim()
-      .min(3)
-      .max(40)
-      .regex(/^[A-Za-z0-9][A-Za-z0-9/_-]+$/),
-    firstName: z.string().trim().min(1).max(100),
-    lastName: z.string().trim().min(1).max(100),
-    dateOfBirth: z.iso
-      .date()
-      .refine((value) => value <= new Date().toISOString().slice(0, 10)),
-    gender: optionalText(40),
-    source: z.enum(["enquiry", "staff", "parent_online", "import"]),
-    sessionId: z.uuid(),
-    levelId: z.uuid(),
-    previousClass: optionalText(100),
-    guardianFirstName: optionalText(100),
-    guardianLastName: optionalText(100),
-    guardianRelationship: optionalText(60),
-    guardianEmail: z.preprocess(
-      (value) =>
-        typeof value === "string" && value.trim() === "" ? undefined : value,
-      z.email().max(254).optional(),
-    ),
-    guardianPhone: optionalText(30),
-  })
-  .superRefine((value, context) => {
-    const guardianValues = [
-      value.guardianFirstName,
-      value.guardianLastName,
-      value.guardianRelationship,
-    ];
-    if (guardianValues.some(Boolean) && !guardianValues.every(Boolean)) {
-      context.addIssue({
-        code: "custom",
-        path: ["guardianFirstName"],
-        message: "Complete the guardian name and relationship",
-      });
-    }
-  });
+export const admissionApplicationSchema = z.object({
+  applicationNumber: z
+    .string()
+    .trim()
+    .min(3)
+    .max(40)
+    .regex(/^[A-Za-z0-9][A-Za-z0-9/_-]+$/),
+  firstName: z.string().trim().min(1).max(100),
+  lastName: z.string().trim().min(1).max(100),
+  dateOfBirth: z.iso
+    .date()
+    .refine((value) => value <= new Date().toISOString().slice(0, 10)),
+  gender: z.enum(["Female", "Male"]),
+  source: z.enum(["enquiry", "staff", "parent_online", "import"]),
+  sessionId: z.uuid(),
+  levelId: z.uuid(),
+  previousClass: optionalText(100),
+  guardianFirstName: z.string().trim().min(1).max(100),
+  guardianLastName: z.string().trim().min(1).max(100),
+  guardianRelationship: z.string().trim().min(1).max(60),
+  guardianEmail: z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() === "" ? undefined : value,
+    z.email().max(254).optional(),
+  ),
+  guardianPhone: optionalText(30),
+});
 
 export const admissionSearchSchema = z.object({
   query: z.string().trim().max(80).catch(""),

@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadAdmissionDocumentPolicy } from "@/features/admissions/service";
 
 export default async function AdmissionDocumentPolicyPage({
@@ -15,15 +18,24 @@ export default async function AdmissionDocumentPolicyPage({
   );
   return (
     <main className="py-10 sm:py-12">
-      <Link href="/admissions" className="text-sm font-medium text-emerald-800">
+      <Link href="/admissions" className="text-brand text-sm font-medium">
         ← Admissions
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold">Admission document policy</h1>
-      <p className="mt-2 text-slate-600">
-        School-specific requirements for future applications at{" "}
-        {result.active.schoolName}. Existing application snapshots are
-        unchanged.
-      </p>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Admissions setup"
+          title="Admission document policy"
+          description={
+            <>
+              School-specific requirements for future applications at{" "}
+              <span className="[overflow-wrap:anywhere]">
+                {result.active.schoolName}
+              </span>
+              . Existing application snapshots are unchanged.
+            </>
+          }
+        />
+      </div>
       {notice.message && (
         <p className="mt-5 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
           {notice.message}
@@ -34,13 +46,13 @@ export default async function AdmissionDocumentPolicyPage({
           {notice.error}
         </p>
       )}
-      <div className="mt-6 space-y-4">
+      <div className="mt-6 min-w-0 space-y-4">
         {result.policies.map((policy) => (
           <form
             key={policy.id}
             action="/api/admissions/documents"
             method="post"
-            className="grid gap-3 rounded-xl border bg-white p-5 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end"
+            className="border-border bg-surface grid min-w-0 gap-4 rounded-xl border p-5 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end sm:p-6"
           >
             <input type="hidden" name="operation" value="configure" />
             <input
@@ -48,37 +60,40 @@ export default async function AdmissionDocumentPolicyPage({
               name="categoryKey"
               value={policy.category_key}
             />
-            <label className="text-sm">
+            <label className="min-w-0 text-sm font-medium sm:col-span-3">
               Label
               <input
                 name="label"
                 defaultValue={policy.label}
                 required
-                className="mt-1 block w-full rounded-lg border px-3 py-2"
+                className={fieldClass}
               />
             </label>
-            <label className="flex items-center gap-2 pb-2 text-sm">
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg py-2 text-sm font-medium">
               <input
+                className="size-5 shrink-0 accent-emerald-800"
                 type="checkbox"
                 name="required"
                 defaultChecked={policy.required}
               />{" "}
               Required
             </label>
-            <label className="flex items-center gap-2 pb-2 text-sm">
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg py-2 text-sm font-medium">
               <input
+                className="size-5 shrink-0 accent-emerald-800"
                 type="checkbox"
                 name="enabled"
                 defaultChecked={policy.enabled}
               />{" "}
               Enabled
             </label>
-            <button
+            <Button
+              className="w-full sm:col-span-3 sm:w-auto"
               disabled={!canConfigure}
-              className="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 sm:col-span-4"
+              type="submit"
             >
               Save policy · version {policy.version}
-            </button>
+            </Button>
           </form>
         ))}
       </div>

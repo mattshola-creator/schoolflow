@@ -163,6 +163,10 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   guardian's first name, last name and relationship are mandatory. The form,
   server schema and atomic application-creation RPC enforce the same rule;
   existing applications are unchanged.
+- Phase C7 remediates Academic Setup with the shared page header and button
+  primitives, mobile-stacking date and code controls, wrapping setup rows,
+  larger checkbox/deactivation targets and responsive lock actions. Academic
+  permissions, validation and mutation behavior are unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

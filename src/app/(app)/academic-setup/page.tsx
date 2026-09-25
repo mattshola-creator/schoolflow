@@ -1,5 +1,7 @@
 import { AlertTriangle, CheckCircle2, LockKeyhole } from "lucide-react";
 import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadAcademicSetup } from "@/features/academics/service";
 import {
   createAcademicLock,
@@ -14,11 +16,7 @@ import {
   saveAcademicSettings,
 } from "./actions";
 
-const panel = "rounded-xl border bg-white p-5 sm:p-6";
-const button =
-  "rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 disabled:opacity-50";
-const secondaryButton =
-  "rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50";
+const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
 const stepNames = {
   settings: "Preferences",
   session: "Session",
@@ -49,10 +47,10 @@ function DeactivateButton({
   id: string;
 }) {
   return (
-    <form action={deactivateAcademicItem}>
+    <form action={deactivateAcademicItem} className="shrink-0">
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="id" value={id} />
-      <button className="text-xs font-medium text-slate-500 underline hover:text-slate-900">
+      <button className="min-h-11 px-2 text-xs font-medium text-slate-500 underline hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">
         Deactivate
       </button>
     </form>
@@ -89,31 +87,26 @@ export default async function AcademicSetupPage({
 
   return (
     <main className="py-10 sm:py-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">
-            Academic foundation
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
-            Set up {setup.active.schoolName}
-          </h1>
-          <p className="mt-2 max-w-2xl text-slate-600">
-            Configure the calendar and class structure this school actually
-            operates. Every value is persisted and school-scoped.
-          </p>
-        </div>
-        <div className="rounded-lg border bg-white px-4 py-3 text-sm">
-          <span className="block text-xs font-medium text-slate-500">
-            Setup status
-          </span>
-          <span className="font-semibold capitalize">{statusLabel}</span>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Academic foundation"
+        title={`Set up ${setup.active.schoolName}`}
+        description="Configure the calendar and class structure this school actually operates. Every value is persisted and school-scoped."
+        actions={
+          <div className="min-w-36 rounded-lg border bg-white px-4 py-3 text-sm">
+            <span className="block text-xs font-medium text-slate-500">
+              Setup status
+            </span>
+            <span className="font-semibold break-words capitalize">
+              {statusLabel}
+            </span>
+          </div>
+        }
+      />
       <Notice error={error} message={message} />
 
       <ol
         aria-label="Academic setup progress"
-        className="mt-7 flex gap-2 overflow-x-auto pb-2"
+        className="mt-7 flex max-w-full gap-2 overflow-x-auto pb-2"
       >
         {Object.entries(stepNames).map(([key, label], index) => {
           const currentIndex = Object.keys(stepNames).indexOf(setup.nextStep);
@@ -150,9 +143,9 @@ export default async function AcademicSetupPage({
           {can("academics.structure.manage") && (
             <form
               action={saveAcademicSettings}
-              className="mt-5 grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+              className="mt-5 grid min-w-0 gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
             >
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Period label
                 <input
                   className={fieldClass}
@@ -161,7 +154,7 @@ export default async function AcademicSetupPage({
                   required
                 />
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Week starts
                 <select
                   className={fieldClass}
@@ -172,7 +165,9 @@ export default async function AcademicSetupPage({
                   <option value="0">Sunday</option>
                 </select>
               </label>
-              <button className={button}>Save preferences</button>
+              <Button className="w-full sm:w-auto" type="submit">
+                Save preferences
+              </Button>
             </form>
           )}
         </section>
@@ -191,12 +186,12 @@ export default async function AcademicSetupPage({
                   setup.sessions.map((session) => (
                     <li
                       key={session.id}
-                      className="flex justify-between rounded-lg bg-slate-50 px-3 py-2"
+                      className="flex min-w-0 flex-col gap-1 rounded-lg bg-slate-50 px-3 py-2 sm:flex-row sm:justify-between sm:gap-3"
                     >
-                      <span>
+                      <span className="min-w-0 break-words">
                         {session.name} · {session.start_date}–{session.end_date}
                       </span>
-                      <span className="text-slate-500 capitalize">
+                      <span className="shrink-0 text-slate-500 capitalize">
                         {session.status}
                       </span>
                     </li>
@@ -219,8 +214,8 @@ export default async function AcademicSetupPage({
                       required
                     />
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="text-sm font-medium">
+                  <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+                    <label className="min-w-0 text-sm font-medium">
                       Starts
                       <input
                         className={fieldClass}
@@ -229,7 +224,7 @@ export default async function AcademicSetupPage({
                         required
                       />
                     </label>
-                    <label className="text-sm font-medium">
+                    <label className="min-w-0 text-sm font-medium">
                       Ends
                       <input
                         className={fieldClass}
@@ -239,11 +234,18 @@ export default async function AcademicSetupPage({
                       />
                     </label>
                   </div>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="makeCurrent" value="true" />{" "}
+                  <label className="flex min-h-11 items-center gap-3 rounded-lg px-2 text-sm">
+                    <input
+                      className="size-5 shrink-0 accent-emerald-800"
+                      type="checkbox"
+                      name="makeCurrent"
+                      value="true"
+                    />{" "}
                     Make current
                   </label>
-                  <button className={button}>Add session</button>
+                  <Button className="w-full" type="submit">
+                    Add session
+                  </Button>
                 </form>
               )}
             </div>
@@ -254,12 +256,12 @@ export default async function AcademicSetupPage({
                   setup.periods.map((period) => (
                     <li
                       key={period.id}
-                      className="flex justify-between rounded-lg bg-slate-50 px-3 py-2"
+                      className="flex min-w-0 flex-col gap-1 rounded-lg bg-slate-50 px-3 py-2 sm:flex-row sm:justify-between sm:gap-3"
                     >
-                      <span>
+                      <span className="min-w-0 break-words">
                         {period.sequence}. {period.name}
                       </span>
-                      <span className="text-slate-500 capitalize">
+                      <span className="shrink-0 text-slate-500 capitalize">
                         {period.status}
                       </span>
                     </li>
@@ -293,8 +295,8 @@ export default async function AcademicSetupPage({
                         ))}
                     </select>
                   </label>
-                  <div className="grid grid-cols-[1fr_6rem] gap-3">
-                    <label className="text-sm font-medium">
+                  <div className="grid min-w-0 gap-3 sm:grid-cols-[1fr_6rem]">
+                    <label className="min-w-0 text-sm font-medium">
                       Name
                       <input
                         className={fieldClass}
@@ -303,7 +305,7 @@ export default async function AcademicSetupPage({
                         required
                       />
                     </label>
-                    <label className="text-sm font-medium">
+                    <label className="min-w-0 text-sm font-medium">
                       Order
                       <input
                         className={fieldClass}
@@ -316,8 +318,8 @@ export default async function AcademicSetupPage({
                       />
                     </label>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="text-sm font-medium">
+                  <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+                    <label className="min-w-0 text-sm font-medium">
                       Starts
                       <input
                         className={fieldClass}
@@ -326,7 +328,7 @@ export default async function AcademicSetupPage({
                         required
                       />
                     </label>
-                    <label className="text-sm font-medium">
+                    <label className="min-w-0 text-sm font-medium">
                       Ends
                       <input
                         className={fieldClass}
@@ -336,11 +338,18 @@ export default async function AcademicSetupPage({
                       />
                     </label>
                   </div>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="makeCurrent" value="true" />{" "}
+                  <label className="flex min-h-11 items-center gap-3 rounded-lg px-2 text-sm">
+                    <input
+                      className="size-5 shrink-0 accent-emerald-800"
+                      type="checkbox"
+                      name="makeCurrent"
+                      value="true"
+                    />{" "}
                     Make current
                   </label>
-                  <button className={button}>Add period</button>
+                  <Button className="w-full" type="submit">
+                    Add period
+                  </Button>
                 </form>
               )}
             </div>
@@ -358,8 +367,11 @@ export default async function AcademicSetupPage({
               <h3 className="font-medium">Sections</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {setup.sections.map((item) => (
-                  <li key={item.id} className="flex justify-between gap-2">
-                    <span>{item.name}</span>
+                  <li
+                    key={item.id}
+                    className="flex min-w-0 items-center justify-between gap-2"
+                  >
+                    <span className="min-w-0 break-words">{item.name}</span>
                     {item.status === "active" && (
                       <DeactivateButton kind="section" id={item.id} />
                     )}
@@ -378,7 +390,7 @@ export default async function AcademicSetupPage({
                     placeholder="Primary"
                     required
                   />
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-2">
                     <input
                       className={fieldClass}
                       name="code"
@@ -395,7 +407,9 @@ export default async function AcademicSetupPage({
                       required
                     />
                   </div>
-                  <button className={button}>Add section</button>
+                  <Button className="w-full" type="submit">
+                    Add section
+                  </Button>
                 </form>
               )}
             </div>
@@ -403,8 +417,11 @@ export default async function AcademicSetupPage({
               <h3 className="font-medium">Class levels</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {setup.levels.map((item) => (
-                  <li key={item.id} className="flex justify-between gap-2">
-                    <span>{item.name}</span>
+                  <li
+                    key={item.id}
+                    className="flex min-w-0 items-center justify-between gap-2"
+                  >
+                    <span className="min-w-0 break-words">{item.name}</span>
                     {item.status === "active" && (
                       <DeactivateButton kind="level" id={item.id} />
                     )}
@@ -434,7 +451,7 @@ export default async function AcademicSetupPage({
                         </option>
                       ))}
                   </select>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-2">
                     <input
                       className={fieldClass}
                       name="code"
@@ -451,7 +468,9 @@ export default async function AcademicSetupPage({
                       required
                     />
                   </div>
-                  <button className={button}>Add level</button>
+                  <Button className="w-full" type="submit">
+                    Add level
+                  </Button>
                 </form>
               )}
             </div>
@@ -459,8 +478,11 @@ export default async function AcademicSetupPage({
               <h3 className="font-medium">Class arms</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {setup.arms.map((item) => (
-                  <li key={item.id} className="flex justify-between gap-2">
-                    <span>
+                  <li
+                    key={item.id}
+                    className="flex min-w-0 items-center justify-between gap-2"
+                  >
+                    <span className="min-w-0 break-words">
                       {
                         setup.levels.find(
                           (level) => level.id === item.class_level_id,
@@ -496,7 +518,7 @@ export default async function AcademicSetupPage({
                     placeholder="Gold"
                     required
                   />
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-2">
                     <input
                       className={fieldClass}
                       name="code"
@@ -513,7 +535,9 @@ export default async function AcademicSetupPage({
                       required
                     />
                   </div>
-                  <button className={button}>Add arm</button>
+                  <Button className="w-full" type="submit">
+                    Add arm
+                  </Button>
                 </form>
               )}
             </div>
@@ -534,10 +558,10 @@ export default async function AcademicSetupPage({
               return (
                 <li
                   key={subject.id}
-                  className="flex items-start justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
+                  className="flex min-w-0 items-start justify-between gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm"
                 >
-                  <span>
-                    <strong>{subject.name}</strong>
+                  <span className="min-w-0 break-words">
+                    <strong className="break-words">{subject.name}</strong>
                     {subject.code ? ` · ${subject.code}` : ""}
                     <small className="mt-1 block text-slate-500">
                       {links.length
@@ -560,9 +584,9 @@ export default async function AcademicSetupPage({
           {can("academics.subjects.manage") && (
             <form
               action={createSubject}
-              className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end"
+              className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end"
             >
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Subject name
                 <input
                   className={fieldClass}
@@ -571,11 +595,11 @@ export default async function AcademicSetupPage({
                   required
                 />
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Code
                 <input className={fieldClass} name="code" placeholder="MATH" />
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Level applicability
                 <select className={fieldClass} name="classLevelId">
                   <option value="">School-wide</option>
@@ -586,7 +610,7 @@ export default async function AcademicSetupPage({
                   ))}
                 </select>
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Classification
                 <select className={fieldClass} name="classification">
                   <option value="core">Core</option>
@@ -594,7 +618,9 @@ export default async function AcademicSetupPage({
                 </select>
                 <input type="hidden" name="sortOrder" value="1" />
               </label>
-              <button className={button}>Add subject</button>
+              <Button className="w-full" type="submit">
+                Add subject
+              </Button>
             </form>
           )}
         </section>
@@ -617,9 +643,9 @@ export default async function AcademicSetupPage({
                   key={lock.id}
                   className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm"
                 >
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 size-4 text-amber-800" />
-                    <span>
+                  <div className="flex min-w-0 items-start gap-2">
+                    <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-800" />
+                    <span className="min-w-0 break-words">
                       <strong className="capitalize">
                         {lock.scope.replace("_", " ")}
                       </strong>{" "}
@@ -629,7 +655,7 @@ export default async function AcademicSetupPage({
                   {can("academics.locks.manage") && (
                     <form
                       action={releaseAcademicLock}
-                      className="mt-3 flex gap-2"
+                      className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row"
                     >
                       <input type="hidden" name="lockId" value={lock.id} />
                       <input
@@ -639,7 +665,13 @@ export default async function AcademicSetupPage({
                         placeholder="Reason for unlocking"
                         required
                       />
-                      <button className={secondaryButton}>Unlock</button>
+                      <Button
+                        className="w-full sm:w-auto"
+                        type="submit"
+                        variant="secondary"
+                      >
+                        Unlock
+                      </Button>
                     </form>
                   )}
                 </li>
@@ -649,15 +681,15 @@ export default async function AcademicSetupPage({
           {can("academics.locks.manage") && (
             <form
               action={createAcademicLock}
-              className="mt-5 grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end"
+              className="mt-5 grid min-w-0 gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end"
             >
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Lock scope
                 <select className={fieldClass} name="scope">
                   <option value="school_setup">Entire academic setup</option>
                 </select>
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Reason
                 <input
                   className={fieldClass}
@@ -666,7 +698,9 @@ export default async function AcademicSetupPage({
                   required
                 />
               </label>
-              <button className={button}>Apply lock</button>
+              <Button className="w-full sm:w-auto" type="submit">
+                Apply lock
+              </Button>
             </form>
           )}
         </section>

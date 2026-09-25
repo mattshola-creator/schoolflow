@@ -1,9 +1,9 @@
+import Link from "next/link";
 import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadStudentFormOptions } from "@/features/students/service";
 import { createStudent } from "../actions";
-
-const button =
-  "rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-900";
 
 export default async function NewStudentPage({
   searchParams,
@@ -20,12 +20,16 @@ export default async function NewStudentPage({
     );
   return (
     <main className="py-10 sm:py-12">
-      <p className="text-sm font-semibold text-emerald-800">Student records</p>
-      <h1 className="mt-1 text-3xl font-semibold">Add a student</h1>
-      <p className="mt-2 text-slate-600">
-        Creates permanent identity, enrollment, placement, and an optional
-        guardian atomically.
-      </p>
+      <Link href="/students" className="text-brand text-sm font-medium">
+        ← Students
+      </Link>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Student records"
+          title="Add a student"
+          description="Creates permanent identity, enrollment, placement, and an optional guardian atomically."
+        />
+      </div>
       {error && (
         <p
           role="alert"
@@ -35,7 +39,7 @@ export default async function NewStudentPage({
         </p>
       )}
       {!options.sessions.length || !options.levels.length ? (
-        <div className="mt-6 rounded-xl border bg-amber-50 p-5">
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-5">
           <h2 className="font-semibold">Academic setup required</h2>
           <p className="mt-1 text-sm">
             Create an academic session and class level before enrolling
@@ -45,19 +49,19 @@ export default async function NewStudentPage({
       ) : (
         <form
           action={createStudent}
-          className="mt-6 grid gap-6 rounded-xl border bg-white p-5 sm:p-6"
+          className="border-border bg-surface mt-6 grid min-w-0 gap-6 rounded-xl border p-5 sm:p-6"
         >
-          <fieldset className="grid gap-4 sm:grid-cols-2">
+          <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
             <legend className="mb-3 font-semibold">Student identity</legend>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               First name
               <input className={fieldClass} name="firstName" required />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Last name
               <input className={fieldClass} name="lastName" required />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Student number
               <input
                 className={fieldClass}
@@ -66,7 +70,7 @@ export default async function NewStudentPage({
                 required
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Date of birth
               <input
                 className={fieldClass}
@@ -75,16 +79,16 @@ export default async function NewStudentPage({
                 required
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Gender (optional)
               <input className={fieldClass} name="gender" />
             </label>
           </fieldset>
-          <fieldset className="grid gap-4 sm:grid-cols-2">
+          <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
             <legend className="mb-3 font-semibold">
               Enrollment and placement
             </legend>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Academic session
               <select className={fieldClass} name="sessionId" required>
                 {options.sessions.map((item) => (
@@ -94,7 +98,7 @@ export default async function NewStudentPage({
                 ))}
               </select>
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Enrolled on
               <input
                 className={fieldClass}
@@ -103,7 +107,7 @@ export default async function NewStudentPage({
                 required
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Class level
               <select className={fieldClass} name="levelId" required>
                 {options.levels.map((item) => (
@@ -113,7 +117,7 @@ export default async function NewStudentPage({
                 ))}
               </select>
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Class arm (optional)
               <select className={fieldClass} name="armId">
                 <option value="">No arm</option>
@@ -125,17 +129,17 @@ export default async function NewStudentPage({
               </select>
             </label>
           </fieldset>
-          <fieldset className="grid gap-4 sm:grid-cols-2">
+          <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
             <legend className="mb-3 font-semibold">Guardian (optional)</legend>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               First name
               <input className={fieldClass} name="guardianFirstName" />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Last name
               <input className={fieldClass} name="guardianLastName" />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Relationship
               <input
                 className={fieldClass}
@@ -143,18 +147,18 @@ export default async function NewStudentPage({
                 placeholder="Mother, uncle, sponsor…"
               />
             </label>
-            <div className="flex flex-col justify-end gap-2 text-sm">
-              <label>
+            <div className="flex min-w-0 flex-col justify-end gap-2 text-sm">
+              <label className="flex min-h-11 items-center gap-3 rounded-lg px-2">
                 <input
-                  className="mr-2"
+                  className="size-5 shrink-0 accent-emerald-800"
                   type="checkbox"
                   name="guardianPrimary"
                 />
                 Primary contact
               </label>
-              <label>
+              <label className="flex min-h-11 items-center gap-3 rounded-lg px-2">
                 <input
-                  className="mr-2"
+                  className="size-5 shrink-0 accent-emerald-800"
                   type="checkbox"
                   name="guardianFinancial"
                 />
@@ -162,7 +166,9 @@ export default async function NewStudentPage({
               </label>
             </div>
           </fieldset>
-          <button className={button}>Create student record</button>
+          <Button className="w-full sm:w-auto" type="submit">
+            Create student record
+          </Button>
         </form>
       )}
     </main>

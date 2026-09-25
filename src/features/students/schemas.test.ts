@@ -11,19 +11,34 @@ const valid = {
   levelId: "22222222-2222-4222-8222-222222222222",
   armId: "",
   enrolledOn: "2026-09-01",
-  guardianFirstName: "",
-  guardianLastName: "",
-  guardianRelationship: "",
+  guardianFirstName: "Ifeoma",
+  guardianLastName: "Okafor",
+  guardianRelationship: "Mother",
   guardianPrimary: "on",
   guardianFinancial: "on",
 };
 
 describe("student schema", () => {
-  it("normalizes optional fields", () => {
+  it("normalizes the optional class arm", () => {
     expect(studentSchema.parse(valid)).toMatchObject({
       armId: null,
       gender: "Female",
     });
+  });
+
+  it("requires a supported gender and complete primary guardian", () => {
+    expect(studentSchema.safeParse({ ...valid, gender: "" }).success).toBe(
+      false,
+    );
+    expect(
+      studentSchema.safeParse({ ...valid, gender: "Not specified" }).success,
+    ).toBe(false);
+    expect(
+      studentSchema.safeParse({ ...valid, guardianFirstName: "" }).success,
+    ).toBe(false);
+    expect(
+      studentSchema.safeParse({ ...valid, guardianPrimary: undefined }).success,
+    ).toBe(false);
   });
 
   it("rejects malformed student numbers and future-independent invalid dates", () => {

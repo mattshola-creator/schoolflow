@@ -2,7 +2,7 @@
 
 ## Open
 
-- M7.5 responsive UI/UX debt remains on module pages outside the focused Admissions register/detail/creation/document-policy, Student 360, Student/Staff register, Staff 360, Staff setup/creation and Student creation/import-preview remediations: real-phone verification found occasional long-text overflow/clipping, reliance on zooming out and Netlify badge obstruction. Phase A resolved the authenticated shell navigation, Phase B began the shared visual foundation, and Phases C1–C6 address the verified people-record surfaces without changing workflow behavior.
+- M7.5 responsive UI/UX debt remains on module pages outside the focused Admissions register/detail/creation/document-policy, Student 360, Student/Staff register, Staff 360, Staff setup/creation, Student creation/import-preview and Academic Setup remediations: real-phone verification found occasional long-text overflow/clipping, reliance on zooming out and Netlify badge obstruction. Phase A resolved the authenticated shell navigation, Phase B began the shared visual foundation, and Phases C1–C7 address the focused operational surfaces without changing their established authorization or mutation behavior.
 
 - Admissions application intake now requires the same supported Female/Male
   gender selection and complete primary-guardian identity as direct student

@@ -145,6 +145,10 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
 - Phase C4 remediates Staff setup and creation with responsive shared headers,
   cards and buttons, overflow-safe form controls and setup rows, and a larger
   accessible teaching-position checkbox target. Staff mutations are unchanged.
+- Phase C5 remediates Student creation and import preview with responsive shared
+  headers and actions, overflow-safe form controls and checkbox targets, and a
+  mobile card presentation for preview rows. Student and import behavior is
+  unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

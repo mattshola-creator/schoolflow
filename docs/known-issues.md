@@ -2,7 +2,7 @@
 
 ## Open
 
-- M7.5 responsive UI/UX debt remains on module pages outside the focused Admissions detail, Student 360, Student/Staff register and Staff 360 remediations: real-phone verification found occasional long-text overflow/clipping, reliance on zooming out and Netlify badge obstruction. Phase A resolved the authenticated shell navigation, Phase B began the shared visual foundation, and Phases C1–C3 address the verified people-record surfaces without changing workflow behavior.
+- M7.5 responsive UI/UX debt remains on module pages outside the focused Admissions detail, Student 360, Student/Staff register, Staff 360 and Staff setup/creation remediations: real-phone verification found occasional long-text overflow/clipping, reliance on zooming out and Netlify badge obstruction. Phase A resolved the authenticated shell navigation, Phase B began the shared visual foundation, and Phases C1–C4 address the verified people-record surfaces without changing workflow behavior.
 
 - The two converted M7 QA fixtures and their synthetic admissions evidence remain preserved pending a separately approved cleanup plan. Do not delete linked application, student, enrollment, class-membership, guardian, document or audit records ad hoc.
 

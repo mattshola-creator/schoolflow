@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { fieldClass } from "@/components/auth-card";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { employmentTypes } from "@/features/staff/schemas";
 import { loadStaffFormOptions } from "@/features/staff/service";
 import { createStaff } from "../actions";
-
-const button =
-  "rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white";
 
 export default async function NewStaffPage({
   searchParams,
@@ -25,13 +24,13 @@ export default async function NewStaffPage({
       <Link href="/staff" className="text-sm font-medium text-emerald-800">
         ← Staff
       </Link>
-      <p className="mt-4 text-sm font-semibold text-emerald-800">
-        Staff records
-      </p>
-      <h1 className="mt-1 text-3xl font-semibold">Add a staff member</h1>
-      <p className="mt-2 text-slate-600">
-        Creates identity, employment, and first school assignment atomically.
-      </p>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Staff records"
+          title="Add a staff member"
+          description="Creates identity, employment, and first school assignment atomically."
+        />
+      </div>
       {error && (
         <p
           role="alert"
@@ -41,34 +40,31 @@ export default async function NewStaffPage({
         </p>
       )}
       {!options.positions.length ? (
-        <div className="mt-6 rounded-xl border bg-amber-50 p-5">
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-5">
           <h2 className="font-semibold">A position is required</h2>
           <p className="mt-1 text-sm">
             Configure at least one active position before adding staff.
           </p>
-          <Link
-            href="/staff/setup"
-            className="mt-3 inline-block text-sm font-semibold text-emerald-900"
-          >
+          <ButtonLink className="mt-3" href="/staff/setup" variant="secondary">
             Open staff setup →
-          </Link>
+          </ButtonLink>
         </div>
       ) : (
         <form
           action={createStaff}
-          className="mt-6 grid gap-6 rounded-xl border bg-white p-5 sm:p-6"
+          className="border-border bg-surface mt-6 grid min-w-0 gap-6 rounded-xl border p-5 sm:p-6"
         >
-          <fieldset className="grid gap-4 sm:grid-cols-2">
+          <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
             <legend className="mb-3 font-semibold">Staff identity</legend>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               First name
               <input className={fieldClass} name="firstName" required />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Last name
               <input className={fieldClass} name="lastName" required />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Staff number
               <input
                 className={fieldClass}
@@ -77,20 +73,20 @@ export default async function NewStaffPage({
                 required
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Work email (optional)
               <input className={fieldClass} name="workEmail" type="email" />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Phone (optional)
               <input className={fieldClass} name="phone" />
             </label>
           </fieldset>
-          <fieldset className="grid gap-4 sm:grid-cols-2">
+          <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
             <legend className="mb-3 font-semibold">
               Employment and assignment
             </legend>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Employment type
               <select className={fieldClass} name="employmentType">
                 {employmentTypes.map((type) => (
@@ -100,7 +96,7 @@ export default async function NewStaffPage({
                 ))}
               </select>
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Started on
               <input
                 className={fieldClass}
@@ -109,7 +105,7 @@ export default async function NewStaffPage({
                 required
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Department
               <select className={fieldClass} name="departmentId">
                 <option value="">No department</option>
@@ -120,7 +116,7 @@ export default async function NewStaffPage({
                 ))}
               </select>
             </label>
-            <label className="text-sm font-medium">
+            <label className="min-w-0 text-sm font-medium">
               Position
               <select className={fieldClass} name="positionId" required>
                 {options.positions.map((item) => (
@@ -134,15 +130,15 @@ export default async function NewStaffPage({
           {options.authorization.permissions.includes(
             "staff.access.manage",
           ) && (
-            <fieldset className="grid gap-4 sm:grid-cols-2">
+            <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
               <legend className="mb-3 font-semibold">
                 Application access (optional)
               </legend>
-              <p className="text-sm text-slate-600 sm:col-span-2">
+              <p className="text-muted-foreground text-sm font-medium sm:col-span-2">
                 Link an existing active organization member and a school-scoped
                 role. This does not create an Auth user.
               </p>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Organization member
                 <select className={fieldClass} name="linkedUserId">
                   <option value="">No account link</option>
@@ -153,7 +149,7 @@ export default async function NewStaffPage({
                   ))}
                 </select>
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Role
                 <select className={fieldClass} name="linkedRoleId">
                   <option value="">No linked role</option>
@@ -166,7 +162,9 @@ export default async function NewStaffPage({
               </label>
             </fieldset>
           )}
-          <button className={button}>Create staff record</button>
+          <Button className="w-full sm:w-auto" type="submit">
+            Create staff record
+          </Button>
         </form>
       )}
     </main>

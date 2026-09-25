@@ -153,6 +153,10 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   complete primary guardian when staff create a student directly. The form,
   server schema and atomic creation RPC enforce the same rule; financial
   responsibility remains optional.
+- Phase C6 remediates Admissions application creation and document-policy
+  setup with responsive shared headers and actions, overflow-safe fieldsets and
+  labels, and larger policy checkbox targets. Admissions workflows and policy
+  versioning are unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

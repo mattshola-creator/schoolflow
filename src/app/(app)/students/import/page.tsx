@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { requireStudentContext } from "@/features/students/service";
 import { createImportPreview } from "./actions";
 
@@ -30,16 +33,16 @@ export default async function StudentImportPage({
     : null;
   return (
     <main className="py-10 sm:py-12">
-      <p className="text-sm font-semibold text-emerald-800">
-        Controlled imports
-      </p>
-      <h1 className="mt-1 text-3xl font-semibold">
-        Student and guardian preview
-      </h1>
-      <p className="mt-2 max-w-2xl text-slate-600">
-        Validate up to 500 CSV rows before any student record is created.
-        Similar records are flagged for human review and never auto-merged.
-      </p>
+      <Link href="/students" className="text-brand text-sm font-medium">
+        ← Students
+      </Link>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Controlled imports"
+          title="Student and guardian preview"
+          description="Validate up to 500 CSV rows before any student record is created. Similar records are flagged for human review and never auto-merged."
+        />
+      </div>
       {error && (
         <p
           role="alert"
@@ -50,9 +53,9 @@ export default async function StudentImportPage({
       )}
       <form
         action={createImportPreview}
-        className="mt-6 grid gap-4 rounded-xl border bg-white p-5 sm:p-6"
+        className="border-border bg-surface mt-6 grid min-w-0 gap-4 rounded-xl border p-5 sm:p-6"
       >
-        <label className="text-sm font-medium">
+        <label className="min-w-0 text-sm font-medium">
           Source name
           <input
             className={fieldClass}
@@ -61,7 +64,7 @@ export default async function StudentImportPage({
             required
           />
         </label>
-        <label className="text-sm font-medium">
+        <label className="min-w-0 text-sm font-medium">
           CSV content
           <textarea
             className={`${fieldClass} min-h-44 font-mono text-xs`}
@@ -74,19 +77,50 @@ export default async function StudentImportPage({
           Required: first_name, last_name, date_of_birth, student_number.
           Guardian fields are optional but must be complete together.
         </p>
-        <button className="rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white">
+        <Button className="w-full sm:w-auto" type="submit">
           Validate and save preview
-        </button>
+        </Button>
       </form>
       {preview?.data && (
-        <section className="mt-6 rounded-xl border bg-white p-5 sm:p-6">
-          <h2 className="text-lg font-semibold">{preview.data.source_name}</h2>
-          <p className="mt-1 text-sm text-slate-600">
+        <section className="border-border bg-surface mt-6 min-w-0 rounded-xl border p-5 sm:p-6">
+          <h2 className="text-lg font-semibold [overflow-wrap:anywhere]">
+            {preview.data.source_name}
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm font-medium">
             {preview.data.total_rows} rows · {preview.data.valid_rows} valid ·{" "}
             {preview.data.warning_rows} warnings · {preview.data.invalid_rows}{" "}
             invalid
           </p>
-          <div className="mt-4 overflow-x-auto">
+          <div className="mt-4 grid gap-3 sm:hidden">
+            {preview.data.import_rows
+              .sort((a, b) => a.row_number - b.row_number)
+              .map((row) => {
+                const data = row.normalized_data as Record<string, string>;
+                const messages = row.validation_messages as string[];
+                return (
+                  <article
+                    className="bg-surface-subtle min-w-0 rounded-lg p-4 text-sm"
+                    key={row.row_number}
+                  >
+                    <div className="flex min-w-0 items-start justify-between gap-3">
+                      <p className="min-w-0 font-semibold break-words">
+                        {data.first_name} {data.last_name}
+                      </p>
+                      <span className="shrink-0 capitalize">{row.status}</span>
+                    </div>
+                    <p className="text-muted-foreground mt-1 [overflow-wrap:anywhere]">
+                      Row {row.row_number} · {data.student_number}
+                    </p>
+                    {messages.length > 0 && (
+                      <p className="text-muted-foreground mt-2 text-xs break-words">
+                        {messages.join(" ")}
+                      </p>
+                    )}
+                  </article>
+                );
+              })}
+          </div>
+          <div className="mt-4 hidden overflow-x-auto sm:block">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b">

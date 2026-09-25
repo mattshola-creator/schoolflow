@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadStaffSetup } from "@/features/staff/service";
 import { createDepartment, createPosition } from "../actions";
 
-const panel = "rounded-xl border bg-white p-5 sm:p-6";
-const button =
-  "rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white";
+const panel = "border-border bg-surface min-w-0 rounded-xl border p-5 sm:p-6";
 
 export default async function StaffSetupPage({
   searchParams,
@@ -31,11 +31,13 @@ export default async function StaffSetupPage({
       <Link href="/staff" className="text-sm font-medium text-emerald-800">
         ← Staff
       </Link>
-      <p className="mt-4 text-sm font-semibold text-emerald-800">Staff setup</p>
-      <h1 className="mt-1 text-3xl font-semibold">Departments and positions</h1>
-      <p className="mt-2 text-slate-600">
-        Configure the structure used by dated school assignments.
-      </p>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="Staff setup"
+          title="Departments and positions"
+          description="Configure the structure used by dated school assignments."
+        />
+      </div>
       {params.message && (
         <p
           role="status"
@@ -56,23 +58,30 @@ export default async function StaffSetupPage({
         <section className={panel}>
           <h2 className="text-lg font-semibold">Departments</h2>
           {canDepartments && (
-            <form action={createDepartment} className="mt-4 grid gap-3">
-              <label className="text-sm font-medium">
+            <form action={createDepartment} className="mt-4 grid min-w-0 gap-3">
+              <label className="min-w-0 text-sm font-medium">
                 Name
                 <input className={fieldClass} name="name" required />
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Code (optional)
                 <input className={fieldClass} name="code" placeholder="ADMIN" />
               </label>
-              <button className={button}>Add department</button>
+              <Button className="w-full sm:w-auto" type="submit">
+                Add department
+              </Button>
             </form>
           )}
           <ul className="mt-5 divide-y">
             {setup.departments.map((item) => (
-              <li key={item.id} className="flex justify-between py-3 text-sm">
-                <span className="font-medium">{item.name}</span>
-                <span className="text-slate-500">
+              <li
+                key={item.id}
+                className="grid min-w-0 gap-1 py-3 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+              >
+                <span className="min-w-0 font-medium break-words">
+                  {item.name}
+                </span>
+                <span className="text-muted-foreground min-w-0 font-medium break-words sm:text-right">
                   {item.code ?? item.status}
                 </span>
               </li>
@@ -87,12 +96,12 @@ export default async function StaffSetupPage({
         <section className={panel}>
           <h2 className="text-lg font-semibold">Positions</h2>
           {canPositions && (
-            <form action={createPosition} className="mt-4 grid gap-3">
-              <label className="text-sm font-medium">
+            <form action={createPosition} className="mt-4 grid min-w-0 gap-3">
+              <label className="min-w-0 text-sm font-medium">
                 Name
                 <input className={fieldClass} name="name" required />
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Code (optional)
                 <input
                   className={fieldClass}
@@ -100,7 +109,7 @@ export default async function StaffSetupPage({
                   placeholder="TEACHER"
                 />
               </label>
-              <label className="text-sm font-medium">
+              <label className="min-w-0 text-sm font-medium">
                 Department
                 <select className={fieldClass} name="departmentId">
                   <option value="">No department</option>
@@ -113,18 +122,26 @@ export default async function StaffSetupPage({
                     ))}
                 </select>
               </label>
-              <label className="text-sm">
-                <input className="mr-2" type="checkbox" name="isTeaching" />
-                Teaching position
+              <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg py-2 text-sm font-medium">
+                <input
+                  className="size-5 shrink-0 accent-emerald-800"
+                  type="checkbox"
+                  name="isTeaching"
+                />
+                <span>Teaching position</span>
               </label>
-              <button className={button}>Add position</button>
+              <Button className="w-full sm:w-auto" type="submit">
+                Add position
+              </Button>
             </form>
           )}
           <ul className="mt-5 divide-y">
             {setup.positions.map((item) => (
-              <li key={item.id} className="py-3 text-sm">
-                <span className="font-medium">{item.name}</span>
-                <span className="block text-slate-500">
+              <li key={item.id} className="min-w-0 py-3 text-sm">
+                <span className="block font-medium break-words">
+                  {item.name}
+                </span>
+                <span className="text-muted-foreground block font-medium break-words">
                   {item.departments?.name ?? "School-wide"}
                   {item.is_teaching ? " · Teaching" : ""}
                 </span>

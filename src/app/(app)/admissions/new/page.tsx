@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadAdmissionOptions } from "@/features/admissions/service";
 import { createAdmissionApplication } from "../actions";
 
@@ -14,20 +16,15 @@ export default async function NewAdmissionPage({
   ]);
   return (
     <main className="py-10 sm:py-12">
-      <Link href="/admissions" className="text-sm font-medium text-emerald-800">
+      <Link href="/admissions" className="text-brand text-sm font-medium">
         ← Admissions
       </Link>
-      <div className="mt-4 max-w-3xl">
-        <p className="text-sm font-semibold text-emerald-800">
-          New application
-        </p>
-        <h1 className="mt-1 text-3xl font-semibold">
-          Applicant and guardian details
-        </h1>
-        <p className="mt-2 text-slate-600">
-          This creates an applicant identity only. A student record is created
-          later through controlled enrollment conversion.
-        </p>
+      <div className="mt-4">
+        <PageHeader
+          eyebrow="New application"
+          title="Applicant and guardian details"
+          description="This creates an applicant identity only. A student record is created later through controlled enrollment conversion."
+        />
       </div>
       {error && (
         <p
@@ -39,11 +36,11 @@ export default async function NewAdmissionPage({
       )}
       <form
         action={createAdmissionApplication}
-        className="mt-7 max-w-3xl space-y-7"
+        className="mt-7 max-w-3xl min-w-0 space-y-7"
       >
-        <fieldset className="grid gap-4 rounded-xl border bg-white p-5 sm:grid-cols-2">
+        <fieldset className="border-border bg-surface grid min-w-0 gap-4 rounded-xl border p-5 sm:grid-cols-2 sm:p-6">
           <legend className="px-2 font-semibold">Application</legend>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Application number
             <input
               className={`${fieldClass} mt-1`}
@@ -52,7 +49,7 @@ export default async function NewAdmissionPage({
               placeholder="APP-2026-001"
             />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Source
             <select
               className={`${fieldClass} mt-1`}
@@ -65,7 +62,7 @@ export default async function NewAdmissionPage({
               <option value="import">Controlled import</option>
             </select>
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Academic session
             <select className={`${fieldClass} mt-1`} name="sessionId" required>
               {options.sessions.map((session) => (
@@ -75,7 +72,7 @@ export default async function NewAdmissionPage({
               ))}
             </select>
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Applied class level
             <select className={`${fieldClass} mt-1`} name="levelId" required>
               {options.levels.map((level) => (
@@ -86,17 +83,17 @@ export default async function NewAdmissionPage({
             </select>
           </label>
         </fieldset>
-        <fieldset className="grid gap-4 rounded-xl border bg-white p-5 sm:grid-cols-2">
+        <fieldset className="border-border bg-surface grid min-w-0 gap-4 rounded-xl border p-5 sm:grid-cols-2 sm:p-6">
           <legend className="px-2 font-semibold">Applicant</legend>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             First name
             <input className={`${fieldClass} mt-1`} name="firstName" required />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Last name
             <input className={`${fieldClass} mt-1`} name="lastName" required />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Date of birth
             <input
               className={`${fieldClass} mt-1`}
@@ -105,26 +102,26 @@ export default async function NewAdmissionPage({
               required
             />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Gender
             <input className={`${fieldClass} mt-1`} name="gender" />
           </label>
-          <label className="text-sm font-medium sm:col-span-2">
+          <label className="min-w-0 text-sm font-medium sm:col-span-2">
             Previous class (optional)
             <input className={`${fieldClass} mt-1`} name="previousClass" />
           </label>
         </fieldset>
-        <fieldset className="grid gap-4 rounded-xl border bg-white p-5 sm:grid-cols-2">
+        <fieldset className="border-border bg-surface grid min-w-0 gap-4 rounded-xl border p-5 sm:grid-cols-2 sm:p-6">
           <legend className="px-2 font-semibold">Guardian (optional)</legend>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             First name
             <input className={`${fieldClass} mt-1`} name="guardianFirstName" />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Last name
             <input className={`${fieldClass} mt-1`} name="guardianLastName" />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Relationship
             <input
               className={`${fieldClass} mt-1`}
@@ -132,7 +129,7 @@ export default async function NewAdmissionPage({
               placeholder="Mother, father, guardian"
             />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Email
             <input
               className={`${fieldClass} mt-1`}
@@ -140,7 +137,7 @@ export default async function NewAdmissionPage({
               type="email"
             />
           </label>
-          <label className="text-sm font-medium">
+          <label className="min-w-0 text-sm font-medium">
             Phone
             <input
               className={`${fieldClass} mt-1`}
@@ -149,9 +146,9 @@ export default async function NewAdmissionPage({
             />
           </label>
         </fieldset>
-        <button className="rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white">
+        <Button className="w-full sm:w-auto" size="large" type="submit">
           Create application
-        </button>
+        </Button>
       </form>
     </main>
   );

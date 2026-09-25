@@ -27,7 +27,7 @@ export default async function NewStudentPage({
         <PageHeader
           eyebrow="Student records"
           title="Add a student"
-          description="Creates permanent identity, enrollment, placement, and an optional guardian atomically."
+          description="Creates permanent identity, enrollment, placement, and a primary guardian atomically."
         />
       </div>
       {error && (
@@ -80,8 +80,12 @@ export default async function NewStudentPage({
               />
             </label>
             <label className="min-w-0 text-sm font-medium">
-              Gender (optional)
-              <input className={fieldClass} name="gender" />
+              Gender
+              <select className={fieldClass} name="gender" required>
+                <option value="">Select gender</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+              </select>
             </label>
           </fieldset>
           <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
@@ -130,14 +134,14 @@ export default async function NewStudentPage({
             </label>
           </fieldset>
           <fieldset className="grid min-w-0 gap-4 sm:grid-cols-2">
-            <legend className="mb-3 font-semibold">Guardian (optional)</legend>
+            <legend className="mb-3 font-semibold">Primary guardian</legend>
             <label className="min-w-0 text-sm font-medium">
               First name
-              <input className={fieldClass} name="guardianFirstName" />
+              <input className={fieldClass} name="guardianFirstName" required />
             </label>
             <label className="min-w-0 text-sm font-medium">
               Last name
-              <input className={fieldClass} name="guardianLastName" />
+              <input className={fieldClass} name="guardianLastName" required />
             </label>
             <label className="min-w-0 text-sm font-medium">
               Relationship
@@ -145,6 +149,7 @@ export default async function NewStudentPage({
                 className={fieldClass}
                 name="guardianRelationship"
                 placeholder="Mother, uncle, sponsor…"
+                required
               />
             </label>
             <div className="flex min-w-0 flex-col justify-end gap-2 text-sm">
@@ -153,6 +158,7 @@ export default async function NewStudentPage({
                   className="size-5 shrink-0 accent-emerald-800"
                   type="checkbox"
                   name="guardianPrimary"
+                  required
                 />
                 Primary contact
               </label>

@@ -4,6 +4,11 @@
 
 - M7.5 responsive UI/UX debt remains on module pages outside the focused Admissions register/detail/creation/document-policy, Student 360, Student/Staff register, Staff 360, Staff setup/creation and Student creation/import-preview remediations: real-phone verification found occasional long-text overflow/clipping, reliance on zooming out and Netlify badge obstruction. Phase A resolved the authenticated shell navigation, Phase B began the shared visual foundation, and Phases C1–C6 address the verified people-record surfaces without changing workflow behavior.
 
+- Admissions application intake now requires the same supported Female/Male
+  gender selection and complete primary-guardian identity as direct student
+  creation. Existing applications are preserved; email and phone remain
+  optional contact fields.
+
 - The two converted M7 QA fixtures and their synthetic admissions evidence remain preserved pending a separately approved cleanup plan. Do not delete linked application, student, enrollment, class-membership, guardian, document or audit records ad hoc.
 
 - A historical Auth identity named `M1 Live QA` remains in the development project even though the M1 record says disposable identities were removed. It was not part of the authorized M6 cleanup and has no identified M6 tenant access. Confirm its ownership before any later deletion.

@@ -8,6 +8,8 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
+M8 Attendance & Teaching — M8-A1 Foundation Implemented, Pending Merge
+
 ## Completed milestones
 
 - M0 Bootstrap — Completed — Deployed & Verified
@@ -62,6 +64,10 @@ The public repository intentionally excludes private product specifications and 
 ## Blockers
 
 None for the accepted M7 or M7.5 scope.
+
+M8-A1 is limited to teaching scope, attendance configuration and authorization
+foundations. Attendance event capture, timetable, curriculum, lesson delivery,
+homework and production QA have not started.
 
 ## M6 completion evidence
 

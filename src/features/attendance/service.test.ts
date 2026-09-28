@@ -1,13 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { requireCapability, requireUser, loadTenantContext, rpc } = vi.hoisted(
-  () => ({
-    requireCapability: vi.fn(),
-    requireUser: vi.fn(),
-    loadTenantContext: vi.fn(),
-    rpc: vi.fn(),
-  }),
-);
+const {
+  requireCapability,
+  requireUser,
+  loadTenantContext,
+  rpc,
+  from,
+  insert,
+  update,
+  select,
+  eq,
+  maybeSingle,
+} = vi.hoisted(() => ({
+  requireCapability: vi.fn(),
+  requireUser: vi.fn(),
+  loadTenantContext: vi.fn(),
+  rpc: vi.fn(),
+  from: vi.fn(),
+  insert: vi.fn(),
+  update: vi.fn(),
+  select: vi.fn(),
+  eq: vi.fn(),
+  maybeSingle: vi.fn(),
+}));
 
 vi.mock("@/lib/authorization", () => ({ requireCapability }));
 vi.mock("@/lib/auth", () => ({ requireUser }));
@@ -16,6 +31,7 @@ vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 import {
   correctStudentAttendanceEntry,
   requireAttendanceContext,
+  saveAttendanceSettings,
   submitStudentAttendanceRegister,
 } from "./service";
 
@@ -29,7 +45,24 @@ describe("attendance context", () => {
     vi.clearAllMocks();
     requireCapability.mockResolvedValue(authorization);
     rpc.mockResolvedValue({ data: crypto.randomUUID(), error: null });
-    requireUser.mockResolvedValue({ supabase: { rpc } });
+    insert.mockResolvedValue({ error: null });
+    update.mockReturnValue({ eq });
+    select.mockReturnValue({ eq });
+    eq.mockReturnValue({ eq, maybeSingle });
+    maybeSingle.mockResolvedValue({ data: null, error: null });
+    from.mockReturnValue({ insert, update, select });
+    requireUser.mockResolvedValue({
+      supabase: {
+        rpc,
+        from,
+        auth: {
+          getUser: vi.fn().mockResolvedValue({
+            data: { user: { id: crypto.randomUUID() } },
+            error: null,
+          }),
+        },
+      },
+    });
     loadTenantContext.mockResolvedValue({
       active: {
         organizationId: authorization.organizationId,
@@ -118,5 +151,39 @@ describe("attendance context", () => {
       module: "attendance",
       feature: "attendance.student_registers",
     });
+  });
+
+  it("saves one validated caller-bound attendance policy", async () => {
+    await saveAttendanceSettings({
+      closingRegisterEnabled: false,
+      lockAfterDays: 1,
+      enabledStudentStatuses: [
+        "present",
+        "late",
+        "absent",
+        "excused",
+        "left_early",
+      ],
+      studentAttendanceDays: [1, 2, 3, 4, 5],
+      lessonPlanRequired: false,
+      lessonPlanApprovalRequired: false,
+    });
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.configure",
+      module: "attendance",
+      feature: "attendance.student_registers",
+    });
+    expect(from).toHaveBeenCalledWith("attendance_settings");
+    expect(insert).toHaveBeenCalledTimes(1);
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organization_id: authorization.organizationId,
+        school_id: authorization.schoolId,
+        morning_register_enabled: true,
+        closing_register_enabled: false,
+        lock_after_days: 1,
+        student_attendance_days: [1, 2, 3, 4, 5],
+      }),
+    );
   });
 });

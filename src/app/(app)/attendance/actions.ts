@@ -3,10 +3,14 @@
 import { redirect } from "next/navigation";
 import {
   attendanceRegisterQuerySchema,
+  correctStudentAttendanceEntrySchema,
   parseAttendanceScopeKey,
   submitStudentAttendanceRegisterSchema,
 } from "@/features/attendance/schemas";
-import { submitStudentAttendanceRegister } from "@/features/attendance/service";
+import {
+  correctStudentAttendanceEntry,
+  submitStudentAttendanceRegister,
+} from "@/features/attendance/service";
 
 function destination(
   query: { date: string; type: "morning" | "closing"; scope: string },
@@ -72,6 +76,40 @@ export async function submitAttendanceRegister(formData: FormData) {
       { ...query.data, scope: query.data.scope },
       "message",
       "Attendance register submitted",
+    ),
+  );
+}
+
+export async function correctAttendanceEntry(formData: FormData) {
+  const query = attendanceRegisterQuerySchema.safeParse({
+    date: formData.get("attendanceDate"),
+    type: formData.get("registerType"),
+    scope: formData.get("scope"),
+  });
+  const correction = correctStudentAttendanceEntrySchema.safeParse({
+    entryId: formData.get("entryId"),
+    status: formData.get("status"),
+    reason: formData.get("reason"),
+  });
+  if (!query.success || !query.data.scope || !correction.success)
+    redirect("/attendance?error=The+attendance+correction+could+not+be+saved");
+
+  try {
+    await correctStudentAttendanceEntry(correction.data);
+  } catch {
+    redirect(
+      destination(
+        { ...query.data, scope: query.data.scope },
+        "error",
+        "The attendance correction could not be saved",
+      ),
+    );
+  }
+  redirect(
+    destination(
+      { ...query.data, scope: query.data.scope },
+      "message",
+      "Attendance correction saved",
     ),
   );
 }

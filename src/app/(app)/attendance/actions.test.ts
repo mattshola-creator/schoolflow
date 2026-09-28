@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { submitStudentAttendanceRegister, redirect } = vi.hoisted(() => ({
+const {
+  correctStudentAttendanceEntry,
+  submitStudentAttendanceRegister,
+  redirect,
+} = vi.hoisted(() => ({
+  correctStudentAttendanceEntry: vi.fn(),
   submitStudentAttendanceRegister: vi.fn(),
   redirect: vi.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);
@@ -9,10 +14,11 @@ const { submitStudentAttendanceRegister, redirect } = vi.hoisted(() => ({
 
 vi.mock("next/navigation", () => ({ redirect }));
 vi.mock("@/features/attendance/service", () => ({
+  correctStudentAttendanceEntry,
   submitStudentAttendanceRegister,
 }));
 
-import { submitAttendanceRegister } from "./actions";
+import { correctAttendanceEntry, submitAttendanceRegister } from "./actions";
 
 function validForm() {
   const sessionId = crypto.randomUUID();
@@ -28,9 +34,18 @@ function validForm() {
   return form;
 }
 
+function validCorrectionForm() {
+  const form = validForm();
+  form.set("entryId", crypto.randomUUID());
+  form.set("status", "excused");
+  form.set("reason", "Medical note received");
+  return form;
+}
+
 describe("student attendance submission action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    correctStudentAttendanceEntry.mockResolvedValue(crypto.randomUUID());
     submitStudentAttendanceRegister.mockResolvedValue(crypto.randomUUID());
   });
 
@@ -63,5 +78,40 @@ describe("student attendance submission action", () => {
       "error=The+attendance+register+could+not+be+submitted",
     );
     expect(submitStudentAttendanceRegister).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects an invalid correction before invoking the correction RPC service", async () => {
+    const form = validCorrectionForm();
+    form.set("reason", "x");
+    await expect(correctAttendanceEntry(form)).rejects.toThrow(
+      "REDIRECT:/attendance?error=",
+    );
+    expect(correctStudentAttendanceEntry).not.toHaveBeenCalled();
+  });
+
+  it("saves one validated correction with its reason", async () => {
+    await expect(correctAttendanceEntry(validCorrectionForm())).rejects.toThrow(
+      "message=Attendance+correction+saved",
+    );
+    expect(correctStudentAttendanceEntry).toHaveBeenCalledTimes(1);
+    expect(correctStudentAttendanceEntry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "excused",
+        reason: "Medical note received",
+      }),
+    );
+  });
+
+  it("does not retry or expose details when correction fails", async () => {
+    correctStudentAttendanceEntry.mockRejectedValueOnce(
+      new Error("sensitive database detail"),
+    );
+    await expect(correctAttendanceEntry(validCorrectionForm())).rejects.toThrow(
+      "error=The+attendance+correction+could+not+be+saved",
+    );
+    expect(correctStudentAttendanceEntry).toHaveBeenCalledTimes(1);
+    expect(redirect).not.toHaveBeenCalledWith(
+      expect.stringContaining("sensitive"),
+    );
   });
 });

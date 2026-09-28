@@ -11,7 +11,7 @@ import {
   loadStudentAttendanceRoster,
   loadStudentAttendanceWorkspace,
 } from "@/features/attendance/service";
-import { submitAttendanceRegister } from "./actions";
+import { correctAttendanceEntry, submitAttendanceRegister } from "./actions";
 
 const statusLabels = {
   present: "Present",
@@ -101,6 +101,9 @@ export default async function AttendancePage({
   const roster = rosterResult?.roster ?? [];
   const existingRegister = roster.find((item) => item.register_id);
   const enabledStatuses = workspace.settings?.enabled_student_statuses ?? [];
+  const canCorrect = workspace.authorization.permissions.includes(
+    "attendance.student.correct",
+  );
 
   return (
     <main className="py-10 sm:py-12">
@@ -284,6 +287,104 @@ export default async function AttendancePage({
               </div>
             ) : null}
           </form>
+          {existingRegister && canCorrect ? (
+            <div className="border-t bg-slate-50 px-5 py-4 text-sm text-slate-600 sm:px-6">
+              Corrections require a new status and an audit reason. Each saved
+              change is appended to immutable correction history.
+            </div>
+          ) : existingRegister ? (
+            <div className="border-t bg-slate-50 px-5 py-4 text-sm text-slate-600 sm:px-6">
+              You can view this register, but you do not have permission to
+              correct it.
+            </div>
+          ) : null}
+          {existingRegister && canCorrect ? (
+            <ul
+              className="divide-y border-t"
+              aria-label="Attendance corrections"
+            >
+              {roster.map((student) => (
+                <li key={student.student_id} className="px-5 py-5 sm:px-6">
+                  <form
+                    action={correctAttendanceEntry}
+                    className="grid min-w-0 gap-4 lg:grid-cols-[minmax(12rem,1fr)_12rem_minmax(14rem,1.5fr)_auto] lg:items-end"
+                  >
+                    <input
+                      type="hidden"
+                      name="attendanceDate"
+                      value={selected.date}
+                    />
+                    <input
+                      type="hidden"
+                      name="registerType"
+                      value={registerType}
+                    />
+                    <input
+                      type="hidden"
+                      name="scope"
+                      value={attendanceScopeKey(scope)}
+                    />
+                    <input
+                      type="hidden"
+                      name="entryId"
+                      value={student.entry_id ?? ""}
+                    />
+                    <div className="min-w-0">
+                      <p className="font-semibold break-words">
+                        {student.last_name}, {student.first_name}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Current:{" "}
+                        {student.attendance_status
+                          ? statusLabels[student.attendance_status]
+                          : "Unavailable"}
+                      </p>
+                    </div>
+                    <label className="min-w-0 text-sm font-medium">
+                      New status
+                      <select
+                        className={fieldClass}
+                        name="status"
+                        defaultValue=""
+                        required
+                      >
+                        <option value="" disabled>
+                          Select status
+                        </option>
+                        {enabledStatuses
+                          .filter(
+                            (status) => status !== student.attendance_status,
+                          )
+                          .map((status) => (
+                            <option key={status} value={status}>
+                              {statusLabels[status]}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                    <label className="min-w-0 text-sm font-medium">
+                      Audit reason
+                      <input
+                        className={fieldClass}
+                        name="reason"
+                        minLength={3}
+                        maxLength={500}
+                        placeholder="Explain why this value changed"
+                        required
+                      />
+                    </label>
+                    <Button
+                      className="w-full lg:w-auto"
+                      type="submit"
+                      variant="secondary"
+                    >
+                      Save correction
+                    </Button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </section>
       ) : (
         <p className="mt-6 rounded-xl border bg-white p-8 text-center text-slate-600">

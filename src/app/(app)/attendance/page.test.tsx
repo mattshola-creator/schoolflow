@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { loadStudentAttendanceRoster, loadStudentAttendanceWorkspace } =
   vi.hoisted(() => ({
@@ -15,10 +15,13 @@ vi.mock("@/features/attendance/service", () => ({
 import AttendancePage from "./page";
 
 describe("student attendance page", () => {
+  afterEach(cleanup);
+
   beforeEach(() => {
     vi.clearAllMocks();
     loadStudentAttendanceWorkspace.mockResolvedValue({
       active: { schoolName: "QA School" },
+      authorization: { permissions: ["attendance.student.correct"] },
       settings: {
         closing_register_enabled: false,
         lock_after_days: 1,
@@ -68,5 +71,82 @@ describe("student attendance page", () => {
       }),
     ).toBeInTheDocument();
     expect(loadStudentAttendanceRoster).not.toHaveBeenCalled();
+  });
+
+  it("shows controlled correction forms only for submitted entries and authorized users", async () => {
+    const scope = await loadStudentAttendanceWorkspace();
+    const selected = scope.scopes[0];
+    loadStudentAttendanceWorkspace.mockResolvedValue(scope);
+    loadStudentAttendanceRoster.mockResolvedValue({
+      roster: [
+        {
+          student_id: crypto.randomUUID(),
+          student_number: "QA-001",
+          first_name: "Ada",
+          last_name: "Okafor",
+          register_id: crypto.randomUUID(),
+          entry_id: crypto.randomUUID(),
+          attendance_status: "present",
+          attendance_note: null,
+          submitted_at: "2026-09-28T08:00:00Z",
+          locks_at: "2026-09-29T08:00:00Z",
+        },
+      ],
+    });
+    render(
+      await AttendancePage({
+        searchParams: Promise.resolve({
+          date: "2026-09-28",
+          scope: `${selected.session_id}:${selected.class_level_id}:none`,
+        }),
+      }),
+    );
+    expect(screen.getByLabelText("Attendance corrections")).toBeInTheDocument();
+    expect(screen.getByLabelText("New status")).not.toHaveTextContent(
+      "Present",
+    );
+    expect(screen.getByLabelText("Audit reason")).toBeRequired();
+    expect(
+      screen.getByRole("button", { name: "Save correction" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Submit register" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps a submitted register read-only when correction permission is absent", async () => {
+    const scope = await loadStudentAttendanceWorkspace();
+    const selected = scope.scopes[0];
+    loadStudentAttendanceWorkspace.mockResolvedValue({
+      ...scope,
+      authorization: { permissions: [] },
+    });
+    loadStudentAttendanceRoster.mockResolvedValue({
+      roster: [
+        {
+          student_id: crypto.randomUUID(),
+          student_number: "QA-001",
+          first_name: "Ada",
+          last_name: "Okafor",
+          register_id: crypto.randomUUID(),
+          entry_id: crypto.randomUUID(),
+          attendance_status: "present",
+        },
+      ],
+    });
+    render(
+      await AttendancePage({
+        searchParams: Promise.resolve({
+          date: "2026-09-28",
+          scope: `${selected.session_id}:${selected.class_level_id}:none`,
+        }),
+      }),
+    );
+    expect(
+      screen.getByText(/do not have permission to correct/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Attendance corrections"),
+    ).not.toBeInTheDocument();
   });
 });

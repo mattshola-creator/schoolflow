@@ -90,3 +90,29 @@
   one submission call, no retry and safe error redirects.
 - No production feature enablement, browser submission or attendance record was
   created.
+
+## M8-A4 Controlled attendance corrections
+
+| Requirement                                | Evidence                                                                                  | Status      |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------- | ----------- |
+| Submitted registers cannot be overwritten  | Existing roster controls remain disabled and no second register-submit control is shown   | Implemented |
+| Corrections require explicit authorization | UI checks effective `attendance.student.correct`; service and RPC repeat authorization    | Implemented |
+| New status must differ from current status | UI excludes the current value; RPC independently rejects unchanged status                 | Implemented |
+| Audit reason is mandatory and bounded      | Browser and Zod require 3–500 characters; RPC trims and independently enforces the bounds | Implemented |
+| Correction history is immutable            | Existing atomic RPC appends history; mutation-blocking trigger prevents update/delete     | Verified    |
+| Correction request executes once           | Focused action test proves one service call and no retry on failure                       | Verified    |
+| Public errors remain safe                  | Generic redirect messages omit raw database details                                       | Verified    |
+| Unauthorized users retain read-only access | Focused rendering test proves correction controls are absent                              | Verified    |
+| Feature remains disabled                   | Default is false and no enabled organization override exists                              | Verified    |
+| Production attendance remains empty        | Register, entry and correction counts remain zero                                         | Verified    |
+
+### M8-A4 verification evidence
+
+- Focused action tests reject invalid input before service invocation, preserve
+  a mandatory reason, perform exactly one correction call and do not retry or
+  disclose internal details after failure.
+- Focused UI tests show correction controls only for an authorized actor on a
+  submitted register and preserve the read-only view otherwise.
+- M8-A2 rollback-only database evidence already covers atomic current-state
+  update, immutable correction insertion, cross-tenant denial and history
+  mutation denial; M8-A4 introduces no new database write path.

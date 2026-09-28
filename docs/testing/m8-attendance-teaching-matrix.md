@@ -177,3 +177,26 @@ correction/audit history, RLS and rollback-only verification. It must remain
 disabled by default and must not create production clock events during its
 foundation phase. Timetable, curriculum, lesson delivery and homework remain
 separate later slices.
+
+## M8-B1 Staff attendance foundation
+
+| Requirement                                          | Evidence                                                                                                                                    | Status           |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Staff clock activity is feature gated                | Existing `attendance.staff_clock` feature remains disabled by default and is rechecked in caller-bound database authorization               | Implemented      |
+| Self-service is bound to the staff identity          | Access helper requires a current school assignment whose employment is linked to the authenticated user                                     | Implemented      |
+| Broader recording and correction are separate powers | `attendance.staff.record_all` and `attendance.staff.correct_all` are distinct permissions granted only to organization owners by this slice | Implemented      |
+| Clock events are idempotent and ordered              | Record RPC uses caller-scoped idempotency and permits one clock-in and clock-out, with clock-out later than clock-in                        | Implemented      |
+| Policy is effective-dated and historically stable    | Position override or school default is validated and snapshotted into the daily summary                                                     | Implemented      |
+| Corrections preserve original evidence               | Original event is immutable; correction history stores previous and corrected occurrence times, reason and actor                            | Implemented      |
+| Direct writes are denied                             | Authenticated grants are SELECT-only; event and correction mutation triggers fail closed                                                    | Implemented      |
+| Browser-facing service errors are generic            | Focused service tests prove one RPC call, exact capability selection and no raw database error disclosure                                   | Verified locally |
+| Foundation creates no production activity            | Rollback-only remote matrix reached one day, two events and one correction in-transaction; post-rollback production counts are 0/0/0        | Verified         |
+
+M8-B1 intentionally contains no staff-attendance UI or production feature
+enablement. A later separately authorized slice may add the staff clock and
+management experience after this foundation is deployed and verified.
+
+The remote matrix also verified idempotent replay, ordered clock-out,
+caller-bound correction, cross-tenant denial and event immutability. The
+temporary actor, role, policy, feature override and attendance activity all
+rolled back. The effective production feature state remained disabled.

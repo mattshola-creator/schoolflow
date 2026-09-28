@@ -29,7 +29,9 @@ vi.mock("@/lib/auth", () => ({ requireUser }));
 vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 
 import {
+  correctStaffClockEvent,
   correctStudentAttendanceEntry,
+  recordStaffClockEvent,
   requireAttendanceContext,
   saveAttendanceSettings,
   submitStudentAttendanceRegister,
@@ -151,6 +153,52 @@ describe("attendance context", () => {
       module: "attendance",
       feature: "attendance.student_registers",
     });
+  });
+
+  it("records one caller-bound staff clock event", async () => {
+    const input = {
+      staffAssignmentId: crypto.randomUUID(),
+      eventType: "clock_in" as const,
+      occurredAt: "2026-09-28T07:30:00+01:00",
+      idempotencyKey: crypto.randomUUID(),
+      note: "Office clock",
+    };
+    await recordStaffClockEvent(input);
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.staff.record",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("record_staff_clock_event", {
+      target_organization_id: authorization.organizationId,
+      target_school_id: authorization.schoolId,
+      target_staff_assignment_id: input.staffAssignmentId,
+      target_event_type: input.eventType,
+      target_occurred_at: input.occurredAt,
+      target_idempotency_key: input.idempotencyKey,
+      target_note: input.note,
+    });
+  });
+
+  it("does not retry or expose a staff correction RPC failure", async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: { message: "protected database detail" },
+    });
+    await expect(
+      correctStaffClockEvent({
+        clockEventId: crypto.randomUUID(),
+        correctedOccurredAt: "2026-09-28T08:00:00+01:00",
+        reason: "Approved time correction",
+      }),
+    ).rejects.toThrow("Staff clock correction could not be saved");
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.staff.correct",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(rpc).toHaveBeenCalledTimes(1);
   });
 
   it("saves one validated caller-bound attendance policy", async () => {

@@ -2897,6 +2897,102 @@ export type Database = {
           },
         ];
       };
+      staff_attendance_days: {
+        Row: {
+          attendance_date: string;
+          created_at: string;
+          effective_clock_in_at: string | null;
+          effective_clock_out_at: string | null;
+          employment_id: string;
+          id: string;
+          organization_id: string;
+          policy_ends_at: string;
+          policy_grace_minutes: number;
+          policy_id: string;
+          policy_starts_at: string;
+          position_id: string;
+          school_id: string;
+          staff_assignment_id: string;
+          staff_profile_id: string;
+          status: Database["public"]["Enums"]["staff_attendance_day_status"];
+          updated_at: string;
+        };
+        Insert: {
+          attendance_date: string;
+          created_at?: string;
+          effective_clock_in_at?: string | null;
+          effective_clock_out_at?: string | null;
+          employment_id: string;
+          id?: string;
+          organization_id: string;
+          policy_ends_at: string;
+          policy_grace_minutes: number;
+          policy_id: string;
+          policy_starts_at: string;
+          position_id: string;
+          school_id: string;
+          staff_assignment_id: string;
+          staff_profile_id: string;
+          status?: Database["public"]["Enums"]["staff_attendance_day_status"];
+          updated_at?: string;
+        };
+        Update: {
+          attendance_date?: string;
+          created_at?: string;
+          effective_clock_in_at?: string | null;
+          effective_clock_out_at?: string | null;
+          employment_id?: string;
+          id?: string;
+          organization_id?: string;
+          policy_ends_at?: string;
+          policy_grace_minutes?: number;
+          policy_id?: string;
+          policy_starts_at?: string;
+          position_id?: string;
+          school_id?: string;
+          staff_assignment_id?: string;
+          staff_profile_id?: string;
+          status?: Database["public"]["Enums"]["staff_attendance_day_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_attendance_days_employment_id_staff_profile_id_organ_fkey";
+            columns: ["employment_id", "staff_profile_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "employments";
+            referencedColumns: ["id", "staff_profile_id", "organization_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_days_policy_id_organization_id_school_id_fkey";
+            columns: ["policy_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_attendance_policies";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_days_position_id_organization_id_school_i_fkey";
+            columns: ["position_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "positions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_days_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_days_staff_assignment_id_organization_id__fkey";
+            columns: ["staff_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       staff_attendance_policies: {
         Row: {
           created_at: string;
@@ -2966,6 +3062,123 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "schools";
             referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      staff_clock_corrections: {
+        Row: {
+          attendance_day_id: string;
+          clock_event_id: string;
+          corrected_at: string;
+          corrected_by: string;
+          corrected_occurred_at: string;
+          id: string;
+          organization_id: string;
+          previous_occurred_at: string;
+          reason: string;
+          school_id: string;
+        };
+        Insert: {
+          attendance_day_id: string;
+          clock_event_id: string;
+          corrected_at?: string;
+          corrected_by: string;
+          corrected_occurred_at: string;
+          id?: string;
+          organization_id: string;
+          previous_occurred_at: string;
+          reason: string;
+          school_id: string;
+        };
+        Update: {
+          attendance_day_id?: string;
+          clock_event_id?: string;
+          corrected_at?: string;
+          corrected_by?: string;
+          corrected_occurred_at?: string;
+          id?: string;
+          organization_id?: string;
+          previous_occurred_at?: string;
+          reason?: string;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_clock_corrections_attendance_day_id_organization_id__fkey";
+            columns: ["attendance_day_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_attendance_days";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_clock_corrections_clock_event_id_organization_id_sch_fkey";
+            columns: ["clock_event_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_clock_events";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      staff_clock_events: {
+        Row: {
+          attendance_day_id: string;
+          created_at: string;
+          event_type: Database["public"]["Enums"]["staff_clock_event_type"];
+          id: string;
+          idempotency_key: string;
+          note: string | null;
+          occurred_at: string;
+          organization_id: string;
+          recorded_by: string;
+          request_fingerprint: string;
+          school_id: string;
+          source: Database["public"]["Enums"]["staff_clock_source"];
+          staff_assignment_id: string;
+        };
+        Insert: {
+          attendance_day_id: string;
+          created_at?: string;
+          event_type: Database["public"]["Enums"]["staff_clock_event_type"];
+          id?: string;
+          idempotency_key: string;
+          note?: string | null;
+          occurred_at: string;
+          organization_id: string;
+          recorded_by: string;
+          request_fingerprint: string;
+          school_id: string;
+          source: Database["public"]["Enums"]["staff_clock_source"];
+          staff_assignment_id: string;
+        };
+        Update: {
+          attendance_day_id?: string;
+          created_at?: string;
+          event_type?: Database["public"]["Enums"]["staff_clock_event_type"];
+          id?: string;
+          idempotency_key?: string;
+          note?: string | null;
+          occurred_at?: string;
+          organization_id?: string;
+          recorded_by?: string;
+          request_fingerprint?: string;
+          school_id?: string;
+          source?: Database["public"]["Enums"]["staff_clock_source"];
+          staff_assignment_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_clock_events_attendance_day_id_organization_id_schoo_fkey";
+            columns: ["attendance_day_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_attendance_days";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_clock_events_staff_assignment_id_organization_id_sch_fkey";
+            columns: ["staff_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
           },
         ];
       };
@@ -3641,6 +3854,16 @@ export type Database = {
         };
         Returns: boolean;
       };
+      can_access_staff_attendance_assignment: {
+        Args: {
+          permission_key: string;
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+        };
+        Returns: boolean;
+      };
       can_access_student_attendance_scope: {
         Args: {
           permission_key: string;
@@ -3693,6 +3916,14 @@ export type Database = {
           enrollment_date: string;
           target_application_id: string;
           target_student_number: string;
+        };
+        Returns: string;
+      };
+      correct_staff_clock_event: {
+        Args: {
+          target_clock_event_id: string;
+          target_corrected_occurred_at: string;
+          target_reason: string;
         };
         Returns: string;
       };
@@ -3930,6 +4161,18 @@ export type Database = {
         };
         Returns: string;
       };
+      record_staff_clock_event: {
+        Args: {
+          target_event_type: Database["public"]["Enums"]["staff_clock_event_type"];
+          target_idempotency_key: string;
+          target_note?: string;
+          target_occurred_at: string;
+          target_organization_id: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+        };
+        Returns: string;
+      };
       respond_to_admission_offer: {
         Args: { accept_offer: boolean; target_application_id: string };
         Returns: Database["public"]["Enums"]["offer_status"];
@@ -4071,6 +4314,10 @@ export type Database = {
       offer_status:
         "draft" | "issued" | "accepted" | "declined" | "expired" | "withdrawn";
       staff_assignment_status: "planned" | "active" | "ended" | "cancelled";
+      staff_attendance_day_status:
+        "present" | "late" | "left_early" | "incomplete" | "excused";
+      staff_clock_event_type: "clock_in" | "clock_out";
+      staff_clock_source: "self_service" | "authorized_operator";
       student_attendance_register_type: "morning" | "closing";
       student_lifecycle_status:
         | "pending_enrollment"
@@ -4311,6 +4558,15 @@ export const Constants = {
         "withdrawn",
       ],
       staff_assignment_status: ["planned", "active", "ended", "cancelled"],
+      staff_attendance_day_status: [
+        "present",
+        "late",
+        "left_early",
+        "incomplete",
+        "excused",
+      ],
+      staff_clock_event_type: ["clock_in", "clock_out"],
+      staff_clock_source: ["self_service", "authorized_operator"],
       student_attendance_register_type: ["morning", "closing"],
       student_lifecycle_status: [
         "pending_enrollment",

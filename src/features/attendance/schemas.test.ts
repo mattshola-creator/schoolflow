@@ -4,8 +4,10 @@ import {
   attendanceScopeKey,
   attendanceSettingsSchema,
   calendarExceptionSchema,
+  correctStaffClockEventSchema,
   correctStudentAttendanceEntrySchema,
   parseAttendanceScopeKey,
+  recordStaffClockEventSchema,
   staffAttendancePolicySchema,
   submitStudentAttendanceRegisterSchema,
 } from "./schemas";
@@ -132,5 +134,33 @@ describe("M8 attendance foundation validation", () => {
         label: "National holiday",
       }).success,
     ).toBe(true);
+  });
+
+  it("requires an offset-aware staff clock timestamp", () => {
+    const input = {
+      staffAssignmentId: crypto.randomUUID(),
+      eventType: "clock_in",
+      occurredAt: "2026-09-28T07:30:00+01:00",
+      idempotencyKey: crypto.randomUUID(),
+    };
+    expect(recordStaffClockEventSchema.safeParse(input).success).toBe(true);
+    expect(
+      recordStaffClockEventSchema.safeParse({
+        ...input,
+        occurredAt: "2026-09-28T07:30:00",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("requires a bounded staff clock correction reason", () => {
+    const input = {
+      clockEventId: crypto.randomUUID(),
+      correctedOccurredAt: "2026-09-28T08:00:00+01:00",
+      reason: "Approved time correction",
+    };
+    expect(correctStaffClockEventSchema.safeParse(input).success).toBe(true);
+    expect(
+      correctStaffClockEventSchema.safeParse({ ...input, reason: "x" }).success,
+    ).toBe(false);
   });
 });

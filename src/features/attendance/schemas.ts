@@ -117,6 +117,20 @@ export const correctStudentAttendanceEntrySchema = z.object({
   reason: z.string().trim().min(3).max(500),
 });
 
+export const recordStaffClockEventSchema = z.object({
+  staffAssignmentId: id,
+  eventType: z.enum(["clock_in", "clock_out"]),
+  occurredAt: z.iso.datetime({ offset: true }),
+  idempotencyKey: id,
+  note: z.string().trim().min(1).max(500).optional(),
+});
+
+export const correctStaffClockEventSchema = z.object({
+  clockEventId: id,
+  correctedOccurredAt: z.iso.datetime({ offset: true }),
+  reason: z.string().trim().min(3).max(500),
+});
+
 const uuidPattern =
   "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
 const scopeKeyPattern = new RegExp(

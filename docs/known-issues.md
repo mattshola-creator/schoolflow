@@ -2,7 +2,9 @@
 
 ## Open
 
-- M7.5 responsive UI/UX debt remains on module pages outside the focused Admissions register/detail/creation/document-policy, Student 360, Student/Staff register, Staff 360, Staff setup/creation, Student creation/import-preview, Academic Setup, Action Center, Documents, Audit, Onboarding, invitation and Capability-state remediations: real-phone verification found occasional long-text overflow/clipping, reliance on zooming out and Netlify badge obstruction. Phase A resolved the authenticated shell navigation, Phase B began the shared visual foundation, and Phases C1–C9 address the focused operational surfaces without changing their established authorization, Storage, audit or mutation behavior.
+- Netlify may inject a floating status badge that can cover underlying content.
+  This overlay is outside the SchoolFlow application source; it is not an
+  unresolved app-owned responsive-layout defect.
 
 - Admissions application intake now requires the same supported Female/Male
   gender selection and complete primary-guardian identity as direct student
@@ -28,6 +30,15 @@
 - M6 performance advisor findings are informational index/policy observations. The M6 init-plan findings were corrected and operational audit, document, task, approval and notification indexes are present; further optimization should follow measured workloads.
 
 ## Closed
+
+- M7.5 UI/UX passed its complete incremental acceptance gate. PRs #34–#47
+  delivered the responsive shell, shared visual foundation, focused module
+  layouts and accessibility interactions without weakening authorization or
+  workflow behavior. C1 through C10 passed real-phone or keyboard acceptance.
+  The final runtime revision is
+  `a8aa342f301bca9800d64e001f178c09b73e0d0b`; GitHub Actions run #107 passed
+  131 tests and the production build, and Netlify deploy
+  `6aba3972b32a3e0008c97a3d` is Ready with zero secret-scan matches.
 
 - M7.5 Phase A replaced the clipped mobile module strip with an accessible drawer and retained the permission-filtered desktop sidebar. PR #34, CI run #81, production deploy `6ab574a671d9b50008854c35`, authenticated desktop checks and real-phone evidence all passed.
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Building2, LogOut, UserRound } from "lucide-react";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
+import { SkipLink } from "@/components/ui/skip-link";
 import { moduleNavigation } from "@/features/authorization/catalog";
 import { evaluateAccess } from "@/features/authorization/evaluator";
 import { requireUser } from "@/lib/auth";
@@ -28,6 +29,7 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SkipLink />
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4">
           <Link
@@ -50,7 +52,10 @@ export default async function AppLayout({
               userEmail={user.email}
             />
             <form action={logout}>
-              <button className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 hover:bg-slate-50 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">
+              <button
+                type="submit"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 hover:bg-slate-50 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+              >
                 <LogOut aria-hidden="true" className="size-4" />
                 <span className="hidden sm:inline">Sign out</span>
                 <span className="sr-only sm:hidden">Sign out</span>
@@ -63,7 +68,9 @@ export default async function AppLayout({
         <aside className="hidden min-h-[calc(100vh-4.75rem)] border-r md:block">
           <WorkspaceNavigation variant="desktop" items={navigationItems} />
         </aside>
-        <main className="min-w-0">{children}</main>
+        <div id="main-content" tabIndex={-1} className="min-w-0">
+          {children}
+        </div>
       </div>
     </div>
   );

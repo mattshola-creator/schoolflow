@@ -5,7 +5,12 @@ import {
   submitApprovalRequest,
   updateTaskStatus,
 } from "../shared-services/actions";
+import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadActionCenter } from "@/features/shared-services/service";
+
+const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
 
 export default async function ActionCenterPage({
   searchParams,
@@ -18,15 +23,11 @@ export default async function ActionCenterPage({
   ]);
   return (
     <main className="space-y-8 py-8">
-      <div>
-        <p className="text-sm font-semibold text-emerald-800">
-          Shared operations
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight">Action Center</h1>
-        <p className="mt-2 text-slate-600">
-          Own tasks, approvals and operational follow-up in the active school.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Shared operations"
+        title="Action Center"
+        description="Own tasks, approvals and operational follow-up in the active school."
+      />
       {message && (
         <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
           {message}
@@ -36,7 +37,7 @@ export default async function ActionCenterPage({
         <p className="rounded-lg bg-red-50 p-3 text-sm text-red-900">{error}</p>
       )}
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border bg-white p-5">
+        <div className={panel}>
           <h2 className="font-semibold">New task</h2>
           <form action={createTask} className="mt-4 grid gap-3">
             <input
@@ -45,19 +46,19 @@ export default async function ActionCenterPage({
               minLength={3}
               maxLength={160}
               placeholder="Task title"
-              className="rounded-lg border px-3 py-2"
+              className={fieldClass}
             />
             <textarea
               name="description"
               maxLength={2000}
               placeholder="Details (optional)"
-              className="rounded-lg border px-3 py-2"
+              className={`${fieldClass} min-h-24 py-3`}
             />
             <div className="grid gap-3 sm:grid-cols-2">
               <select
                 name="priority"
                 defaultValue="normal"
-                className="rounded-lg border px-3 py-2"
+                className={fieldClass}
               >
                 <option value="low">Low priority</option>
                 <option value="normal">Normal priority</option>
@@ -67,39 +68,39 @@ export default async function ActionCenterPage({
               <input
                 name="dueAt"
                 type="datetime-local"
-                className="rounded-lg border px-3 py-2"
+                className={fieldClass}
                 aria-label="Due date"
               />
             </div>
-            <button className="rounded-lg bg-emerald-800 px-4 py-2 font-medium text-white">
+            <Button className="w-full" type="submit">
               Add task
-            </button>
+            </Button>
           </form>
         </div>
-        <div className="rounded-xl border bg-white p-5">
+        <div className={panel}>
           <h2 className="font-semibold">New approval policy</h2>
           <form action={createApprovalPolicy} className="mt-4 grid gap-3">
             <input
               name="name"
               required
               placeholder="Policy name"
-              className="rounded-lg border px-3 py-2"
+              className={fieldClass}
             />
             <input
               name="key"
               required
               placeholder="admissions.offer"
-              className="rounded-lg border px-3 py-2"
+              className={fieldClass}
             />
             <input
               name="description"
               placeholder="Purpose (optional)"
-              className="rounded-lg border px-3 py-2"
+              className={fieldClass}
             />
             <select
               name="approverRoleId"
               required
-              className="rounded-lg border px-3 py-2"
+              className={fieldClass}
               defaultValue=""
             >
               <option value="" disabled>
@@ -111,9 +112,9 @@ export default async function ActionCenterPage({
                 </option>
               ))}
             </select>
-            <button className="rounded-lg border border-emerald-800 px-4 py-2 font-medium text-emerald-900">
+            <Button className="w-full" type="submit" variant="secondary">
               Create policy
-            </button>
+            </Button>
           </form>
         </div>
       </section>
@@ -128,32 +129,35 @@ export default async function ActionCenterPage({
             data.tasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-wrap items-center justify-between gap-4 border-b p-4 last:border-b-0"
+                className="flex min-w-0 flex-col items-stretch gap-4 border-b p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
-                  <p className="font-medium">{task.title}</p>
-                  <p className="text-sm text-slate-500">
+                <div className="min-w-0">
+                  <p className="font-medium break-words">{task.title}</p>
+                  <p className="text-sm break-words text-slate-500">
                     {task.priority} · {task.status}
                     {task.due_at
                       ? ` · due ${new Date(task.due_at).toLocaleString()}`
                       : ""}
                   </p>
                 </div>
-                <form action={updateTaskStatus} className="flex gap-2">
+                <form
+                  action={updateTaskStatus}
+                  className="grid min-w-0 gap-2 sm:flex sm:shrink-0"
+                >
                   <input type="hidden" name="taskId" value={task.id} />
                   <select
                     name="status"
                     defaultValue={task.status}
-                    className="rounded-lg border px-2 py-1 text-sm"
+                    className={`${fieldClass} mt-0 sm:w-auto`}
                   >
                     <option value="open">Open</option>
                     <option value="in_progress">In progress</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                   </select>
-                  <button className="rounded-lg bg-slate-900 px-3 py-1 text-sm text-white">
+                  <Button className="w-full sm:w-auto" type="submit">
                     Save
-                  </button>
+                  </Button>
                 </form>
               </div>
             ))
@@ -161,7 +165,7 @@ export default async function ActionCenterPage({
         </div>
       </section>
       <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
-        <div className="rounded-xl border bg-white p-5">
+        <div className={panel}>
           <h2 className="font-semibold">Submit approval</h2>
           {data.policies.length === 0 ? (
             <p className="mt-3 text-sm text-slate-500">
@@ -169,11 +173,7 @@ export default async function ActionCenterPage({
             </p>
           ) : (
             <form action={submitApprovalRequest} className="mt-4 grid gap-3">
-              <select
-                name="policyId"
-                required
-                className="rounded-lg border px-3 py-2"
-              >
+              <select name="policyId" required className={fieldClass}>
                 {data.policies.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -184,27 +184,27 @@ export default async function ActionCenterPage({
                 name="title"
                 required
                 placeholder="Request title"
-                className="rounded-lg border px-3 py-2"
+                className={fieldClass}
               />
               <input
                 name="subjectType"
                 required
                 placeholder="Subject type, e.g. application"
-                className="rounded-lg border px-3 py-2"
+                className={fieldClass}
               />
               <input
                 name="subjectId"
                 required
                 placeholder="Subject UUID"
-                className="rounded-lg border px-3 py-2"
+                className={fieldClass}
               />
-              <button className="rounded-lg bg-emerald-800 px-4 py-2 font-medium text-white">
+              <Button className="w-full" type="submit">
                 Submit request
-              </button>
+              </Button>
             </form>
           )}
         </div>
-        <div className="rounded-xl border bg-white p-5">
+        <div className={panel}>
           <h2 className="font-semibold">Approval inbox</h2>
           {data.requests.length === 0 ? (
             <p className="mt-3 text-sm text-slate-500">No approval requests.</p>
@@ -214,42 +214,46 @@ export default async function ActionCenterPage({
                 key={request.id}
                 className="mt-4 border-t pt-4 first:border-t-0 first:pt-0"
               >
-                <p className="font-medium">{request.title}</p>
+                <p className="font-medium break-words">{request.title}</p>
                 <p className="text-sm text-slate-500">
                   {request.status} · step {request.current_step}
                 </p>
                 {request.status === "pending" && (
                   <form
                     action={decideApproval}
-                    className="mt-2 flex flex-wrap gap-2"
+                    className="mt-3 grid min-w-0 gap-2 sm:grid-cols-3"
                   >
                     <input type="hidden" name="requestId" value={request.id} />
                     <input
                       name="comment"
                       placeholder="Comment"
-                      className="min-w-48 rounded-lg border px-2 py-1 text-sm"
+                      className={`${fieldClass} mt-0 sm:col-span-3`}
                     />
-                    <button
+                    <Button
                       name="decision"
                       value="approved"
-                      className="rounded-lg bg-emerald-800 px-3 py-1 text-sm text-white"
+                      className="w-full"
+                      type="submit"
                     >
                       Approve
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       name="decision"
                       value="returned"
-                      className="rounded-lg border px-3 py-1 text-sm"
+                      className="w-full"
+                      type="submit"
+                      variant="secondary"
                     >
                       Return
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       name="decision"
                       value="rejected"
-                      className="rounded-lg bg-red-700 px-3 py-1 text-sm text-white"
+                      className="w-full bg-red-700 hover:bg-red-800"
+                      type="submit"
                     >
                       Reject
-                    </button>
+                    </Button>
                   </form>
                 )}
               </div>
@@ -266,9 +270,9 @@ export default async function ActionCenterPage({
                 key={notification.id}
                 className="rounded-xl border bg-white p-4"
               >
-                <p className="font-medium">{notification.title}</p>
+                <p className="font-medium break-words">{notification.title}</p>
                 {notification.body && (
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm break-words text-slate-600">
                     {notification.body}
                   </p>
                 )}

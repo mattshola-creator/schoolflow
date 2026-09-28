@@ -2,6 +2,11 @@ import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 
+import {
+  correctStudentAttendanceEntrySchema,
+  submitStudentAttendanceRegisterSchema,
+} from "./schemas";
+
 export const studentAttendanceCapability = {
   permission: "attendance.view",
   module: "attendance",
@@ -39,7 +44,7 @@ export async function loadAttendanceFoundation() {
     context.supabase
       .from("attendance_settings")
       .select(
-        "morning_register_enabled, closing_register_enabled, lock_after_days, enabled_student_statuses, lesson_plan_required, lesson_plan_approval_required",
+        "morning_register_enabled, closing_register_enabled, lock_after_days, enabled_student_statuses, student_attendance_days, lesson_plan_required, lesson_plan_approval_required",
       )
       .eq("organization_id", context.active.organizationId)
       .eq("school_id", context.active.schoolId!)
@@ -58,4 +63,41 @@ export async function loadAttendanceFoundation() {
     settings: settings.data,
     calendarExceptions: calendar.data ?? [],
   };
+}
+
+export async function submitStudentAttendanceRegister(input: unknown) {
+  const parsed = submitStudentAttendanceRegisterSchema.parse(input);
+  const context = await requireAttendanceContext("attendance.student.record");
+  const { data, error } = await context.supabase.rpc(
+    "submit_student_attendance_register",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_session_id: parsed.sessionId,
+      target_class_level_id: parsed.classLevelId,
+      // Generated RPC arguments do not express nullable PostgreSQL parameters.
+      target_class_arm_id: (parsed.classArmId ?? null) as string,
+      target_attendance_date: parsed.attendanceDate,
+      target_register_type: parsed.registerType,
+      target_idempotency_key: parsed.idempotencyKey,
+      target_entries: parsed.entries,
+    },
+  );
+  if (error) throw new Error("Attendance register could not be submitted");
+  return data;
+}
+
+export async function correctStudentAttendanceEntry(input: unknown) {
+  const parsed = correctStudentAttendanceEntrySchema.parse(input);
+  const context = await requireAttendanceContext("attendance.student.correct");
+  const { data, error } = await context.supabase.rpc(
+    "correct_student_attendance_entry",
+    {
+      target_entry_id: parsed.entryId,
+      target_new_status: parsed.status,
+      target_reason: parsed.reason,
+    },
+  );
+  if (error) throw new Error("Attendance correction could not be saved");
+  return data;
 }

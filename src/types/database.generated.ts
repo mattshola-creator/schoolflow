@@ -1011,6 +1011,7 @@ export type Database = {
           morning_register_enabled: boolean;
           organization_id: string;
           school_id: string;
+          student_attendance_days: number[];
           updated_at: string;
           updated_by: string;
         };
@@ -1025,6 +1026,7 @@ export type Database = {
           morning_register_enabled?: boolean;
           organization_id: string;
           school_id: string;
+          student_attendance_days?: number[];
           updated_at?: string;
           updated_by?: string;
         };
@@ -1039,6 +1041,7 @@ export type Database = {
           morning_register_enabled?: boolean;
           organization_id?: string;
           school_id?: string;
+          student_attendance_days?: number[];
           updated_at?: string;
           updated_by?: string;
         };
@@ -3032,6 +3035,234 @@ export type Database = {
           },
         ];
       };
+      student_attendance_corrections: {
+        Row: {
+          corrected_at: string;
+          corrected_by: string;
+          entry_id: string;
+          id: string;
+          new_status: Database["public"]["Enums"]["attendance_status"];
+          organization_id: string;
+          previous_status: Database["public"]["Enums"]["attendance_status"];
+          reason: string;
+          register_id: string;
+          school_id: string;
+          student_id: string;
+        };
+        Insert: {
+          corrected_at?: string;
+          corrected_by: string;
+          entry_id: string;
+          id?: string;
+          new_status: Database["public"]["Enums"]["attendance_status"];
+          organization_id: string;
+          previous_status: Database["public"]["Enums"]["attendance_status"];
+          reason: string;
+          register_id: string;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          corrected_at?: string;
+          corrected_by?: string;
+          entry_id?: string;
+          id?: string;
+          new_status?: Database["public"]["Enums"]["attendance_status"];
+          organization_id?: string;
+          previous_status?: Database["public"]["Enums"]["attendance_status"];
+          reason?: string;
+          register_id?: string;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_attendance_correction_entry_id_organization_id_sch_fkey";
+            columns: ["entry_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "student_attendance_entries";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_correction_register_id_organization_id__fkey";
+            columns: ["register_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "student_attendance_registers";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_corrections_student_id_organization_id_fkey";
+            columns: ["student_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "student_profiles";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      student_attendance_entries: {
+        Row: {
+          class_membership_id: string;
+          enrollment_id: string;
+          id: string;
+          note: string | null;
+          organization_id: string;
+          recorded_at: string;
+          recorded_by: string;
+          register_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["attendance_status"];
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          class_membership_id: string;
+          enrollment_id: string;
+          id?: string;
+          note?: string | null;
+          organization_id: string;
+          recorded_at?: string;
+          recorded_by: string;
+          register_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["attendance_status"];
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          class_membership_id?: string;
+          enrollment_id?: string;
+          id?: string;
+          note?: string | null;
+          organization_id?: string;
+          recorded_at?: string;
+          recorded_by?: string;
+          register_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["attendance_status"];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_attendance_entries_class_membership_id_organizatio_fkey";
+            columns: ["class_membership_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_memberships";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_entries_enrollment_id_student_id_organi_fkey";
+            columns: [
+              "enrollment_id",
+              "student_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "student_enrollments";
+            referencedColumns: [
+              "id",
+              "student_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "student_attendance_entries_register_id_organization_id_sch_fkey";
+            columns: ["register_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "student_attendance_registers";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_entries_student_id_organization_id_fkey";
+            columns: ["student_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "student_profiles";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      student_attendance_registers: {
+        Row: {
+          attendance_date: string;
+          class_arm_id: string | null;
+          class_level_id: string;
+          created_at: string;
+          id: string;
+          idempotency_key: string;
+          locks_at: string;
+          organization_id: string;
+          register_type: Database["public"]["Enums"]["student_attendance_register_type"];
+          request_fingerprint: string;
+          school_id: string;
+          session_id: string;
+          submitted_at: string;
+          submitted_by: string;
+        };
+        Insert: {
+          attendance_date: string;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          created_at?: string;
+          id?: string;
+          idempotency_key: string;
+          locks_at: string;
+          organization_id: string;
+          register_type: Database["public"]["Enums"]["student_attendance_register_type"];
+          request_fingerprint: string;
+          school_id: string;
+          session_id: string;
+          submitted_at?: string;
+          submitted_by: string;
+        };
+        Update: {
+          attendance_date?: string;
+          class_arm_id?: string | null;
+          class_level_id?: string;
+          created_at?: string;
+          id?: string;
+          idempotency_key?: string;
+          locks_at?: string;
+          organization_id?: string;
+          register_type?: Database["public"]["Enums"]["student_attendance_register_type"];
+          request_fingerprint?: string;
+          school_id?: string;
+          session_id?: string;
+          submitted_at?: string;
+          submitted_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_attendance_registers_class_arm_id_organization_id__fkey";
+            columns: ["class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_registers_class_level_id_organization_i_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_registers_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "student_attendance_registers_session_id_organization_id_sc_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       student_enrollments: {
         Row: {
           academic_session_id: string;
@@ -3410,6 +3641,18 @@ export type Database = {
         };
         Returns: boolean;
       };
+      can_access_student_attendance_scope: {
+        Args: {
+          permission_key: string;
+          target_attendance_date: string;
+          target_class_arm_id: string;
+          target_class_level_id: string;
+          target_organization_id: string;
+          target_school_id: string;
+          target_session_id: string;
+        };
+        Returns: boolean;
+      };
       can_access_students: {
         Args: {
           feature_key?: string;
@@ -3450,6 +3693,14 @@ export type Database = {
           enrollment_date: string;
           target_application_id: string;
           target_student_number: string;
+        };
+        Returns: string;
+      };
+      correct_student_attendance_entry: {
+        Args: {
+          target_entry_id: string;
+          target_new_status: Database["public"]["Enums"]["attendance_status"];
+          target_reason: string;
         };
         Returns: string;
       };
@@ -3682,6 +3933,20 @@ export type Database = {
         };
         Returns: string;
       };
+      submit_student_attendance_register: {
+        Args: {
+          target_attendance_date: string;
+          target_class_arm_id: string;
+          target_class_level_id: string;
+          target_entries: Json;
+          target_idempotency_key: string;
+          target_organization_id: string;
+          target_register_type: Database["public"]["Enums"]["student_attendance_register_type"];
+          target_school_id: string;
+          target_session_id: string;
+        };
+        Returns: string;
+      };
       transfer_staff_assignment: {
         Args: {
           target_assignment_id: string;
@@ -3767,6 +4032,7 @@ export type Database = {
       offer_status:
         "draft" | "issued" | "accepted" | "declined" | "expired" | "withdrawn";
       staff_assignment_status: "planned" | "active" | "ended" | "cancelled";
+      student_attendance_register_type: "morning" | "closing";
       student_lifecycle_status:
         | "pending_enrollment"
         | "active"
@@ -4006,6 +4272,7 @@ export const Constants = {
         "withdrawn",
       ],
       staff_assignment_status: ["planned", "active", "ended", "cancelled"],
+      student_attendance_register_type: ["morning", "closing"],
       student_lifecycle_status: [
         "pending_enrollment",
         "active",

@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { requireCapability, requireUser, loadTenantContext } = vi.hoisted(
+const { requireCapability, requireUser, loadTenantContext, rpc } = vi.hoisted(
   () => ({
     requireCapability: vi.fn(),
     requireUser: vi.fn(),
     loadTenantContext: vi.fn(),
+    rpc: vi.fn(),
   }),
 );
 
@@ -12,7 +13,11 @@ vi.mock("@/lib/authorization", () => ({ requireCapability }));
 vi.mock("@/lib/auth", () => ({ requireUser }));
 vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 
-import { requireAttendanceContext } from "./service";
+import {
+  correctStudentAttendanceEntry,
+  requireAttendanceContext,
+  submitStudentAttendanceRegister,
+} from "./service";
 
 const authorization = {
   organizationId: crypto.randomUUID(),
@@ -23,7 +28,8 @@ describe("attendance context", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     requireCapability.mockResolvedValue(authorization);
-    requireUser.mockResolvedValue({ supabase: {} });
+    rpc.mockResolvedValue({ data: crypto.randomUUID(), error: null });
+    requireUser.mockResolvedValue({ supabase: { rpc } });
     loadTenantContext.mockResolvedValue({
       active: {
         organizationId: authorization.organizationId,
@@ -65,5 +71,52 @@ describe("attendance context", () => {
     await expect(requireAttendanceContext()).rejects.toThrow(
       "The active school context is invalid",
     );
+  });
+
+  it("submits one validated payload through the caller-bound RPC", async () => {
+    const input = {
+      sessionId: crypto.randomUUID(),
+      classLevelId: crypto.randomUUID(),
+      attendanceDate: "2026-09-28",
+      registerType: "morning" as const,
+      idempotencyKey: crypto.randomUUID(),
+      entries: [{ studentId: crypto.randomUUID(), status: "present" as const }],
+    };
+    await submitStudentAttendanceRegister(input);
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.student.record",
+      module: "attendance",
+      feature: "attendance.student_registers",
+    });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith(
+      "submit_student_attendance_register",
+      expect.objectContaining({
+        target_organization_id: authorization.organizationId,
+        target_school_id: authorization.schoolId,
+        target_idempotency_key: input.idempotencyKey,
+        target_entries: input.entries,
+      }),
+    );
+  });
+
+  it("uses the correction RPC once and returns a safe error", async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: { message: "sensitive database detail" },
+    });
+    await expect(
+      correctStudentAttendanceEntry({
+        entryId: crypto.randomUUID(),
+        status: "excused",
+        reason: "Medical note received",
+      }),
+    ).rejects.toThrow("Attendance correction could not be saved");
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.student.correct",
+      module: "attendance",
+      feature: "attendance.student_registers",
+    });
   });
 });

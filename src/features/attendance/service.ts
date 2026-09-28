@@ -4,7 +4,9 @@ import { loadTenantContext } from "@/lib/tenant-context";
 
 import {
   attendanceSettingsSchema,
+  correctStaffClockEventSchema,
   correctStudentAttendanceEntrySchema,
+  recordStaffClockEventSchema,
   submitStudentAttendanceRegisterSchema,
 } from "./schemas";
 
@@ -140,6 +142,46 @@ export async function correctStudentAttendanceEntry(input: unknown) {
     },
   );
   if (error) throw new Error("Attendance correction could not be saved");
+  return data;
+}
+
+export async function recordStaffClockEvent(input: unknown) {
+  const parsed = recordStaffClockEventSchema.parse(input);
+  const context = await requireAttendanceContext(
+    "attendance.staff.record",
+    "attendance.staff_clock",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "record_staff_clock_event",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_staff_assignment_id: parsed.staffAssignmentId,
+      target_event_type: parsed.eventType,
+      target_occurred_at: parsed.occurredAt,
+      target_idempotency_key: parsed.idempotencyKey,
+      target_note: (parsed.note ?? null) as string,
+    },
+  );
+  if (error) throw new Error("Staff clock event could not be recorded");
+  return data;
+}
+
+export async function correctStaffClockEvent(input: unknown) {
+  const parsed = correctStaffClockEventSchema.parse(input);
+  const context = await requireAttendanceContext(
+    "attendance.staff.correct",
+    "attendance.staff_clock",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "correct_staff_clock_event",
+    {
+      target_clock_event_id: parsed.clockEventId,
+      target_corrected_occurred_at: parsed.correctedOccurredAt,
+      target_reason: parsed.reason,
+    },
+  );
+  if (error) throw new Error("Staff clock correction could not be saved");
   return data;
 }
 

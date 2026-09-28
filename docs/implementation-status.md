@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — Student Attendance Implemented, Deployed & Production Verified
+M8 Attendance & Teaching — M8-B1 Staff Attendance Foundation In Progress
 
 ## Completed milestones
 
@@ -71,8 +71,9 @@ corrections. One authorized production QA register with two entries and one
 Present-to-Late correction passed persisted-state and audit verification. The
 temporary QA feature override was disabled afterward and the QA account was
 signed out. Staff attendance, timetable, curriculum, lesson delivery and
-homework have not started; the smallest next slice is M8-B1 Staff Attendance
-Foundation.
+homework have not started. M8-B1 is adding the disabled-by-default staff clock
+event, daily summary and immutable correction foundation without a UI or
+production clock activity.
 
 ## M6 completion evidence
 

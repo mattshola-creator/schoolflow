@@ -1,4 +1,5 @@
-import { buttonClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { acceptInvitation } from "./actions";
 export default async function AcceptInvitationPage({
   searchParams,
@@ -7,17 +8,17 @@ export default async function AcceptInvitationPage({
 }) {
   const { token, error } = await searchParams;
   return (
-    <main className="mx-auto max-w-xl px-5 py-16">
-      <section className="rounded-xl border bg-white p-7">
-        <h1 className="text-2xl font-semibold">Accept invitation</h1>
-        <p className="mt-2 text-slate-600">
-          Membership and role access are granted only after the invitation is
-          validated for your signed-in email.
-        </p>
+    <main className="py-10 sm:py-16">
+      <section className="max-w-xl min-w-0 rounded-xl border bg-white p-5 sm:p-7">
+        <PageHeader
+          eyebrow="Secure membership"
+          title="Accept invitation"
+          description="Membership and role access are granted only after the invitation is validated for your signed-in email."
+        />
         {error && (
           <p
             role="alert"
-            className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-800"
+            className="mt-5 rounded-lg bg-red-50 p-3 text-sm break-words text-red-800"
           >
             {error}
           </p>
@@ -25,7 +26,9 @@ export default async function AcceptInvitationPage({
         {token ? (
           <form action={acceptInvitation} className="mt-7">
             <input type="hidden" name="token" value={token} />
-            <button className={buttonClass}>Accept invitation</button>
+            <Button className="w-full" type="submit" size="large">
+              Accept invitation
+            </Button>
           </form>
         ) : (
           <p role="alert" className="mt-5 text-sm text-red-700">

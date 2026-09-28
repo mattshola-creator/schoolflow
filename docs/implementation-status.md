@@ -172,6 +172,11 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   wraps, file controls remain within the viewport, and Audit uses mobile cards
   while retaining its desktop table. Shared-service actions, authorization,
   private Storage and append-only audit behavior are unchanged.
+- Phase C9 aligns Onboarding, Accept Invitation and module Capability states
+  with the shared page-header and button system, responsive panel spacing,
+  mobile-width actions and safe long-message wrapping. Atomic onboarding,
+  email-bound invitation validation and server-side capability evaluation are
+  unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

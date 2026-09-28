@@ -2,14 +2,20 @@ import { z } from "zod";
 
 const id = z.string().uuid();
 const weekday = z.coerce.number().int().min(0).max(6);
+const attendanceStatus = z.enum([
+  "present",
+  "late",
+  "absent",
+  "excused",
+  "left_early",
+]);
 
 export const attendanceSettingsSchema = z
   .object({
     closingRegisterEnabled: z.coerce.boolean().default(false),
     lockAfterDays: z.coerce.number().int().min(0).max(30),
-    enabledStudentStatuses: z
-      .array(z.enum(["present", "late", "absent", "excused", "left_early"]))
-      .min(1),
+    enabledStudentStatuses: z.array(attendanceStatus).min(1),
+    studentAttendanceDays: z.array(weekday).min(1).max(7),
     lessonPlanRequired: z.coerce.boolean().default(false),
     lessonPlanApprovalRequired: z.coerce.boolean().default(false),
   })
@@ -22,6 +28,15 @@ export const attendanceSettingsSchema = z
         code: "custom",
         path: ["enabledStudentStatuses"],
         message: "Attendance statuses must be unique.",
+      });
+    if (
+      new Set(value.studentAttendanceDays).size !==
+      value.studentAttendanceDays.length
+    )
+      context.addIssue({
+        code: "custom",
+        path: ["studentAttendanceDays"],
+        message: "Student attendance days must be unique.",
       });
     if (value.lessonPlanApprovalRequired && !value.lessonPlanRequired)
       context.addIssue({
@@ -68,4 +83,36 @@ export const calendarExceptionSchema = z.object({
   calendarDate: z.iso.date(),
   isTeachingDay: z.coerce.boolean(),
   label: z.string().trim().min(2).max(120),
+});
+
+export const studentAttendanceEntrySchema = z.object({
+  studentId: id,
+  status: attendanceStatus,
+  note: z.string().trim().min(1).max(500).optional(),
+});
+
+export const submitStudentAttendanceRegisterSchema = z
+  .object({
+    sessionId: id,
+    classLevelId: id,
+    classArmId: id.optional(),
+    attendanceDate: z.iso.date(),
+    registerType: z.enum(["morning", "closing"]),
+    idempotencyKey: id,
+    entries: z.array(studentAttendanceEntrySchema).min(1),
+  })
+  .superRefine((value, context) => {
+    const studentIds = value.entries.map((entry) => entry.studentId);
+    if (new Set(studentIds).size !== studentIds.length)
+      context.addIssue({
+        code: "custom",
+        path: ["entries"],
+        message: "Each student may appear only once.",
+      });
+  });
+
+export const correctStudentAttendanceEntrySchema = z.object({
+  entryId: id,
+  status: attendanceStatus,
+  reason: z.string().trim().min(3).max(500),
 });

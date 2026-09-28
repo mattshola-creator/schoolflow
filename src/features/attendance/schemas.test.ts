@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   attendanceSettingsSchema,
   calendarExceptionSchema,
+  correctStudentAttendanceEntrySchema,
   staffAttendancePolicySchema,
+  submitStudentAttendanceRegisterSchema,
 } from "./schemas";
 
 describe("M8 attendance foundation validation", () => {
@@ -12,12 +14,14 @@ describe("M8 attendance foundation validation", () => {
         closingRegisterEnabled: false,
         lockAfterDays: 1,
         enabledStudentStatuses: ["present", "late", "absent", "excused"],
+        studentAttendanceDays: [1, 2, 3, 4, 5],
       }).success,
     ).toBe(true);
     expect(
       attendanceSettingsSchema.safeParse({
         lockAfterDays: 31,
         enabledStudentStatuses: ["present", "present"],
+        studentAttendanceDays: [1, 1],
       }).success,
     ).toBe(false);
   });
@@ -27,8 +31,50 @@ describe("M8 attendance foundation validation", () => {
       attendanceSettingsSchema.safeParse({
         lockAfterDays: 1,
         enabledStudentStatuses: ["present"],
+        studentAttendanceDays: [1, 2, 3, 4, 5],
         lessonPlanRequired: false,
         lessonPlanApprovalRequired: true,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("validates an atomic register payload and rejects duplicate students", () => {
+    const studentId = crypto.randomUUID();
+    const input = {
+      sessionId: crypto.randomUUID(),
+      classLevelId: crypto.randomUUID(),
+      attendanceDate: "2026-09-28",
+      registerType: "morning",
+      idempotencyKey: crypto.randomUUID(),
+      entries: [{ studentId, status: "present" }],
+    };
+    expect(submitStudentAttendanceRegisterSchema.safeParse(input).success).toBe(
+      true,
+    );
+    expect(
+      submitStudentAttendanceRegisterSchema.safeParse({
+        ...input,
+        entries: [
+          { studentId, status: "present" },
+          { studentId, status: "absent" },
+        ],
+      }).success,
+    ).toBe(false);
+  });
+
+  it("requires a bounded correction reason", () => {
+    expect(
+      correctStudentAttendanceEntrySchema.safeParse({
+        entryId: crypto.randomUUID(),
+        status: "excused",
+        reason: "Medical note received",
+      }).success,
+    ).toBe(true);
+    expect(
+      correctStudentAttendanceEntrySchema.safeParse({
+        entryId: crypto.randomUUID(),
+        status: "excused",
+        reason: "x",
       }).success,
     ).toBe(false);
   });

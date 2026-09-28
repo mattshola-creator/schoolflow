@@ -36,3 +36,31 @@
 - Local database reset was unavailable because Docker/Podman is not installed in
   the execution workspace; transaction-wrapped development validation was used
   without retaining test records.
+
+## M8-A2 Student attendance register data foundation
+
+| Requirement                                  | Evidence                                                                                                            | Status      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Register submission is atomic                | One caller-bound function inserts the register and exact effective roster in one transaction                        | Implemented |
+| Submission is idempotent                     | UUID key plus canonical request fingerprint; identical replay returns the original register                         | Implemented |
+| Partial or duplicate rosters are rejected    | Payload uniqueness and exact roster-set validation                                                                  | Implemented |
+| Teaching scope limits staff access           | Effective employment, staff assignment and teaching assignment checks; explicit all-school permissions are separate | Implemented |
+| Calendar and lock policy are enforced        | Session, school-day/exception, register-type and timezone-aware lock checks                                         | Implemented |
+| Correction history is immutable              | Append-only correction table, mutation-blocking trigger and no client write grant                                   | Implemented |
+| Event tables are not directly writable       | Authenticated role receives SELECT only; writes use checked RPCs                                                    | Implemented |
+| Tenant isolation applies to reads and writes | Composite foreign keys, RLS and caller-bound scope checks                                                           | Implemented |
+| Feature remains disabled                     | Existing feature default is false and no enabled organization override exists                                       | Verified    |
+| No production attendance is recorded         | Development tables are empty after rollback-only verification                                                       | Verified    |
+
+### M8-A2 verification evidence
+
+- Both migrations applied to the connected development project and generated
+  database types were synchronized.
+- Transaction-wrapped verification passed atomic two-student submission,
+  identical idempotent replay, correction history, current-state update, direct
+  write denial and correction immutability; the transaction rolled back.
+- Post-test counts are zero for registers, entries and corrections. The feature
+  has no enabled organization override and remains disabled by default.
+- Focused schema and service tests cover payload validation, duplicate students,
+  correction reasons, exact capability checks, single RPC invocation and safe
+  error translation.

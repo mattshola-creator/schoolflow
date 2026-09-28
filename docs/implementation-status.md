@@ -1,12 +1,12 @@
 # SchoolFlow Implementation Status
 
-Last updated: 24 September 2026
+Last updated: 28 September 2026
 
 ## Current milestone
 
 M7 Admissions — Completed — Deployed & Verified
 
-M7.5 UI/UX — In Progress
+M7.5 UI/UX — Completed — Deployed & Verified
 
 ## Completed milestones
 
@@ -18,6 +18,7 @@ M7.5 UI/UX — In Progress
 - M5 Staff Foundation — Completed — Deployed & Verified
 - M6 Shared Services — Completed — Deployed & Verified
 - M7 Admissions — Completed — Deployed & Verified
+- M7.5 UI/UX — Completed — Deployed & Verified
 
 ## Implemented
 
@@ -60,7 +61,7 @@ The public repository intentionally excludes private product specifications and 
 
 ## Blockers
 
-None for the accepted M7 scope. M7.5 has not started.
+None for the accepted M7 or M7.5 scope.
 
 ## M6 completion evidence
 
@@ -177,7 +178,24 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   mobile-width actions and safe long-message wrapping. Atomic onboarding,
   email-bound invitation validation and server-side capability evaluation are
   unchanged.
-- Remaining work includes module-page overflow and long-text handling, dense
-  component layouts outside Admissions/Student 360, broader component adoption, accessibility and
-  responsive regression coverage, and prevention of floating status badges
-  obscuring actionable content.
+- Phase C10 adds keyboard skip navigation, correct shared landmarks, accessible
+  names for focused shared-service controls, screen-reader announcement
+  semantics and a reduced-motion fallback while retaining the mobile drawer's
+  focus trap, Escape handling and focus return. PR #47 merged as revision
+  `a8aa342f301bca9800d64e001f178c09b73e0d0b`; GitHub Actions run #107 passed
+  131 tests and the production build; Netlify deploy
+  `6aba3972b32a3e0008c97a3d` is Ready with zero secret-scan matches.
+- C1 through C10 passed real-phone or keyboard acceptance. The full evidence is
+  recorded in `docs/testing/m75-ui-ux-matrix.md`.
+
+## M7.5 completion
+
+M7.5 UI/UX is formally accepted as Completed — Deployed & Verified. The
+accepted milestone covers the responsive authenticated shell, shared visual
+foundation, focused operational module layouts, mobile-safe forms and records,
+and cross-cutting accessibility interactions. It preserves the established
+tenancy, authorization, entitlement, Storage, audit and mutation boundaries.
+
+The floating Netlify status badge is hosting-platform UI outside the
+SchoolFlow source. Approved tenant branding or Experience Studio work and M8
+remain separate milestones and were not started during M7.5.

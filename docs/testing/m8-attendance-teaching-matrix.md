@@ -78,7 +78,7 @@
 | Public failures remain safe                           | Validation and service failures redirect with generic messages                                  | Implemented |
 | Mobile layout avoids horizontal register tables       | Roster uses stacked responsive grid rows and full-width controls/actions                        | Implemented |
 | Feature remains disabled                              | No enabled organization override exists; default remains false                                  | Verified    |
-| Production attendance remains empty                   | Register, entry and correction counts remain zero                                               | Verified    |
+| No production attendance was created in A3            | Register, entry and correction counts remained zero at the A3 checkpoint                        | Verified    |
 
 ### M8-A3 verification evidence
 
@@ -104,7 +104,7 @@
 | Public errors remain safe                  | Generic redirect messages omit raw database details                                       | Verified    |
 | Unauthorized users retain read-only access | Focused rendering test proves correction controls are absent                              | Verified    |
 | Feature remains disabled                   | Default is false and no enabled organization override exists                              | Verified    |
-| Production attendance remains empty        | Register, entry and correction counts remain zero                                         | Verified    |
+| No production attendance was created in A4 | Register, entry and correction counts remained zero at the A4 checkpoint                  | Verified    |
 
 ### M8-A4 verification evidence
 
@@ -129,7 +129,7 @@
 | Insert and update preserve column-level grants | Service selects existence, then performs one permitted insert or bounded update        | Implemented |
 | Failure is generic and not retried             | Focused action tests prove one call and safe redirect                                  | Verified    |
 | Feature remains disabled outside setup window  | Default remains false; temporary QA enablement requires a separate controlled step     | Verified    |
-| Production attendance remains empty            | Register, entry and correction counts remain zero                                      | Verified    |
+| Policy setup creates no attendance activity    | Setup saved policy only; register, entry and correction counts stayed zero             | Verified    |
 
 ### M8-A5 verification evidence
 
@@ -139,3 +139,41 @@
   save one valid baseline and do not retry or expose internal details on error.
 - Focused service tests prove exact `attendance.configure` capability use,
   caller-bound actor fields, school scope and one policy write.
+
+## M8-A6 Controlled production attendance verification
+
+| Requirement                                       | Evidence                                                                                          | Status   |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------- |
+| Authorized register loads the exact active roster | Production morning register showed the two active Primary 4 QA students                           | Verified |
+| Complete register is submitted atomically         | One register and exactly two entries persisted from one browser submission                        | Verified |
+| Submitted register becomes read-only              | Production UI disabled the original status controls and removed the submit action                 | Verified |
+| Correction uses the controlled workflow           | One authorized Present-to-Late correction persisted with a bounded QA reason                      | Verified |
+| Current state and history agree                   | Final entries are one Late and one Present; immutable history records Present to Late             | Verified |
+| Audit coverage is complete                        | Audit contains one register insert, two entry inserts, one entry update and one correction insert | Verified |
+| Authenticated actor remains consistent            | Register, entries, correction and audit records resolve to the same authorized QA actor           | Verified |
+| No duplicate or extra write occurred              | Final counts are one register, two entries and one correction                                     | Verified |
+| Temporary enablement is closed                    | QA organization override was returned to disabled immediately after verification                  | Verified |
+| Session and protected account safety              | QA account signed out; permanent owner account was not accessed or modified                       | Verified |
+
+### M8-A6 production evidence
+
+- The production policy uses a one-day lock, morning registers only, the five
+  approved attendance statuses and Monday-to-Friday attendance days.
+- The authorized QA actor submitted one morning register for 28 September 2026
+  against the active 2026/2027 Primary 4 QA roster. Both entries began as
+  Present.
+- The actor saved one controlled correction from Present to Late with the
+  reason `Controlled M8 production correction verification`. The final persisted
+  state is one Late entry, one Present entry and one immutable correction.
+- The temporary feature override was disabled after verification. No second
+  register, second correction, code change, migration or deployment occurred.
+
+## Smallest remaining M8 slice
+
+Student attendance is implemented and production-verified. The next independent
+slice is M8-B1 Staff Attendance Foundation: define caller-bound staff clock-event
+and daily-summary data boundaries, school-hours policy enforcement, immutable
+correction/audit history, RLS and rollback-only verification. It must remain
+disabled by default and must not create production clock events during its
+foundation phase. Timetable, curriculum, lesson delivery and homework remain
+separate later slices.

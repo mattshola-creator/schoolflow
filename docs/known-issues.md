@@ -13,6 +13,11 @@
 
 - The two converted M7 QA fixtures and their synthetic admissions evidence remain preserved pending a separately approved cleanup plan. Do not delete linked application, student, enrollment, class-membership, guardian, document or audit records ad hoc.
 
+- M8 production acceptance preserves one synthetic Primary 4 QA morning
+  register with two entries and one controlled correction. The attendance
+  feature override is disabled. Do not delete or alter this evidence outside a
+  separately approved cleanup or retention task.
+
 - A historical Auth identity named `M1 Live QA` remains in the development project even though the M1 record says disposable identities were removed. It was not part of the authorized M6 cleanup and has no identified M6 tenant access. Confirm its ownership before any later deletion.
 - Local Git transport remains unauthenticated. GitHub publication and verification currently use the authenticated connector, whose remote commit SHAs differ from the equivalent local checkpoint SHAs.
 - Docker is unavailable in the current execution environment. This does not block M0 because the development-project migration, access restrictions, advisors and application connectivity were verified remotely.

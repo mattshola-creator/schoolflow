@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  attendanceRegisterQuerySchema,
+  attendanceScopeKey,
   attendanceSettingsSchema,
   calendarExceptionSchema,
   correctStudentAttendanceEntrySchema,
+  parseAttendanceScopeKey,
   staffAttendancePolicySchema,
   submitStudentAttendanceRegisterSchema,
 } from "./schemas";
@@ -77,6 +80,28 @@ describe("M8 attendance foundation validation", () => {
         reason: "x",
       }).success,
     ).toBe(false);
+  });
+
+  it("round-trips a class scope without confusing a missing class arm", () => {
+    const scope = {
+      session_id: crypto.randomUUID(),
+      class_level_id: crypto.randomUUID(),
+      class_arm_id: null,
+    };
+    const key = attendanceScopeKey(scope);
+    expect(parseAttendanceScopeKey(key)).toEqual({
+      sessionId: scope.session_id,
+      classLevelId: scope.class_level_id,
+      classArmId: undefined,
+    });
+    expect(
+      attendanceRegisterQuerySchema.safeParse({
+        date: "2026-09-28",
+        type: "morning",
+        scope: key,
+      }).success,
+    ).toBe(true);
+    expect(parseAttendanceScopeKey("not-a-scope")).toBeNull();
   });
 
   it("validates school and position schedule boundaries", () => {

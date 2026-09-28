@@ -101,3 +101,54 @@ export async function correctStudentAttendanceEntry(input: unknown) {
   if (error) throw new Error("Attendance correction could not be saved");
   return data;
 }
+
+export async function loadStudentAttendanceWorkspace(attendanceDate: string) {
+  const context = await requireAttendanceContext();
+  const [settings, scopes] = await Promise.all([
+    context.supabase
+      .from("attendance_settings")
+      .select(
+        "morning_register_enabled, closing_register_enabled, lock_after_days, enabled_student_statuses, student_attendance_days",
+      )
+      .eq("organization_id", context.active.organizationId)
+      .eq("school_id", context.active.schoolId!)
+      .maybeSingle(),
+    context.supabase.rpc("list_student_attendance_scopes", {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_attendance_date: attendanceDate,
+    }),
+  ]);
+  if (settings.error || scopes.error)
+    throw new Error("Student attendance could not be loaded");
+  return {
+    ...context,
+    settings: settings.data,
+    scopes: scopes.data ?? [],
+  };
+}
+
+export async function loadStudentAttendanceRoster(input: {
+  sessionId: string;
+  classLevelId: string;
+  classArmId?: string;
+  attendanceDate: string;
+  registerType: "morning" | "closing";
+}) {
+  const context = await requireAttendanceContext("attendance.student.record");
+  const { data, error } = await context.supabase.rpc(
+    "get_student_attendance_roster",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_session_id: input.sessionId,
+      target_class_level_id: input.classLevelId,
+      // Generated RPC arguments do not express nullable PostgreSQL parameters.
+      target_class_arm_id: (input.classArmId ?? null) as string,
+      target_attendance_date: input.attendanceDate,
+      target_register_type: input.registerType,
+    },
+  );
+  if (error) throw new Error("Student attendance roster could not be loaded");
+  return { ...context, roster: data ?? [] };
+}

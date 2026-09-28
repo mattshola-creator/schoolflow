@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-A4 Controlled Attendance Corrections Implemented, Pending Merge
+M8 Attendance & Teaching — M8-A5 Attendance Policy Setup Implemented, Pending Merge
 
 ## Completed milestones
 
@@ -65,11 +65,11 @@ The public repository intentionally excludes private product specifications and 
 
 None for the accepted M7 or M7.5 scope.
 
-M8-A4 adds permission-gated, reason-required corrections to submitted student
-registers through the existing atomic RPC and immutable history. No organization
-has the feature enabled and no production attendance has been recorded. Staff
-attendance, timetable, curriculum, lesson delivery, homework and production
-attendance QA have not started.
+M8-A5 adds protected school attendance-policy setup through the existing
+feature, context, permission and RLS model. The student-register feature remains
+disabled by default and no production attendance has been recorded. Controlled
+production register/correction QA, staff attendance, timetable, curriculum,
+lesson delivery and homework have not started.
 
 ## M6 completion evidence
 

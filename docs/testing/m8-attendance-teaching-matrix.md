@@ -116,3 +116,26 @@
 - M8-A2 rollback-only database evidence already covers atomic current-state
   update, immutable correction insertion, cross-tenant denial and history
   mutation denial; M8-A4 introduces no new database write path.
+
+## M8-A5 Attendance policy setup prerequisite
+
+| Requirement                                    | Evidence                                                                               | Status      |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------- | ----------- |
+| Missing policy prevents register use           | Register route renders the existing fail-closed policy warning                         | Verified    |
+| Setup requires existing authorization          | Route uses attendance context and checks `attendance.configure`                        | Implemented |
+| Tenant and school are server-derived           | Service uses the validated active context; no organization/school IDs come from forms  | Implemented |
+| Policy values are validated                    | Zod enforces lock days, unique enabled statuses, unique weekdays and policy invariants | Verified    |
+| Creating/updating actor is authenticated       | Service uses verified `getUser()` identity; RLS binds audit columns to `auth.uid()`    | Implemented |
+| Insert and update preserve column-level grants | Service selects existence, then performs one permitted insert or bounded update        | Implemented |
+| Failure is generic and not retried             | Focused action tests prove one call and safe redirect                                  | Verified    |
+| Feature remains disabled outside setup window  | Default remains false; temporary QA enablement requires a separate controlled step     | Verified    |
+| Production attendance remains empty            | Register, entry and correction counts remain zero                                      | Verified    |
+
+### M8-A5 verification evidence
+
+- Focused route tests cover authorized baseline rendering and fail-closed
+  behavior.
+- Focused action tests reject incomplete policy data before service invocation,
+  save one valid baseline and do not retry or expose internal details on error.
+- Focused service tests prove exact `attendance.configure` capability use,
+  caller-bound actor fields, school scope and one policy write.

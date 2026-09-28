@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 
 import {
+  attendanceSettingsSchema,
   correctStudentAttendanceEntrySchema,
   submitStudentAttendanceRegisterSchema,
 } from "./schemas";
@@ -63,6 +64,46 @@ export async function loadAttendanceFoundation() {
     settings: settings.data,
     calendarExceptions: calendar.data ?? [],
   };
+}
+
+export async function saveAttendanceSettings(input: unknown) {
+  const parsed = attendanceSettingsSchema.parse(input);
+  const context = await requireAttendanceContext("attendance.configure");
+  const { data: userData, error: userError } =
+    await context.supabase.auth.getUser();
+  if (userError || !userData.user)
+    throw new Error("Attendance configuration could not be saved");
+  const table = context.supabase.from("attendance_settings");
+  const existing = await table
+    .select("school_id")
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (existing.error)
+    throw new Error("Attendance configuration could not be saved");
+  const values = {
+    closing_register_enabled: parsed.closingRegisterEnabled,
+    lock_after_days: parsed.lockAfterDays,
+    enabled_student_statuses: parsed.enabledStudentStatuses,
+    student_attendance_days: parsed.studentAttendanceDays,
+    lesson_plan_required: parsed.lessonPlanRequired,
+    lesson_plan_approval_required: parsed.lessonPlanApprovalRequired,
+    updated_by: userData.user.id,
+  };
+  const result = existing.data
+    ? await table
+        .update(values)
+        .eq("organization_id", context.active.organizationId)
+        .eq("school_id", context.active.schoolId!)
+    : await table.insert({
+        organization_id: context.active.organizationId,
+        school_id: context.active.schoolId!,
+        morning_register_enabled: true,
+        ...values,
+        created_by: userData.user.id,
+      });
+  if (result.error)
+    throw new Error("Attendance configuration could not be saved");
 }
 
 export async function submitStudentAttendanceRegister(input: unknown) {

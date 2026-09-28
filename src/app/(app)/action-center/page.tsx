@@ -8,6 +8,7 @@ import {
 import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { StatusNotice } from "@/components/ui/status-notice";
 import { loadActionCenter } from "@/features/shared-services/service";
 
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
@@ -28,14 +29,8 @@ export default async function ActionCenterPage({
         title="Action Center"
         description="Own tasks, approvals and operational follow-up in the active school."
       />
-      {message && (
-        <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
-          {message}
-        </p>
-      )}
-      {error && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-900">{error}</p>
-      )}
+      {message && <StatusNotice tone="success">{message}</StatusNotice>}
+      {error && <StatusNotice tone="error">{error}</StatusNotice>}
       <section className="grid gap-6 lg:grid-cols-2">
         <div className={panel}>
           <h2 className="font-semibold">New task</h2>
@@ -45,12 +40,14 @@ export default async function ActionCenterPage({
               required
               minLength={3}
               maxLength={160}
+              aria-label="Task title"
               placeholder="Task title"
               className={fieldClass}
             />
             <textarea
               name="description"
               maxLength={2000}
+              aria-label="Task details"
               placeholder="Details (optional)"
               className={`${fieldClass} min-h-24 py-3`}
             />
@@ -58,6 +55,7 @@ export default async function ActionCenterPage({
               <select
                 name="priority"
                 defaultValue="normal"
+                aria-label="Task priority"
                 className={fieldClass}
               >
                 <option value="low">Low priority</option>
@@ -83,23 +81,27 @@ export default async function ActionCenterPage({
             <input
               name="name"
               required
+              aria-label="Policy name"
               placeholder="Policy name"
               className={fieldClass}
             />
             <input
               name="key"
               required
+              aria-label="Policy key"
               placeholder="admissions.offer"
               className={fieldClass}
             />
             <input
               name="description"
+              aria-label="Policy purpose"
               placeholder="Purpose (optional)"
               className={fieldClass}
             />
             <select
               name="approverRoleId"
               required
+              aria-label="First-step approver role"
               className={fieldClass}
               defaultValue=""
             >
@@ -148,6 +150,7 @@ export default async function ActionCenterPage({
                   <select
                     name="status"
                     defaultValue={task.status}
+                    aria-label={`Status for ${task.title}`}
                     className={`${fieldClass} mt-0 sm:w-auto`}
                   >
                     <option value="open">Open</option>
@@ -173,7 +176,12 @@ export default async function ActionCenterPage({
             </p>
           ) : (
             <form action={submitApprovalRequest} className="mt-4 grid gap-3">
-              <select name="policyId" required className={fieldClass}>
+              <select
+                name="policyId"
+                required
+                aria-label="Approval policy"
+                className={fieldClass}
+              >
                 {data.policies.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -183,18 +191,21 @@ export default async function ActionCenterPage({
               <input
                 name="title"
                 required
+                aria-label="Request title"
                 placeholder="Request title"
                 className={fieldClass}
               />
               <input
                 name="subjectType"
                 required
+                aria-label="Request subject type"
                 placeholder="Subject type, e.g. application"
                 className={fieldClass}
               />
               <input
                 name="subjectId"
                 required
+                aria-label="Request subject identifier"
                 placeholder="Subject UUID"
                 className={fieldClass}
               />
@@ -226,6 +237,7 @@ export default async function ActionCenterPage({
                     <input type="hidden" name="requestId" value={request.id} />
                     <input
                       name="comment"
+                      aria-label={`Comment for ${request.title}`}
                       placeholder="Comment"
                       className={`${fieldClass} mt-0 sm:col-span-3`}
                     />

@@ -2,6 +2,7 @@ import { downloadDocument } from "../shared-services/actions";
 import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { StatusNotice } from "@/components/ui/status-notice";
 import { loadDocuments } from "@/features/shared-services/service";
 
 export default async function DocumentsPage({
@@ -20,14 +21,8 @@ export default async function DocumentsPage({
         title="Documents"
         description="Private, permission-scoped files for the active school."
       />
-      {message && (
-        <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
-          {message}
-        </p>
-      )}
-      {error && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-900">{error}</p>
-      )}
+      {message && <StatusNotice tone="success">{message}</StatusNotice>}
+      {error && <StatusNotice tone="error">{error}</StatusNotice>}
       <section className="min-w-0 rounded-xl border bg-white p-5 sm:p-6">
         <h2 className="font-semibold">Upload document</h2>
         <form
@@ -39,6 +34,7 @@ export default async function DocumentsPage({
           <input
             name="title"
             required
+            aria-label="Document title"
             placeholder="Document title"
             className={fieldClass}
           />
@@ -47,15 +43,18 @@ export default async function DocumentsPage({
             required
             type="file"
             accept=".pdf,.jpg,.jpeg,.png,.csv"
+            aria-label="Choose document file"
             className={`${fieldClass} min-w-0 py-2 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-sm file:font-medium`}
           />
           <input
             name="entityType"
+            aria-label="Linked record type"
             placeholder="Linked record type (optional)"
             className={fieldClass}
           />
           <input
             name="entityId"
+            aria-label="Linked record identifier"
             placeholder="Linked record UUID (optional)"
             className={fieldClass}
           />

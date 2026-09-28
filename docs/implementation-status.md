@@ -167,6 +167,11 @@ deliverables by ADR-0008 or the approved M7 implementation matrix.
   primitives, mobile-stacking date and code controls, wrapping setup rows,
   larger checkbox/deactivation targets and responsive lock actions. Academic
   permissions, validation and mutation behavior are unchanged.
+- Phase C8 remediates the shared Action Center, Documents and Audit surfaces:
+  operational controls stack safely on phones, long task/document content
+  wraps, file controls remain within the viewport, and Audit uses mobile cards
+  while retaining its desktop table. Shared-service actions, authorization,
+  private Storage and append-only audit behavior are unchanged.
 - Remaining work includes module-page overflow and long-text handling, dense
   component layouts outside Admissions/Student 360, broader component adoption, accessibility and
   responsive regression coverage, and prevention of floating status badges

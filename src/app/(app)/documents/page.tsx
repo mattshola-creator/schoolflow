@@ -1,4 +1,7 @@
 import { downloadDocument } from "../shared-services/actions";
+import { fieldClass } from "@/components/auth-card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { loadDocuments } from "@/features/shared-services/service";
 
 export default async function DocumentsPage({
@@ -12,15 +15,11 @@ export default async function DocumentsPage({
   ]);
   return (
     <main className="space-y-8 py-8">
-      <div>
-        <p className="text-sm font-semibold text-emerald-800">
-          Shared services
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight">Documents</h1>
-        <p className="mt-2 text-slate-600">
-          Private, permission-scoped files for the active school.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Shared services"
+        title="Documents"
+        description="Private, permission-scoped files for the active school."
+      />
       {message && (
         <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
           {message}
@@ -29,7 +28,7 @@ export default async function DocumentsPage({
       {error && (
         <p className="rounded-lg bg-red-50 p-3 text-sm text-red-900">{error}</p>
       )}
-      <section className="rounded-xl border bg-white p-5">
+      <section className="min-w-0 rounded-xl border bg-white p-5 sm:p-6">
         <h2 className="font-semibold">Upload document</h2>
         <form
           action="/api/documents/upload"
@@ -41,28 +40,28 @@ export default async function DocumentsPage({
             name="title"
             required
             placeholder="Document title"
-            className="rounded-lg border px-3 py-2"
+            className={fieldClass}
           />
           <input
             name="file"
             required
             type="file"
             accept=".pdf,.jpg,.jpeg,.png,.csv"
-            className="rounded-lg border px-3 py-2"
+            className={`${fieldClass} min-w-0 py-2 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-sm file:font-medium`}
           />
           <input
             name="entityType"
             placeholder="Linked record type (optional)"
-            className="rounded-lg border px-3 py-2"
+            className={fieldClass}
           />
           <input
             name="entityId"
             placeholder="Linked record UUID (optional)"
-            className="rounded-lg border px-3 py-2"
+            className={fieldClass}
           />
-          <button className="rounded-lg bg-emerald-800 px-4 py-2 font-medium text-white sm:col-span-2">
+          <Button className="w-full sm:col-span-2" type="submit">
             Upload securely
-          </button>
+          </Button>
         </form>
         <p className="mt-2 text-xs text-slate-500">
           PDF, JPEG, PNG or CSV · maximum 10 MiB.
@@ -79,21 +78,25 @@ export default async function DocumentsPage({
             data.documents.map((doc) => (
               <div
                 key={doc.id}
-                className="flex flex-wrap items-center justify-between gap-4 border-b p-4 last:border-b-0"
+                className="flex min-w-0 flex-col items-stretch gap-4 border-b p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
-                  <p className="font-medium">{doc.title}</p>
-                  <p className="text-sm text-slate-500">
+                <div className="min-w-0">
+                  <p className="font-medium break-words">{doc.title}</p>
+                  <p className="text-sm break-all text-slate-500">
                     {doc.original_filename} ·{" "}
                     {(doc.size_bytes / 1024).toFixed(1)} KiB · {doc.status}
                   </p>
                 </div>
                 {doc.status === "available" && (
-                  <form action={downloadDocument}>
+                  <form action={downloadDocument} className="shrink-0">
                     <input type="hidden" name="documentId" value={doc.id} />
-                    <button className="rounded-lg border px-3 py-1 text-sm">
+                    <Button
+                      className="w-full sm:w-auto"
+                      type="submit"
+                      variant="secondary"
+                    >
                       Download
-                    </button>
+                    </Button>
                   </form>
                 )}
               </div>

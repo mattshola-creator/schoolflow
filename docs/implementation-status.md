@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-A2 Student Attendance Data Foundation Implemented, Pending Merge
+M8 Attendance & Teaching — M8-A3 Student Attendance Register UI Implemented, Pending Merge
 
 ## Completed milestones
 
@@ -65,11 +65,11 @@ The public repository intentionally excludes private product specifications and 
 
 None for the accepted M7 or M7.5 scope.
 
-M8-A2 adds disabled-by-default, caller-bound student attendance registers,
-atomic roster submission, idempotency and immutable correction history. No
-attendance UI is enabled and no production attendance has been recorded.
-Staff attendance, timetable, curriculum, lesson delivery, homework and
-production attendance QA have not started.
+M8-A3 adds the disabled-by-default responsive student register UI, assigned
+scope/roster reads and a one-call atomic submission workflow. No organization
+has the feature enabled and no production attendance has been recorded. The
+controlled correction UI, staff attendance, timetable, curriculum, lesson
+delivery, homework and production attendance QA have not started.
 
 ## M6 completion evidence
 

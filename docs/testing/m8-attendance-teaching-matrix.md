@@ -64,3 +64,29 @@
 - Focused schema and service tests cover payload validation, duplicate students,
   correction reasons, exact capability checks, single RPC invocation and safe
   error translation.
+
+## M8-A3 Student attendance register UI
+
+| Requirement                                           | Evidence                                                                                        | Status      |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------- |
+| Attendance navigation is feature gated                | Navigation requires `attendance.student_registers`; direct route uses the same capability guard | Implemented |
+| Only assigned rosters are exposed                     | Caller-bound read RPCs reuse effective M8-A2 record-scope authorization                         | Implemented |
+| Attendance access does not imply broad student access | Read RPCs return only class labels/counts and the selected minimal roster                       | Implemented |
+| Complete-register submission is preserved             | Server action validates every displayed row and invokes the atomic M8-A2 service once           | Implemented |
+| Duplicate browser submission is safe                  | Each rendered register carries a UUID idempotency key enforced by M8-A2                         | Implemented |
+| Existing registers are not silently overwritten       | Submitted values render read-only and point to the future correction workflow                   | Implemented |
+| Public failures remain safe                           | Validation and service failures redirect with generic messages                                  | Implemented |
+| Mobile layout avoids horizontal register tables       | Roster uses stacked responsive grid rows and full-width controls/actions                        | Implemented |
+| Feature remains disabled                              | No enabled organization override exists; default remains false                                  | Verified    |
+| Production attendance remains empty                   | Register, entry and correction counts remain zero                                               | Verified    |
+
+### M8-A3 verification evidence
+
+- Transaction-wrapped development checks returned exactly the authorized class
+  scope and its two-student roster, denied an unrelated authenticated identity,
+  and rolled back the temporary feature override.
+- Focused tests cover route fail-closed behavior, responsive selector rendering,
+  scope parsing, malformed input rejection before service invocation, exactly
+  one submission call, no retry and safe error redirects.
+- No production feature enablement, browser submission or attendance record was
+  created.

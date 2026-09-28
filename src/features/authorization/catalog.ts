@@ -58,8 +58,10 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   {
     module: "attendance",
     permission: "attendance.view",
+    feature: "attendance.student_registers",
     label: "Attendance",
     description: "Attendance operations",
+    href: "/attendance",
   },
   {
     module: "academics",

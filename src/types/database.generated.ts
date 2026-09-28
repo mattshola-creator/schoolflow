@@ -3826,6 +3826,29 @@ export type Database = {
         Args: { target_organization_id: string; target_school_id?: string };
         Returns: Json;
       };
+      get_student_attendance_roster: {
+        Args: {
+          target_attendance_date: string;
+          target_class_arm_id: string;
+          target_class_level_id: string;
+          target_organization_id: string;
+          target_register_type: Database["public"]["Enums"]["student_attendance_register_type"];
+          target_school_id: string;
+          target_session_id: string;
+        };
+        Returns: {
+          attendance_note: string;
+          attendance_status: Database["public"]["Enums"]["attendance_status"];
+          entry_id: string;
+          first_name: string;
+          last_name: string;
+          locks_at: string;
+          register_id: string;
+          student_id: string;
+          student_number: string;
+          submitted_at: string;
+        }[];
+      };
       has_module_entitlement: {
         Args: { module_key: string; target_organization_id: string };
         Returns: boolean;
@@ -3870,6 +3893,22 @@ export type Database = {
           display_name: string;
           email: string;
           user_id: string;
+        }[];
+      };
+      list_student_attendance_scopes: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: {
+          class_arm_id: string;
+          class_arm_name: string;
+          class_level_id: string;
+          class_level_name: string;
+          session_id: string;
+          session_name: string;
+          student_count: number;
         }[];
       };
       record_admission_decision: {

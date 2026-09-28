@@ -116,3 +116,35 @@ export const correctStudentAttendanceEntrySchema = z.object({
   status: attendanceStatus,
   reason: z.string().trim().min(3).max(500),
 });
+
+const uuidPattern =
+  "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
+const scopeKeyPattern = new RegExp(
+  `^${uuidPattern}:${uuidPattern}:(?:${uuidPattern}|none)$`,
+);
+
+export const attendanceRegisterQuerySchema = z.object({
+  date: z.iso.date(),
+  type: z.enum(["morning", "closing"]).default("morning"),
+  scope: z.string().regex(scopeKeyPattern).optional(),
+});
+
+export function attendanceScopeKey(scope: {
+  session_id: string;
+  class_level_id: string;
+  class_arm_id: string | null;
+}) {
+  return `${scope.session_id}:${scope.class_level_id}:${scope.class_arm_id ?? "none"}`;
+}
+
+export function parseAttendanceScopeKey(value: string) {
+  const parsed = z
+    .tuple([id, id, z.union([id, z.literal("none")])])
+    .safeParse(value.split(":"));
+  if (!parsed.success) return null;
+  return {
+    sessionId: parsed.data[0],
+    classLevelId: parsed.data[1],
+    classArmId: parsed.data[2] === "none" ? undefined : parsed.data[2],
+  };
+}

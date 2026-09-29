@@ -148,6 +148,20 @@ export default async function StaffAttendancePage({
                     A working-hours policy must be configured before clocking.
                   </p>
                 )}
+                {assignment.approved_time_off_kind ? (
+                  <div
+                    className={`mt-4 rounded-lg p-4 text-sm ${assignment.is_excused ? "bg-emerald-50 text-emerald-900" : "bg-sky-50 text-sky-900"}`}
+                  >
+                    <p className="font-semibold capitalize">
+                      Approved {assignment.approved_time_off_kind}
+                    </p>
+                    <p className="mt-1">
+                      {assignment.is_excused
+                        ? "The approved request covers the complete scheduled work interval. No clock action is required."
+                        : "This approved request covers part of the day. Normal clock requirements still apply."}
+                    </p>
+                  </div>
+                ) : null}
                 <dl className="mt-5 grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <dt className="text-slate-500">Clock in</dt>
@@ -162,7 +176,10 @@ export default async function StaffAttendancePage({
                     </dd>
                   </div>
                 </dl>
-                {nextEvent && isToday && assignment.policy_name ? (
+                {nextEvent &&
+                isToday &&
+                assignment.policy_name &&
+                !assignment.is_excused ? (
                   <form action={recordStaffClock} className="mt-5">
                     <input
                       type="hidden"
@@ -187,7 +204,7 @@ export default async function StaffAttendancePage({
                       {nextEvent === "clock_in" ? "Clock in" : "Clock out"}
                     </Button>
                   </form>
-                ) : nextEvent && !isToday ? (
+                ) : nextEvent && !isToday && !assignment.is_excused ? (
                   <p className="mt-5 text-sm text-slate-600">
                     Historical dates are read-only.
                   </p>

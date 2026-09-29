@@ -261,3 +261,18 @@ and temporary feature enablement are not part of this implementation slice.
 
 Attendance integration, summaries, exception tasks and controlled production
 QA remain outside this foundation and workspace slice.
+
+## M8-B5 Approved staff time-off attendance integration
+
+| Requirement                                      | Evidence                                                                                                                                     | Status           |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Only approved time-off affects attendance        | Caller-bound workspace query filters linked Staff/HR requests to `approved`; submitted, returned, rejected and cancelled requests are absent | Implemented      |
+| Full-day coverage is timezone-aware              | Pure coverage helper compares the request with the complete policy interval in the school's configured IANA timezone                         | Verified locally |
+| Partial permission does not excuse a full day    | Partial overlap is shown as context while `is_excused` remains false and clock actions remain available                                      | Verified locally |
+| Full coverage suppresses false clock exceptions  | A full policy interval returns effective `excused` status and the responsive workspace renders no clock action                               | Verified locally |
+| Integration remains read-only                    | The replacement list RPC contains only stable SELECT logic and creates no attendance summary, request or task                                | Verified locally |
+| Existing tenant and assignment scope is retained | The query reuses `can_access_staff_attendance_assignment`, exact organization/school predicates and authenticated-only execution             | Implemented      |
+| Sensitive leave detail is minimized              | Attendance receives kind, interval and coverage state only; reason, leave type, approval actors and decisions are not returned               | Implemented      |
+
+Production feature enablement, production time-off creation and a live absence
+cycle are outside this implementation slice.

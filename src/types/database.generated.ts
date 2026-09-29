@@ -4126,6 +4126,34 @@ export type Database = {
           user_id: string;
         }[];
       };
+      list_staff_attendance_positions: {
+        Args: { target_organization_id: string; target_school_id: string };
+        Returns: {
+          position_id: string;
+          position_name: string;
+        }[];
+      };
+      list_staff_clock_assignments: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: {
+          attendance_day_id: string;
+          clock_in_at: string;
+          clock_out_at: string;
+          day_status: Database["public"]["Enums"]["staff_attendance_day_status"];
+          policy_ends_at: string;
+          policy_grace_minutes: number;
+          policy_name: string;
+          policy_starts_at: string;
+          position_name: string;
+          staff_assignment_id: string;
+          staff_name: string;
+          staff_number: string;
+        }[];
+      };
       list_student_attendance_scopes: {
         Args: {
           target_attendance_date: string;

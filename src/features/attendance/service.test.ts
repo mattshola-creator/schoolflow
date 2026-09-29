@@ -10,6 +10,7 @@ const {
   update,
   select,
   eq,
+  is,
   maybeSingle,
 } = vi.hoisted(() => ({
   requireCapability: vi.fn(),
@@ -21,6 +22,7 @@ const {
   update: vi.fn(),
   select: vi.fn(),
   eq: vi.fn(),
+  is: vi.fn(),
   maybeSingle: vi.fn(),
 }));
 
@@ -31,9 +33,11 @@ vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 import {
   correctStaffClockEvent,
   correctStudentAttendanceEntry,
+  loadStaffClockWorkspace,
   recordStaffClockEvent,
   requireAttendanceContext,
   saveAttendanceSettings,
+  saveStaffAttendancePolicy,
   submitStudentAttendanceRegister,
 } from "./service";
 
@@ -50,7 +54,8 @@ describe("attendance context", () => {
     insert.mockResolvedValue({ error: null });
     update.mockReturnValue({ eq });
     select.mockReturnValue({ eq });
-    eq.mockReturnValue({ eq, maybeSingle });
+    eq.mockReturnValue({ eq, is, maybeSingle });
+    is.mockReturnValue({ maybeSingle });
     maybeSingle.mockResolvedValue({ data: null, error: null });
     from.mockReturnValue({ insert, update, select });
     requireUser.mockResolvedValue({
@@ -199,6 +204,46 @@ describe("attendance context", () => {
       feature: "attendance.staff_clock",
     });
     expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads only the caller-bound staff clock workspace", async () => {
+    rpc.mockResolvedValue({ data: [], error: null });
+    await loadStaffClockWorkspace("2026-09-28");
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.staff.record",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(rpc).toHaveBeenCalledWith("list_staff_clock_assignments", {
+      target_organization_id: authorization.organizationId,
+      target_school_id: authorization.schoolId,
+      target_attendance_date: "2026-09-28",
+    });
+  });
+
+  it("saves one school-scoped staff working-hours policy", async () => {
+    await saveStaffAttendancePolicy({
+      name: "Teaching staff",
+      workingDays: [1, 2, 3, 4, 5],
+      startsAt: "07:30:00",
+      endsAt: "16:00:00",
+      graceMinutes: 15,
+      effectiveFrom: "2026-09-01",
+    });
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.configure",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(from).toHaveBeenCalledWith("staff_attendance_policies");
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organization_id: authorization.organizationId,
+        school_id: authorization.schoolId,
+        position_id: null,
+        working_days: [1, 2, 3, 4, 5],
+      }),
+    );
   });
 
   it("saves one validated caller-bound attendance policy", async () => {

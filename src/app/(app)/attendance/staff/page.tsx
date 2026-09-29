@@ -3,10 +3,15 @@ import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import {
+  loadStaffAttendanceSummary,
   loadStaffClockCorrections,
   loadStaffClockWorkspace,
 } from "@/features/attendance/service";
-import { correctStaffClock, recordStaffClock } from "./actions";
+import {
+  correctStaffClock,
+  recordStaffClock,
+  refreshAttendanceExceptions,
+} from "./actions";
 
 function localDate() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -58,6 +63,15 @@ export default async function StaffAttendancePage({
   const canCorrect = workspace.authorization.permissions.includes(
     "attendance.staff.correct",
   );
+  const canViewSummary = workspace.authorization.permissions.includes(
+    "attendance.summary.view",
+  );
+  const canManageTasks = workspace.authorization.permissions.includes(
+    "shared.tasks.manage",
+  );
+  const summary = canViewSummary
+    ? await loadStaffAttendanceSummary(date).catch(() => null)
+    : null;
   const correctionEvents = canCorrect
     ? await loadStaffClockCorrections(date).catch(() => [])
     : [];
@@ -102,6 +116,44 @@ export default async function StaffAttendancePage({
           View date
         </Button>
       </form>
+
+      {summary ? (
+        <section className="mt-6" aria-labelledby="staff-summary-heading">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 id="staff-summary-heading" className="text-xl font-semibold">
+                Daily summary
+              </h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Approved full-day time off is counted as excused and does not
+                create a missing-clock exception.
+              </p>
+            </div>
+            {canManageTasks ? (
+              <form action={refreshAttendanceExceptions}>
+                <input type="hidden" name="attendanceDate" value={date} />
+                <Button type="submit" variant="secondary">
+                  Refresh exception tasks
+                </Button>
+              </form>
+            ) : null}
+          </div>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {[
+              ["Scheduled", summary.scheduled_staff],
+              ["Present", summary.present_staff],
+              ["Incomplete", summary.incomplete_staff],
+              ["Excused", summary.excused_staff],
+              ["Open exceptions", summary.open_exceptions],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-xl border bg-white p-4">
+                <dt className="text-sm text-slate-600">{label}</dt>
+                <dd className="mt-1 text-2xl font-semibold">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null}
 
       {!workspace.assignments.length ? (
         <p className="mt-6 rounded-xl border bg-white p-8 text-center text-slate-600">

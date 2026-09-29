@@ -33,9 +33,11 @@ vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 import {
   correctStaffClockEvent,
   correctStudentAttendanceEntry,
+  loadStaffAttendanceSummary,
   loadStaffClockCorrections,
   loadStaffClockWorkspace,
   recordStaffClockEvent,
+  refreshStaffAttendanceExceptions,
   requireAttendanceContext,
   saveAttendanceSettings,
   saveStaffAttendancePolicy,
@@ -231,6 +233,57 @@ describe("attendance context", () => {
       feature: "attendance.staff_clock",
     });
     expect(rpc).toHaveBeenCalledWith("list_staff_clock_correction_events", {
+      target_organization_id: authorization.organizationId,
+      target_school_id: authorization.schoolId,
+      target_attendance_date: "2026-09-28",
+    });
+  });
+
+  it("loads the caller-bound daily staff attendance summary", async () => {
+    rpc.mockResolvedValue({
+      data: [
+        {
+          scheduled_staff: 4,
+          present_staff: 3,
+          incomplete_staff: 1,
+          excused_staff: 0,
+          open_exceptions: 1,
+        },
+      ],
+      error: null,
+    });
+
+    await expect(
+      loadStaffAttendanceSummary("2026-09-28"),
+    ).resolves.toMatchObject({ scheduled_staff: 4, open_exceptions: 1 });
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.summary.view",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(rpc).toHaveBeenCalledWith("get_staff_attendance_summary", {
+      target_organization_id: authorization.organizationId,
+      target_school_id: authorization.schoolId,
+      target_attendance_date: "2026-09-28",
+    });
+  });
+
+  it("refreshes exceptions once and keeps RPC failures private", async () => {
+    rpc.mockResolvedValueOnce({
+      data: null,
+      error: { message: "protected task detail" },
+    });
+
+    await expect(
+      refreshStaffAttendanceExceptions("2026-09-28"),
+    ).rejects.toThrow("Staff attendance exceptions could not be refreshed");
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.summary.view",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("refresh_staff_attendance_exceptions", {
       target_organization_id: authorization.organizationId,
       target_school_id: authorization.schoolId,
       target_attendance_date: "2026-09-28",

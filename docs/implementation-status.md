@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-B5 Time-Off Attendance Integration In Progress
+M8 Attendance & Teaching — M8-B6 Attendance Summaries and Exceptions In Progress
 
 ## Completed milestones
 
@@ -94,6 +94,14 @@ coverage in the school's configured timezone is treated as excused and
 suppresses clock actions; partial permissions remain visible without excusing
 the whole day. Both production features remain disabled and no production
 request or attendance activity is created by this slice.
+
+M8-B6 adds a caller-bound daily summary and explicit, idempotent generation of
+missing-clock Action Center tasks after the effective working day ends.
+Approved full-day time off and non-teaching calendar dates suppress false
+exceptions. Later valid evidence resolves the exception and completes its
+still-open task while preserving audit history. Summary access and task
+generation remain separately permissioned, and the production feature remains
+disabled.
 
 ## M6 completion evidence
 

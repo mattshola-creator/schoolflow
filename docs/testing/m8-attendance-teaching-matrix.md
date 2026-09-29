@@ -276,3 +276,20 @@ QA remain outside this foundation and workspace slice.
 
 Production feature enablement, production time-off creation and a live absence
 cycle are outside this implementation slice.
+
+## M8-B6 Staff attendance summaries and controlled exceptions
+
+| Requirement                                    | Evidence                                                                                                                                         | Status           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| Daily staff attendance is summarized           | Caller-bound summary RPC reports scheduled, present, incomplete, excused and open-exception counts for one school date                           | Implemented      |
+| Exceptions start only after the working day    | The private predicate evaluates the effective policy end in the school's configured IANA timezone                                                | Verified locally |
+| Excused and non-teaching days are suppressed   | Approved full-policy time off and non-teaching calendar exceptions make the missing-clock predicate false                                        | Verified locally |
+| Missing clock-in and clock-out remain distinct | Stable enum categories and one unique exception per assignment, date and kind preserve the exact operational gap                                 | Implemented      |
+| Action Center generation is idempotent         | Composite uniqueness plus insert-on-conflict and one linked task prevent repeat refreshes from duplicating work                                  | Verified locally |
+| Later valid evidence resolves open work        | Refresh resolves no-longer-required exceptions and completes their still-open Action Center tasks without deleting history                       | Implemented      |
+| Refresh is explicitly authorized               | The RPC requires both `attendance.summary.view` and `shared.tasks.manage`, exact tenant/school scope and an authenticated caller                 | Verified locally |
+| Direct exception mutation is denied            | Authenticated clients receive SELECT only; writes occur inside the protected refresh RPC and anonymous execution is revoked                      | Verified locally |
+| Feature remains disabled                       | The existing `attendance.staff_clock` feature gate protects summary and refresh entry points; no production override is introduced by this slice | Verified locally |
+
+Production exception generation and live clock mutation are outside this
+implementation slice.

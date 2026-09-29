@@ -1,13 +1,17 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { loadStaffClockCorrections, loadStaffClockWorkspace } = vi.hoisted(
-  () => ({
-    loadStaffClockCorrections: vi.fn(),
-    loadStaffClockWorkspace: vi.fn(),
-  }),
-);
+const {
+  loadStaffAttendanceSummary,
+  loadStaffClockCorrections,
+  loadStaffClockWorkspace,
+} = vi.hoisted(() => ({
+  loadStaffAttendanceSummary: vi.fn(),
+  loadStaffClockCorrections: vi.fn(),
+  loadStaffClockWorkspace: vi.fn(),
+}));
 vi.mock("@/features/attendance/service", () => ({
+  loadStaffAttendanceSummary,
   loadStaffClockCorrections,
   loadStaffClockWorkspace,
 }));
@@ -18,6 +22,7 @@ describe("staff attendance page", () => {
   afterEach(cleanup);
   beforeEach(() => {
     vi.clearAllMocks();
+    loadStaffAttendanceSummary.mockResolvedValue(null);
     loadStaffClockCorrections.mockResolvedValue([]);
     loadStaffClockWorkspace.mockResolvedValue({
       active: { schoolName: "QA School" },
@@ -96,6 +101,66 @@ describe("staff attendance page", () => {
     expect(
       screen.getByRole("link", { name: /working-hours setup/i }),
     ).toHaveAttribute("href", "/attendance/staff/setup");
+  });
+
+  it("shows summary and exception refresh only to authorized task managers", async () => {
+    loadStaffClockWorkspace.mockResolvedValueOnce({
+      active: { schoolName: "QA School" },
+      authorization: {
+        permissions: ["attendance.summary.view", "shared.tasks.manage"],
+      },
+      assignments: [],
+    });
+    loadStaffAttendanceSummary.mockResolvedValueOnce({
+      scheduled_staff: 4,
+      present_staff: 2,
+      incomplete_staff: 1,
+      excused_staff: 1,
+      open_exceptions: 1,
+    });
+
+    render(
+      await StaffAttendancePage({
+        searchParams: Promise.resolve({ date: "2026-09-28" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Daily summary" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Excused")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Refresh exception tasks" }),
+    ).toBeInTheDocument();
+    expect(loadStaffAttendanceSummary).toHaveBeenCalledWith("2026-09-28");
+  });
+
+  it("does not expose exception refresh without task-management permission", async () => {
+    loadStaffClockWorkspace.mockResolvedValueOnce({
+      active: { schoolName: "QA School" },
+      authorization: { permissions: ["attendance.summary.view"] },
+      assignments: [],
+    });
+    loadStaffAttendanceSummary.mockResolvedValueOnce({
+      scheduled_staff: 1,
+      present_staff: 1,
+      incomplete_staff: 0,
+      excused_staff: 0,
+      open_exceptions: 0,
+    });
+
+    render(
+      await StaffAttendancePage({
+        searchParams: Promise.resolve({ date: "2026-09-28" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Daily summary" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Refresh exception tasks" }),
+    ).toBeNull();
   });
 
   it("fails closed when the feature or context is unavailable", async () => {

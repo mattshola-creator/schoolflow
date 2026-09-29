@@ -223,6 +223,43 @@ export async function loadStaffClockCorrections(attendanceDate: string) {
   return data ?? [];
 }
 
+export async function loadStaffAttendanceSummary(attendanceDate: string) {
+  const date = attendanceRegisterQuerySchema.shape.date.parse(attendanceDate);
+  const context = await requireAttendanceContext(
+    "attendance.summary.view",
+    "attendance.staff_clock",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "get_staff_attendance_summary",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_attendance_date: date,
+    },
+  );
+  if (error) throw new Error("Staff attendance summary could not be loaded");
+  return data?.[0] ?? null;
+}
+
+export async function refreshStaffAttendanceExceptions(attendanceDate: string) {
+  const date = attendanceRegisterQuerySchema.shape.date.parse(attendanceDate);
+  const context = await requireAttendanceContext(
+    "attendance.summary.view",
+    "attendance.staff_clock",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "refresh_staff_attendance_exceptions",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_attendance_date: date,
+    },
+  );
+  if (error)
+    throw new Error("Staff attendance exceptions could not be refreshed");
+  return data;
+}
+
 export async function loadStaffAttendanceSetup() {
   const context = await requireAttendanceContext(
     "attendance.configure",

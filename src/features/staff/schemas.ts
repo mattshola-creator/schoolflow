@@ -95,8 +95,8 @@ export const staffTimeRequestSchema = z
     staffAssignmentId: z.string().uuid(),
     kind: z.enum(["leave", "permission"]),
     leaveTypeId: optionalUuid,
-    startsAt: z.iso.datetime({ offset: true }),
-    endsAt: z.iso.datetime({ offset: true }),
+    startsAt: z.iso.datetime({ local: true }),
+    endsAt: z.iso.datetime({ local: true }),
     reason: z.string().trim().min(3).max(1000),
     policyId: z.string().uuid(),
   })
@@ -113,3 +113,16 @@ export const staffTimeRequestSchema = z
       path: ["leaveTypeId"],
     },
   );
+
+export const staffLeaveTypeSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  code: z
+    .string()
+    .trim()
+    .regex(/^[A-Z][A-Z0-9_]{1,19}$/),
+  isPaid: z.preprocess((value) => value === "on", z.boolean()),
+});
+
+export const schoolTimezoneSchema = z.object({
+  timezone: z.string().trim().min(3).max(64),
+});

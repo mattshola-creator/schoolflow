@@ -221,15 +221,15 @@ export async function submitStaffTimeRequest(input: unknown) {
     "staff.leave_permission",
   );
   const { data, error } = await context.supabase.rpc(
-    "submit_staff_time_request",
+    "submit_staff_time_request_local",
     {
       target_organization_id: context.active.organizationId,
       target_school_id: context.active.schoolId!,
       target_staff_assignment_id: parsed.staffAssignmentId,
       target_kind: parsed.kind,
       target_leave_type_id: parsed.leaveTypeId,
-      target_starts_at: parsed.startsAt,
-      target_ends_at: parsed.endsAt,
+      target_starts_local: parsed.startsAt,
+      target_ends_local: parsed.endsAt,
       target_reason: parsed.reason,
       target_policy_id: parsed.policyId,
     },
@@ -237,4 +237,56 @@ export async function submitStaffTimeRequest(input: unknown) {
   if (error || !data)
     throw new Error("Staff time request could not be submitted");
   return data;
+}
+
+export async function loadStaffTimeOffWorkspace() {
+  const context = await requireStaffContext(
+    "staff.time_off.request",
+    "staff.leave_permission",
+  );
+  const scope = {
+    target_organization_id: context.active.organizationId,
+    target_school_id: context.active.schoolId!,
+  };
+  const [assignments, policies, leaveTypes, requests, school] =
+    await Promise.all([
+      context.supabase.rpc("list_staff_time_request_assignments", scope),
+      context.supabase.rpc("list_staff_time_request_policies", scope),
+      context.supabase
+        .from("staff_leave_types")
+        .select("id, name, code, is_paid, status")
+        .eq("organization_id", context.active.organizationId)
+        .eq("school_id", context.active.schoolId!)
+        .eq("status", "active")
+        .order("name"),
+      context.supabase
+        .from("staff_time_requests")
+        .select(
+          "id, kind, starts_at, ends_at, reason, status, staff_assignment_id",
+        )
+        .eq("organization_id", context.active.organizationId)
+        .eq("school_id", context.active.schoolId!)
+        .order("created_at", { ascending: false })
+        .limit(20),
+      context.supabase
+        .from("schools")
+        .select("locations!schools_location_id_fkey(timezone)")
+        .eq("id", context.active.schoolId!)
+        .eq("organization_id", context.active.organizationId)
+        .single(),
+    ]);
+  if (
+    [assignments, policies, leaveTypes, requests, school].some(
+      (item) => item.error,
+    )
+  )
+    throw new Error("Staff time-off workspace could not be loaded");
+  return {
+    ...context,
+    assignments: assignments.data ?? [],
+    policies: policies.data ?? [],
+    leaveTypes: leaveTypes.data ?? [],
+    requests: requests.data ?? [],
+    timezone: school.data?.locations.timezone,
+  };
 }

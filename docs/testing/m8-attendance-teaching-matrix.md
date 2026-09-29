@@ -256,6 +256,8 @@ and temporary feature enablement are not part of this implementation slice.
 | Direct request writes are denied                 | Authenticated clients receive SELECT only; submission uses the validated RPC and anonymous execution is revoked                                  | Verified remotely |
 | Feature is disabled and production data is empty | `staff.leave_permission` defaults to disabled, has zero enabled overrides, and both new business tables contain zero rows                        | Verified remotely |
 | Validation and failures remain fail-closed       | Focused tests reject invalid kind/type/range combinations, mismatched context and RPC failures without retries or protected database detail      | Verified locally  |
+| School civil time is explicit                    | The workspace reuses the school's location IANA timezone; database validation rejects unknown zones and Postgres converts local timestamps       | Verified          |
+| Workspace controls remain separately protected   | Caller-bound option RPCs and distinct request, management and `school.manage` checks protect each control while the feature remains disabled     | Verified          |
 
-Attendance integration, summaries, exception tasks, configuration/request UI
-and controlled production QA are intentionally outside this foundation slice.
+Attendance integration, summaries, exception tasks and controlled production
+QA remain outside this foundation and workspace slice.

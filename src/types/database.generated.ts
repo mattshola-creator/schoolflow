@@ -2993,6 +2993,73 @@ export type Database = {
           },
         ];
       };
+      staff_attendance_exceptions: {
+        Row: {
+          action_task_id: string | null;
+          attendance_date: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          kind: Database["public"]["Enums"]["staff_attendance_exception_kind"];
+          organization_id: string;
+          resolved_at: string | null;
+          school_id: string;
+          staff_assignment_id: string;
+          status: Database["public"]["Enums"]["staff_attendance_exception_status"];
+          updated_at: string;
+        };
+        Insert: {
+          action_task_id?: string | null;
+          attendance_date: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          kind: Database["public"]["Enums"]["staff_attendance_exception_kind"];
+          organization_id: string;
+          resolved_at?: string | null;
+          school_id: string;
+          staff_assignment_id: string;
+          status?: Database["public"]["Enums"]["staff_attendance_exception_status"];
+          updated_at?: string;
+        };
+        Update: {
+          action_task_id?: string | null;
+          attendance_date?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["staff_attendance_exception_kind"];
+          organization_id?: string;
+          resolved_at?: string | null;
+          school_id?: string;
+          staff_assignment_id?: string;
+          status?: Database["public"]["Enums"]["staff_attendance_exception_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_attendance_exceptions_action_task_id_organization_id_s_fkey";
+            columns: ["action_task_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "action_tasks";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_exceptions_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_exceptions_staff_assignment_id_organization__fkey";
+            columns: ["staff_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       staff_attendance_days: {
         Row: {
           attendance_date: string;
@@ -4031,6 +4098,20 @@ export type Database = {
         };
         Returns: string;
       };
+      get_staff_attendance_summary: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: {
+          excused_staff: number;
+          incomplete_staff: number;
+          open_exceptions: number;
+          present_staff: number;
+          scheduled_staff: number;
+        }[];
+      };
       create_admission_application: {
         Args: {
           applicant_date_of_birth: string;
@@ -4437,6 +4518,14 @@ export type Database = {
         };
         Returns: string;
       };
+      refresh_staff_attendance_exceptions: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: number;
+      };
       transition_admission_application: {
         Args: {
           target_application_id: string;
@@ -4514,6 +4603,8 @@ export type Database = {
       staff_assignment_status: "planned" | "active" | "ended" | "cancelled";
       staff_attendance_day_status:
         "present" | "late" | "left_early" | "incomplete" | "excused";
+      staff_attendance_exception_kind: "missing_clock_in" | "missing_clock_out";
+      staff_attendance_exception_status: "open" | "resolved";
       staff_clock_event_type: "clock_in" | "clock_out";
       staff_clock_source: "self_service" | "authorized_operator";
       staff_time_request_kind: "leave" | "permission";
@@ -4766,6 +4857,11 @@ export const Constants = {
         "incomplete",
         "excused",
       ],
+      staff_attendance_exception_kind: [
+        "missing_clock_in",
+        "missing_clock_out",
+      ],
+      staff_attendance_exception_status: ["open", "resolved"],
       staff_clock_event_type: ["clock_in", "clock_out"],
       staff_clock_source: ["self_service", "authorized_operator"],
       staff_time_request_kind: ["leave", "permission"],

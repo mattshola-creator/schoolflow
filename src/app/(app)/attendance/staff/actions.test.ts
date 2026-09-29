@@ -3,11 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const {
   correctStaffClockEvent,
   recordStaffClockEvent,
+  refreshStaffAttendanceExceptions,
   redirect,
   revalidatePath,
 } = vi.hoisted(() => ({
   correctStaffClockEvent: vi.fn(),
   recordStaffClockEvent: vi.fn(),
+  refreshStaffAttendanceExceptions: vi.fn(),
   redirect: vi.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);
   }),
@@ -18,9 +20,14 @@ vi.mock("next/cache", () => ({ revalidatePath }));
 vi.mock("@/features/attendance/service", () => ({
   correctStaffClockEvent,
   recordStaffClockEvent,
+  refreshStaffAttendanceExceptions,
 }));
 
-import { correctStaffClock, recordStaffClock } from "./actions";
+import {
+  correctStaffClock,
+  recordStaffClock,
+  refreshAttendanceExceptions,
+} from "./actions";
 
 function validForm() {
   const form = new FormData();
@@ -44,6 +51,7 @@ describe("staff clock action", () => {
     vi.clearAllMocks();
     correctStaffClockEvent.mockResolvedValue(crypto.randomUUID());
     recordStaffClockEvent.mockResolvedValue(crypto.randomUUID());
+    refreshStaffAttendanceExceptions.mockResolvedValue(2);
   });
 
   it("rejects malformed input before the service", async () => {
@@ -105,6 +113,39 @@ describe("staff clock action", () => {
       "error=The+clock+correction+could+not+be+saved",
     );
     expect(correctStaffClockEvent).toHaveBeenCalledTimes(1);
+    expect(redirect).not.toHaveBeenCalledWith(
+      expect.stringContaining("database"),
+    );
+  });
+
+  it("rejects an invalid exception date before the service", async () => {
+    await expect(refreshAttendanceExceptions(new FormData())).rejects.toThrow(
+      "error=The+attendance+date+is+invalid",
+    );
+    expect(refreshStaffAttendanceExceptions).not.toHaveBeenCalled();
+  });
+
+  it("refreshes exception tasks exactly once", async () => {
+    const form = new FormData();
+    form.set("attendanceDate", "2026-09-28");
+    await expect(refreshAttendanceExceptions(form)).rejects.toThrow(
+      "date=2026-09-28&message=2+attendance+exception+tasks+created",
+    );
+    expect(refreshStaffAttendanceExceptions).toHaveBeenCalledTimes(1);
+    expect(refreshStaffAttendanceExceptions).toHaveBeenCalledWith("2026-09-28");
+    expect(revalidatePath).toHaveBeenCalledWith("/action-center");
+  });
+
+  it("does not retry or disclose exception refresh failures", async () => {
+    refreshStaffAttendanceExceptions.mockRejectedValueOnce(
+      new Error("protected database detail"),
+    );
+    const form = new FormData();
+    form.set("attendanceDate", "2026-09-28");
+    await expect(refreshAttendanceExceptions(form)).rejects.toThrow(
+      "error=Attendance+exceptions+could+not+be+refreshed",
+    );
+    expect(refreshStaffAttendanceExceptions).toHaveBeenCalledTimes(1);
     expect(redirect).not.toHaveBeenCalledWith(
       expect.stringContaining("database"),
     );

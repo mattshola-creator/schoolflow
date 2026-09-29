@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   correctStaffClockEvent,
   recordStaffClockEvent,
+  refreshStaffAttendanceExceptions,
 } from "@/features/attendance/service";
 
 function staffAttendanceUrl(
@@ -86,6 +87,36 @@ export async function correctStaffClock(formData: FormData) {
       attendanceDate,
       "message",
       "Staff clock correction saved",
+    ),
+  );
+}
+
+export async function refreshAttendanceExceptions(formData: FormData) {
+  const attendanceDate = formData.get("attendanceDate");
+  if (
+    typeof attendanceDate !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(attendanceDate)
+  )
+    redirect("/attendance/staff?error=The+attendance+date+is+invalid");
+  let created: number;
+  try {
+    created = await refreshStaffAttendanceExceptions(attendanceDate);
+  } catch {
+    redirect(
+      staffAttendanceUrl(
+        attendanceDate,
+        "error",
+        "Attendance exceptions could not be refreshed",
+      ),
+    );
+  }
+  revalidatePath("/attendance/staff");
+  revalidatePath("/action-center");
+  redirect(
+    staffAttendanceUrl(
+      attendanceDate,
+      "message",
+      `${created} attendance exception task${created === 1 ? "" : "s"} created`,
     ),
   );
 }

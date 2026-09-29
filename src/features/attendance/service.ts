@@ -205,6 +205,24 @@ export async function loadStaffClockWorkspace(attendanceDate: string) {
   return { ...context, assignments: data ?? [] };
 }
 
+export async function loadStaffClockCorrections(attendanceDate: string) {
+  const date = attendanceRegisterQuerySchema.shape.date.parse(attendanceDate);
+  const context = await requireAttendanceContext(
+    "attendance.staff.correct",
+    "attendance.staff_clock",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "list_staff_clock_correction_events",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_attendance_date: date,
+    },
+  );
+  if (error) throw new Error("Staff clock corrections could not be loaded");
+  return data ?? [];
+}
+
 export async function loadStaffAttendanceSetup() {
   const context = await requireAttendanceContext(
     "attendance.configure",

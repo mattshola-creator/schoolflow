@@ -89,8 +89,8 @@ describe("staff validation", () => {
   it("validates leave and permission request boundaries", () => {
     const base = {
       staffAssignmentId: ids.positionId,
-      startsAt: "2026-10-01T08:00:00+01:00",
-      endsAt: "2026-10-01T12:00:00+01:00",
+      startsAt: "2026-10-01T08:00",
+      endsAt: "2026-10-01T12:00",
       reason: "Approved personal appointment",
       policyId: ids.roleId,
     };

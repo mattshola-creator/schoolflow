@@ -24,8 +24,8 @@ const input = {
   staffAssignmentId: crypto.randomUUID(),
   kind: "permission" as const,
   leaveTypeId: null,
-  startsAt: "2026-10-01T08:00:00+01:00",
-  endsAt: "2026-10-01T12:00:00+01:00",
+  startsAt: "2026-10-01T08:00",
+  endsAt: "2026-10-01T12:00",
   reason: "Approved personal appointment",
   policyId: crypto.randomUUID(),
 };
@@ -47,14 +47,14 @@ describe("staff time request service", () => {
       feature: "staff.leave_permission",
     });
     expect(rpc).toHaveBeenCalledTimes(1);
-    expect(rpc).toHaveBeenCalledWith("submit_staff_time_request", {
+    expect(rpc).toHaveBeenCalledWith("submit_staff_time_request_local", {
       target_organization_id: authorization.organizationId,
       target_school_id: authorization.schoolId,
       target_staff_assignment_id: input.staffAssignmentId,
       target_kind: input.kind,
       target_leave_type_id: null,
-      target_starts_at: input.startsAt,
-      target_ends_at: input.endsAt,
+      target_starts_local: input.startsAt,
+      target_ends_local: input.endsAt,
       target_reason: input.reason,
       target_policy_id: input.policyId,
     });

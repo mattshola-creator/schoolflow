@@ -2794,6 +2794,102 @@ export type Database = {
           },
         ];
       };
+      staff_leave_types: {
+        Row: {
+          code: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          is_paid: boolean;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          is_paid?: boolean;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          is_paid?: boolean;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [];
+      };
+      staff_time_requests: {
+        Row: {
+          approval_request_id: string | null;
+          created_at: string;
+          decided_at: string | null;
+          ends_at: string;
+          id: string;
+          kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          leave_type_id: string | null;
+          organization_id: string;
+          reason: string;
+          requested_by: string;
+          school_id: string;
+          staff_assignment_id: string;
+          starts_at: string;
+          status: Database["public"]["Enums"]["staff_time_request_status"];
+          updated_at: string;
+        };
+        Insert: {
+          approval_request_id?: string | null;
+          created_at?: string;
+          decided_at?: string | null;
+          ends_at: string;
+          id?: string;
+          kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          leave_type_id?: string | null;
+          organization_id: string;
+          reason: string;
+          requested_by?: string;
+          school_id: string;
+          staff_assignment_id: string;
+          starts_at: string;
+          status?: Database["public"]["Enums"]["staff_time_request_status"];
+          updated_at?: string;
+        };
+        Update: {
+          approval_request_id?: string | null;
+          created_at?: string;
+          decided_at?: string | null;
+          ends_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["staff_time_request_kind"];
+          leave_type_id?: string | null;
+          organization_id?: string;
+          reason?: string;
+          requested_by?: string;
+          school_id?: string;
+          staff_assignment_id?: string;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["staff_time_request_status"];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       staff_assignments: {
         Row: {
           created_at: string;
@@ -4171,6 +4267,22 @@ export type Database = {
           staff_number: string;
         }[];
       };
+      list_staff_time_request_assignments: {
+        Args: { target_organization_id: string; target_school_id: string };
+        Returns: {
+          staff_assignment_id: string;
+          staff_name: string;
+          staff_number: string;
+        }[];
+      };
+      list_staff_time_request_policies: {
+        Args: { target_organization_id: string; target_school_id: string };
+        Returns: {
+          policy_id: string;
+          policy_key: string;
+          policy_name: string;
+        }[];
+      };
       list_student_attendance_scopes: {
         Args: {
           target_attendance_date: string;
@@ -4285,6 +4397,28 @@ export type Database = {
           target_school_id: string;
           target_staff_assignment_id: string;
           target_starts_at: string;
+        };
+        Returns: string;
+      };
+      submit_staff_time_request_local: {
+        Args: {
+          target_ends_local: string;
+          target_kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          target_leave_type_id: string | null;
+          target_organization_id: string;
+          target_policy_id: string;
+          target_reason: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+          target_starts_local: string;
+        };
+        Returns: string;
+      };
+      set_school_timezone: {
+        Args: {
+          target_organization_id: string;
+          target_school_id: string;
+          target_timezone: string;
         };
         Returns: string;
       };

@@ -7,9 +7,15 @@ import {
   endEmploymentSchema,
   positionSchema,
   staffSchema,
+  staffLeaveTypeSchema,
+  schoolTimezoneSchema,
+  staffTimeRequestSchema,
   transferAssignmentSchema,
 } from "@/features/staff/schemas";
-import { requireStaffContext } from "@/features/staff/service";
+import {
+  requireStaffContext,
+  submitStaffTimeRequest,
+} from "@/features/staff/service";
 
 function failed(destination: string): never {
   redirect(
@@ -108,4 +114,44 @@ export async function transferStaffAssignment(formData: FormData) {
   });
   if (error) failed("/staff");
   done("/staff", "School assignment transferred with history preserved");
+}
+
+export async function createStaffLeaveType(formData: FormData) {
+  const parsed = staffLeaveTypeSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) failed("/staff/time-off");
+  const { supabase, active } = await requireStaffContext(
+    "staff.time_off.manage",
+    "staff.leave_permission",
+  );
+  const { error } = await supabase.from("staff_leave_types").insert({
+    organization_id: active.organizationId,
+    school_id: active.schoolId!,
+    name: parsed.data.name,
+    code: parsed.data.code,
+    is_paid: parsed.data.isPaid,
+  });
+  if (error) failed("/staff/time-off");
+  done("/staff/time-off", "Leave type created");
+}
+
+export async function saveSchoolTimezone(formData: FormData) {
+  const parsed = schoolTimezoneSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) failed("/staff/time-off");
+  const { supabase, active } = await requireStaffContext("school.manage");
+  const { error } = await supabase.rpc("set_school_timezone", {
+    target_organization_id: active.organizationId,
+    target_school_id: active.schoolId!,
+    target_timezone: parsed.data.timezone,
+  });
+  if (error) failed("/staff/time-off");
+  done("/staff/time-off", "School timezone updated");
+}
+
+export async function submitStaffTimeOff(formData: FormData) {
+  const parsed = staffTimeRequestSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) failed("/staff/time-off");
+  await submitStaffTimeRequest(parsed.data).catch(() =>
+    failed("/staff/time-off"),
+  );
+  done("/staff/time-off", "Request submitted for approval");
 }

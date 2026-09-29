@@ -81,9 +81,11 @@ was signed out and the synthetic evidence remains preserved. M8-B3's
 separately authorized correction view and form are deployed through PR #58,
 revision `7ea3ff3a85705272abcc52e17d001445f569a6d8`, with the feature still
 disabled. M8-B4 now adds the disabled-by-default Staff/HR leave and permission
-foundation, caller-bound submission and shared approval linkage. No leave type
-or request has been created; application publication remains pending the
-focused PR.
+foundation, caller-bound submission and shared approval linkage. The follow-up
+workspace reuses the school's location-level IANA timezone, validates timezone
+changes, converts local civil times inside Postgres and adds protected leave,
+permission and leave-type forms. No leave type or request has been created;
+application publication remains pending the focused PR.
 
 ## M6 completion evidence
 

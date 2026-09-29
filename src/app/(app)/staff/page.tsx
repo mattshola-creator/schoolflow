@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Settings2, UserPlus } from "lucide-react";
+import { CalendarDays, Settings2, UserPlus } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { DirectorySearch } from "@/components/ui/directory-search";
 import { PageHeader } from "@/components/ui/page-header";
@@ -30,6 +30,9 @@ export default async function StaffPage({
   const canSetup = result.authorization.permissions.some((permission) =>
     ["staff.departments.manage", "staff.positions.manage"].includes(permission),
   );
+  const canTimeOff = result.authorization.permissions.includes(
+    "staff.time_off.request",
+  );
   const totalPages = Math.max(1, Math.ceil(result.count / result.pageSize));
   return (
     <main className="py-10 sm:py-12">
@@ -44,8 +47,14 @@ export default async function StaffPage({
           <>Employment, school assignments, positions, and access linkage.</>
         }
         actions={
-          canSetup || canManage ? (
+          canSetup || canManage || canTimeOff ? (
             <>
+              {canTimeOff && (
+                <ButtonLink href="/staff/time-off" variant="secondary">
+                  <CalendarDays aria-hidden="true" className="size-4" /> Time
+                  off
+                </ButtonLink>
+              )}
               {canSetup && (
                 <ButtonLink href="/staff/setup" variant="secondary">
                   <Settings2 aria-hidden="true" className="size-4" /> Setup

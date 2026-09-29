@@ -33,6 +33,7 @@ vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 import {
   correctStaffClockEvent,
   correctStudentAttendanceEntry,
+  loadStaffClockCorrections,
   loadStaffClockWorkspace,
   recordStaffClockEvent,
   requireAttendanceContext,
@@ -215,6 +216,21 @@ describe("attendance context", () => {
       feature: "attendance.staff_clock",
     });
     expect(rpc).toHaveBeenCalledWith("list_staff_clock_assignments", {
+      target_organization_id: authorization.organizationId,
+      target_school_id: authorization.schoolId,
+      target_attendance_date: "2026-09-28",
+    });
+  });
+
+  it("loads correction events through the separate correction boundary", async () => {
+    rpc.mockResolvedValue({ data: [], error: null });
+    await loadStaffClockCorrections("2026-09-28");
+    expect(requireCapability).toHaveBeenCalledWith({
+      permission: "attendance.staff.correct",
+      module: "attendance",
+      feature: "attendance.staff_clock",
+    });
+    expect(rpc).toHaveBeenCalledWith("list_staff_clock_correction_events", {
       target_organization_id: authorization.organizationId,
       target_school_id: authorization.schoolId,
       target_attendance_date: "2026-09-28",

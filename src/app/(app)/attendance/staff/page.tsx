@@ -2,8 +2,11 @@ import { Clock3, Settings2 } from "lucide-react";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
-import { loadStaffClockWorkspace } from "@/features/attendance/service";
-import { recordStaffClock } from "./actions";
+import {
+  loadStaffClockCorrections,
+  loadStaffClockWorkspace,
+} from "@/features/attendance/service";
+import { correctStaffClock, recordStaffClock } from "./actions";
 
 function localDate() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -52,6 +55,12 @@ export default async function StaffAttendancePage({
   const canConfigure = workspace.authorization.permissions.includes(
     "attendance.configure",
   );
+  const canCorrect = workspace.authorization.permissions.includes(
+    "attendance.staff.correct",
+  );
+  const correctionEvents = canCorrect
+    ? await loadStaffClockCorrections(date).catch(() => [])
+    : [];
   return (
     <main className="py-10 sm:py-12">
       <PageHeader
@@ -188,6 +197,74 @@ export default async function StaffAttendancePage({
           })}
         </ul>
       )}
+
+      {canCorrect && correctionEvents.length ? (
+        <section className="mt-10" aria-labelledby="staff-corrections-heading">
+          <h2
+            id="staff-corrections-heading"
+            className="text-xl font-semibold text-slate-950"
+          >
+            Controlled clock corrections
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-slate-600">
+            Correct an existing event with an audit reason. Original clock
+            evidence remains immutable.
+          </p>
+          <ul className="mt-5 grid gap-5 xl:grid-cols-2">
+            {correctionEvents.map((event) => (
+              <li
+                key={event.clock_event_id}
+                className="min-w-0 rounded-xl border bg-white p-5 sm:p-6"
+              >
+                <h3 className="font-semibold break-words">
+                  {event.staff_name}
+                </h3>
+                <p className="mt-1 text-sm [overflow-wrap:anywhere] text-slate-500">
+                  {event.staff_number} · {event.position_name}
+                </p>
+                <p className="mt-4 text-sm text-slate-700">
+                  {event.event_type === "clock_in" ? "Clock in" : "Clock out"}:{" "}
+                  {localTime(event.effective_occurred_at)}
+                </p>
+                <form action={correctStaffClock} className="mt-4 space-y-4">
+                  <input
+                    type="hidden"
+                    name="clockEventId"
+                    value={event.clock_event_id}
+                  />
+                  <input
+                    type="hidden"
+                    name="attendanceDate"
+                    value={event.attendance_date}
+                  />
+                  <label className="block text-sm font-medium">
+                    Corrected time
+                    <input
+                      className={fieldClass}
+                      type="time"
+                      name="correctedTime"
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Audit reason
+                    <textarea
+                      className={fieldClass}
+                      name="reason"
+                      minLength={3}
+                      maxLength={500}
+                      required
+                    />
+                  </label>
+                  <Button className="w-full" type="submit" variant="secondary">
+                    Save correction
+                  </Button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </main>
   );
 }

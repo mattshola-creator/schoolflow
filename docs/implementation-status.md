@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-B2 Staff Attendance UI Deployed & Verified
+M8 Attendance & Teaching — M8-B3 Staff Clock Corrections In Progress
 
 ## Completed milestones
 
@@ -77,7 +77,11 @@ setup and responsive clock experience. One authorized production QA cycle
 created one working-hours policy, one staff attendance day and two clock events
 with zero corrections; school-scoped audit records were verified. The
 temporary `attendance.staff_clock` override was disabled again, the QA session
-was signed out and the synthetic evidence remains preserved.
+was signed out and the synthetic evidence remains preserved. M8-B3 adds a
+separately authorized correction view and form over the existing immutable
+clock-correction RPC. The new caller-bound read function is deployed to the
+connected Supabase project, while the application revision and production
+feature remain unchanged pending the focused PR.
 
 ## M6 completion evidence
 

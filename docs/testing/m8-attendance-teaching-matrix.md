@@ -224,3 +224,22 @@ production QA then verified the deployed working-hours and clock journey with
 one synthetic policy, one attendance day and two clock events. The resulting
 QA evidence is intentionally preserved; no correction was created. The feature
 override was disabled after the test.
+
+## M8-B3 Controlled staff clock corrections
+
+| Requirement                                       | Evidence                                                                                                                                             | Status            |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| Correction access is separately authorized        | Route rendering, service context and caller-bound read RPC require `attendance.staff.correct` plus `attendance.staff_clock`                          | Implemented       |
+| Correction events remain tenant and school bound  | The read RPC derives identity fields through the attendance day and rechecks the existing assignment/date access helper                              | Implemented       |
+| Original clock evidence remains immutable         | UI invokes the existing `correct_staff_clock_event` RPC; the original event table remains append-only and effective time changes live on the summary | Implemented       |
+| Reason and corrected time are mandatory           | Browser inputs and the existing Zod/RPC boundaries require an offset-aware time and a trimmed 3–500 character reason                                 | Verified locally  |
+| Failure remains generic and does not retry        | Focused action and service tests assert one correction call and no protected database detail in redirects                                            | Verified locally  |
+| Unauthorized users receive no correction controls | Focused page tests render correction forms only when effective permissions include `attendance.staff.correct`                                        | Verified locally  |
+| Read endpoint is not anonymous                    | Deployed function metadata confirms `anon` has no execute privilege and `authenticated` access remains caller-bound                                  | Verified remotely |
+| No production attendance mutation occurred        | Migration verification left the preserved clock evidence unchanged and the staff correction count remains zero                                       | Verified remotely |
+
+The full local quality gate passes 182 tests, zero-warning lint, strict
+TypeScript and the production build. The Supabase security advisor reported no
+new Critical or High finding. Its existing warning category for intentionally
+caller-bound `security definer` RPCs remains unchanged. Production browser QA
+and temporary feature enablement are not part of this implementation slice.

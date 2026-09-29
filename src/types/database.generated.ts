@@ -4154,6 +4154,23 @@ export type Database = {
           staff_number: string;
         }[];
       };
+      list_staff_clock_correction_events: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: {
+          attendance_date: string;
+          clock_event_id: string;
+          effective_occurred_at: string;
+          event_type: Database["public"]["Enums"]["staff_clock_event_type"];
+          position_name: string;
+          staff_assignment_id: string;
+          staff_name: string;
+          staff_number: string;
+        }[];
+      };
       list_student_attendance_scopes: {
         Args: {
           target_attendance_date: string;

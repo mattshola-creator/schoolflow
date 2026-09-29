@@ -3,10 +3,12 @@ import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 
 import {
+  attendanceRegisterQuerySchema,
   attendanceSettingsSchema,
   correctStaffClockEventSchema,
   correctStudentAttendanceEntrySchema,
   recordStaffClockEventSchema,
+  staffAttendancePolicySchema,
   submitStudentAttendanceRegisterSchema,
 } from "./schemas";
 
@@ -183,6 +185,101 @@ export async function correctStaffClockEvent(input: unknown) {
   );
   if (error) throw new Error("Staff clock correction could not be saved");
   return data;
+}
+
+export async function loadStaffClockWorkspace(attendanceDate: string) {
+  const date = attendanceRegisterQuerySchema.shape.date.parse(attendanceDate);
+  const context = await requireAttendanceContext(
+    "attendance.staff.record",
+    "attendance.staff_clock",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "list_staff_clock_assignments",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_attendance_date: date,
+    },
+  );
+  if (error) throw new Error("Staff attendance could not be loaded");
+  return { ...context, assignments: data ?? [] };
+}
+
+export async function loadStaffAttendanceSetup() {
+  const context = await requireAttendanceContext(
+    "attendance.configure",
+    "attendance.staff_clock",
+  );
+  const [positions, policies] = await Promise.all([
+    context.supabase.rpc("list_staff_attendance_positions", {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+    }),
+    context.supabase
+      .from("staff_attendance_policies")
+      .select(
+        "id, position_id, name, working_days, starts_at, ends_at, grace_minutes, effective_from, effective_to, status",
+      )
+      .eq("organization_id", context.active.organizationId)
+      .eq("school_id", context.active.schoolId!)
+      .eq("status", "active")
+      .order("name"),
+  ]);
+  if (positions.error || policies.error)
+    throw new Error("Staff attendance setup could not be loaded");
+  return {
+    ...context,
+    positions: positions.data ?? [],
+    policies: policies.data ?? [],
+  };
+}
+
+export async function saveStaffAttendancePolicy(input: unknown) {
+  const parsed = staffAttendancePolicySchema.parse(input);
+  const context = await requireAttendanceContext(
+    "attendance.configure",
+    "attendance.staff_clock",
+  );
+  const { data: userData, error: userError } =
+    await context.supabase.auth.getUser();
+  if (userError || !userData.user)
+    throw new Error("Staff attendance policy could not be saved");
+
+  const table = context.supabase.from("staff_attendance_policies");
+  let existingQuery = table
+    .select("id")
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .eq("status", "active");
+  existingQuery = parsed.positionId
+    ? existingQuery.eq("position_id", parsed.positionId)
+    : existingQuery.is("position_id", null);
+  const existing = await existingQuery.maybeSingle();
+  if (existing.error)
+    throw new Error("Staff attendance policy could not be saved");
+
+  const values = {
+    position_id: parsed.positionId ?? null,
+    name: parsed.name,
+    working_days: parsed.workingDays,
+    starts_at: parsed.startsAt,
+    ends_at: parsed.endsAt,
+    grace_minutes: parsed.graceMinutes,
+    effective_from: parsed.effectiveFrom,
+    effective_to: parsed.effectiveTo ?? null,
+    updated_by: userData.user.id,
+  };
+  const result = existing.data
+    ? await table.update(values).eq("id", existing.data.id)
+    : await table.insert({
+        organization_id: context.active.organizationId,
+        school_id: context.active.schoolId!,
+        status: "active",
+        ...values,
+        created_by: userData.user.id,
+      });
+  if (result.error)
+    throw new Error("Staff attendance policy could not be saved");
 }
 
 export async function loadStudentAttendanceWorkspace(attendanceDate: string) {

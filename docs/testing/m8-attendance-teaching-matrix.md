@@ -200,3 +200,22 @@ The remote matrix also verified idempotent replay, ordered clock-out,
 caller-bound correction, cross-tenant denial and event immutability. The
 temporary actor, role, policy, feature override and attendance activity all
 rolled back. The effective production feature state remained disabled.
+
+## M8-B2 Protected staff attendance UI
+
+| Requirement                                        | Evidence                                                                                                                                                 | Status           |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Clock UI uses the M8-B1 authorization boundary     | Caller-bound list RPC reuses `can_access_staff_attendance_assignment`; service and route require `attendance.staff.record` plus `attendance.staff_clock` | Implemented      |
+| Self-service cannot enumerate unrelated staff      | Assignment rows are returned only when the existing helper authorizes that exact assignment and date                                                     | Implemented      |
+| Working-hours setup is separately protected        | Setup load/save require `attendance.configure`, active context and the staff-clock feature                                                               | Implemented      |
+| Browser cannot choose an arbitrary occurrence time | Server action generates the timestamp and submits one validated RPC call                                                                                 | Verified locally |
+| Failure remains generic and does not retry         | Focused action/service tests assert one call and safe redirects without database detail                                                                  | Verified locally |
+| Mobile layout avoids page-wide overflow            | Assignment state uses stacked responsive cards, wrapped identifiers and full-width mobile actions                                                        | Verified locally |
+| Historical clock state is read-only                | Clock action is rendered only for the current local school date                                                                                          | Verified locally |
+| Production activity remains zero                   | Rollback-only matrix passed; post-check policy/day/event/correction counts are 0/0/0/0 and the feature remains disabled                                  | Verified         |
+
+M8-B2 does not include controlled correction UI, approved absence/permission,
+missing-clock Action Center exceptions, summaries or production enablement.
+The remote matrix verified authorized assignment and position discovery,
+cross-tenant non-disclosure and RLS-protected policy insertion before rolling
+back its actor, role, feature override and policy.

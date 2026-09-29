@@ -35,7 +35,7 @@ describe("staff attendance page", () => {
   it("renders a mobile-safe clock card and protected setup link", async () => {
     render(
       await StaffAttendancePage({
-        searchParams: Promise.resolve({ date: "2026-09-28" }),
+        searchParams: Promise.resolve({}),
       }),
     );
     expect(

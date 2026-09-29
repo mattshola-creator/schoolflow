@@ -2,7 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { recordStaffClockEvent } from "@/features/attendance/service";
+import {
+  correctStaffClockEvent,
+  recordStaffClockEvent,
+} from "@/features/attendance/service";
+
+function staffAttendanceUrl(
+  date: string,
+  kind: "error" | "message",
+  message: string,
+) {
+  const params = new URLSearchParams({ date, [kind]: message });
+  return `/attendance/staff?${params.toString()}`;
+}
 
 export async function recordStaffClock(formData: FormData) {
   const assignmentId = formData.get("staffAssignmentId");
@@ -30,4 +42,50 @@ export async function recordStaffClock(formData: FormData) {
   }
   revalidatePath("/attendance/staff");
   redirect("/attendance/staff?message=Staff+clock+event+recorded");
+}
+
+export async function correctStaffClock(formData: FormData) {
+  const clockEventId = formData.get("clockEventId");
+  const attendanceDate = formData.get("attendanceDate");
+  const correctedTime = formData.get("correctedTime");
+  const reason = formData.get("reason");
+  if (
+    typeof clockEventId !== "string" ||
+    typeof attendanceDate !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(attendanceDate) ||
+    typeof correctedTime !== "string" ||
+    !/^\d{2}:\d{2}$/.test(correctedTime) ||
+    typeof reason !== "string"
+  )
+    redirect(
+      staffAttendanceUrl(
+        typeof attendanceDate === "string" ? attendanceDate : "",
+        "error",
+        "The correction request is invalid",
+      ),
+    );
+
+  try {
+    await correctStaffClockEvent({
+      clockEventId,
+      correctedOccurredAt: `${attendanceDate}T${correctedTime}:00+01:00`,
+      reason,
+    });
+  } catch {
+    redirect(
+      staffAttendanceUrl(
+        attendanceDate,
+        "error",
+        "The clock correction could not be saved",
+      ),
+    );
+  }
+  revalidatePath("/attendance/staff");
+  redirect(
+    staffAttendanceUrl(
+      attendanceDate,
+      "message",
+      "Staff clock correction saved",
+    ),
+  );
 }

@@ -50,3 +50,33 @@ export const teachingAssignmentLifecycleSchema = z.object({
 });
 
 export type TeachingAssignmentInput = z.infer<typeof teachingAssignmentSchema>;
+
+export const timetablePeriodSchema = z
+  .object({
+    sessionId: z.string().uuid(),
+    weekday: z.coerce.number().int().min(1).max(7),
+    name: z.string().trim().min(1).max(80),
+    startsAt: z.iso.time({ precision: -1 }),
+    endsAt: z.iso.time({ precision: -1 }),
+  })
+  .refine((value) => value.endsAt > value.startsAt, {
+    path: ["endsAt"],
+    message: "The period must end after it starts.",
+  });
+
+export const timetableEntrySchema = z.object({
+  sessionId: z.string().uuid(),
+  periodId: z.string().uuid(),
+  teachingAssignmentId: z.string().uuid(),
+  acknowledgeConflict: z.preprocess(
+    (value) => value === true || value === "true" || value === "on",
+    z.boolean(),
+  ),
+  notes: z.preprocess(
+    (value) => (value === "" || value === null ? undefined : value),
+    z.string().trim().min(1).max(500).optional(),
+  ),
+});
+
+export type TimetablePeriodInput = z.infer<typeof timetablePeriodSchema>;
+export type TimetableEntryInput = z.infer<typeof timetableEntrySchema>;

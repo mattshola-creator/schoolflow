@@ -1,5 +1,5 @@
 import { fieldClass } from "@/components/auth-card";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { loadTeachingAssignmentWorkspace } from "@/features/academics/teaching-service";
 import { changeTeachingAssignment, saveTeachingAssignment } from "./actions";
@@ -43,6 +43,11 @@ export default async function TeachingPage({
         eyebrow="Teaching management"
         title={`Teaching assignments at ${workspace.active.schoolName}`}
         description="Assign class and subject responsibilities without granting access to unrelated schools or classes."
+        actions={
+          <ButtonLink href="/teaching/timetable" variant="secondary">
+            Open timetable
+          </ButtonLink>
+        }
       />
       {notice.error || notice.message ? (
         <p

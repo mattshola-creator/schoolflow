@@ -15,6 +15,7 @@ vi.mock("@/lib/tenant-context", () => ({ loadTenantContext }));
 
 import {
   createTeachingAssignment,
+  findTimetableConflictKinds,
   requireTeachingContext,
 } from "./teaching-service";
 
@@ -101,5 +102,34 @@ describe("teaching management context", () => {
       }),
     ).rejects.toThrow("Teaching assignment could not be created");
     expect(insert).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("manual timetable conflict detection", () => {
+  const target = {
+    staff_assignment_id: "teacher-a",
+    class_level_id: "level-a",
+    class_arm_id: "arm-a",
+  };
+
+  it("distinguishes teacher and class conflicts", () => {
+    expect(
+      findTimetableConflictKinds(target, [
+        { ...target, class_level_id: "level-b", class_arm_id: null },
+        { ...target, staff_assignment_id: "teacher-b" },
+      ]),
+    ).toEqual(["teacher", "class"]);
+  });
+
+  it("returns no conflict for a different teacher and class", () => {
+    expect(
+      findTimetableConflictKinds(target, [
+        {
+          staff_assignment_id: "teacher-b",
+          class_level_id: "level-b",
+          class_arm_id: null,
+        },
+      ]),
+    ).toEqual([]);
   });
 });

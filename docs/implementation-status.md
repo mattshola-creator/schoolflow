@@ -1,6 +1,6 @@
 # SchoolFlow Implementation Status
 
-Last updated: 28 September 2026
+Last updated: 29 September 2026
 
 ## Current milestone
 
@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-B2 Staff Attendance UI In Progress
+M8 Attendance & Teaching — M8-B2 Staff Attendance UI Deployed & Verified
 
 ## Completed milestones
 
@@ -70,11 +70,14 @@ register submission, read-only submitted state and controlled immutable
 corrections. One authorized production QA register with two entries and one
 Present-to-Late correction passed persisted-state and audit verification. The
 temporary QA feature override was disabled afterward and the QA account was
-signed out. Staff attendance, timetable, curriculum, lesson delivery and
-homework have not started. M8-B1 added the disabled-by-default staff clock
-event, daily summary and immutable correction foundation. M8-B2 is adding the
-protected working-hours setup and responsive clock experience without
-production enablement or production clock activity.
+signed out. Timetable, curriculum, lesson delivery and homework have not
+started. M8-B1 added the disabled-by-default staff clock event, daily summary
+and immutable correction foundation. M8-B2 added the protected working-hours
+setup and responsive clock experience. One authorized production QA cycle
+created one working-hours policy, one staff attendance day and two clock events
+with zero corrections; school-scoped audit records were verified. The
+temporary `attendance.staff_clock` override was disabled again, the QA session
+was signed out and the synthetic evidence remains preserved.
 
 ## M6 completion evidence
 

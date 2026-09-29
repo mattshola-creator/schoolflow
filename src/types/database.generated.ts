@@ -3867,6 +3867,93 @@ export type Database = {
           },
         ];
       };
+      timetable_entries: {
+        Row: {
+          conflict_acknowledged: boolean;
+          created_at: string;
+          created_by: string;
+          id: string;
+          notes: string | null;
+          organization_id: string;
+          period_id: string;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          teaching_assignment_id: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          conflict_acknowledged?: boolean;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          notes?: string | null;
+          organization_id: string;
+          period_id: string;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          teaching_assignment_id: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          conflict_acknowledged?: boolean;
+          notes?: string | null;
+          period_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          teaching_assignment_id?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [];
+      };
+      timetable_periods: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          ends_at: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          session_id: string;
+          sort_order: number;
+          starts_at: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+          weekday: number;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          ends_at: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          session_id: string;
+          sort_order?: number;
+          starts_at: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+          weekday: number;
+        };
+        Update: {
+          ends_at?: string;
+          name?: string;
+          sort_order?: number;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+          weekday?: number;
+        };
+        Relationships: [];
+      };
       teaching_assignments: {
         Row: {
           assignment_type: Database["public"]["Enums"]["teaching_assignment_type"];

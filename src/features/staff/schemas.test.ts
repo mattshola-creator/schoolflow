@@ -5,6 +5,7 @@ import {
   positionSchema,
   staffSchema,
   transferAssignmentSchema,
+  staffTimeRequestSchema,
 } from "./schemas";
 
 const ids = {
@@ -83,5 +84,36 @@ describe("staff validation", () => {
         startedOn: "2026-09-15",
       }).success,
     ).toBe(true);
+  });
+
+  it("validates leave and permission request boundaries", () => {
+    const base = {
+      staffAssignmentId: ids.positionId,
+      startsAt: "2026-10-01T08:00:00+01:00",
+      endsAt: "2026-10-01T12:00:00+01:00",
+      reason: "Approved personal appointment",
+      policyId: ids.roleId,
+    };
+    expect(
+      staffTimeRequestSchema.safeParse({
+        ...base,
+        kind: "permission",
+        leaveTypeId: "",
+      }).success,
+    ).toBe(true);
+    expect(
+      staffTimeRequestSchema.safeParse({
+        ...base,
+        kind: "leave",
+        leaveTypeId: "",
+      }).success,
+    ).toBe(false);
+    expect(
+      staffTimeRequestSchema.safeParse({
+        ...base,
+        kind: "permission",
+        leaveTypeId: ids.userId,
+      }).success,
+    ).toBe(false);
   });
 });

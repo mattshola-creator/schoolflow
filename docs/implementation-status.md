@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-B3 Staff Clock Corrections In Progress
+M8 Attendance & Teaching — M8-B4 Staff Time-Off Foundation In Progress
 
 ## Completed milestones
 
@@ -77,11 +77,13 @@ setup and responsive clock experience. One authorized production QA cycle
 created one working-hours policy, one staff attendance day and two clock events
 with zero corrections; school-scoped audit records were verified. The
 temporary `attendance.staff_clock` override was disabled again, the QA session
-was signed out and the synthetic evidence remains preserved. M8-B3 adds a
-separately authorized correction view and form over the existing immutable
-clock-correction RPC. The new caller-bound read function is deployed to the
-connected Supabase project, while the application revision and production
-feature remain unchanged pending the focused PR.
+was signed out and the synthetic evidence remains preserved. M8-B3's
+separately authorized correction view and form are deployed through PR #58,
+revision `7ea3ff3a85705272abcc52e17d001445f569a6d8`, with the feature still
+disabled. M8-B4 now adds the disabled-by-default Staff/HR leave and permission
+foundation, caller-bound submission and shared approval linkage. No leave type
+or request has been created; application publication remains pending the
+focused PR.
 
 ## M6 completion evidence
 

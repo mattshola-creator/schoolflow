@@ -4274,6 +4274,20 @@ export type Database = {
         };
         Returns: string;
       };
+      submit_staff_time_request: {
+        Args: {
+          target_ends_at: string;
+          target_kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          target_leave_type_id: string | null;
+          target_organization_id: string;
+          target_policy_id: string;
+          target_reason: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+          target_starts_at: string;
+        };
+        Returns: string;
+      };
       transfer_staff_assignment: {
         Args: {
           target_assignment_id: string;
@@ -4363,6 +4377,9 @@ export type Database = {
         "present" | "late" | "left_early" | "incomplete" | "excused";
       staff_clock_event_type: "clock_in" | "clock_out";
       staff_clock_source: "self_service" | "authorized_operator";
+      staff_time_request_kind: "leave" | "permission";
+      staff_time_request_status:
+        "submitted" | "approved" | "rejected" | "returned" | "cancelled";
       student_attendance_register_type: "morning" | "closing";
       student_lifecycle_status:
         | "pending_enrollment"
@@ -4612,6 +4629,14 @@ export const Constants = {
       ],
       staff_clock_event_type: ["clock_in", "clock_out"],
       staff_clock_source: ["self_service", "authorized_operator"],
+      staff_time_request_kind: ["leave", "permission"],
+      staff_time_request_status: [
+        "submitted",
+        "approved",
+        "rejected",
+        "returned",
+        "cancelled",
+      ],
       student_attendance_register_type: ["morning", "closing"],
       student_lifecycle_status: [
         "pending_enrollment",

@@ -1,6 +1,7 @@
 import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
+import { staffTimeRequestSchema } from "./schemas";
 
 export async function requireStaffContext(
   permission = "staff.view",
@@ -211,4 +212,29 @@ export async function loadStaffMember(staffId: string) {
     positions: positions.data ?? [],
     departments: departments.data ?? [],
   };
+}
+
+export async function submitStaffTimeRequest(input: unknown) {
+  const parsed = staffTimeRequestSchema.parse(input);
+  const context = await requireStaffContext(
+    "staff.time_off.request",
+    "staff.leave_permission",
+  );
+  const { data, error } = await context.supabase.rpc(
+    "submit_staff_time_request",
+    {
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+      target_staff_assignment_id: parsed.staffAssignmentId,
+      target_kind: parsed.kind,
+      target_leave_type_id: parsed.leaveTypeId,
+      target_starts_at: parsed.startsAt,
+      target_ends_at: parsed.endsAt,
+      target_reason: parsed.reason,
+      target_policy_id: parsed.policyId,
+    },
+  );
+  if (error || !data)
+    throw new Error("Staff time request could not be submitted");
+  return data;
 }

@@ -243,3 +243,19 @@ TypeScript and the production build. The Supabase security advisor reported no
 new Critical or High finding. Its existing warning category for intentionally
 caller-bound `security definer` RPCs remains unchanged. Production browser QA
 and temporary feature enablement are not part of this implementation slice.
+
+## M8-B4 Staff leave and permission foundation
+
+| Requirement                                      | Evidence                                                                                                                                         | Status            |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| Staff/HR owns leave and permission records       | School-scoped leave-type and time-request tables are separate from Attendance and link to the reusable shared approval engine                    | Implemented       |
+| Leave and short permission remain distinct       | Request kind is constrained to `leave` or `permission`; leave requires an active leave type and permission forbids one                           | Verified remotely |
+| Submission is atomic and caller-bound            | One RPC validates identity, active assignment, self/manager scope, policy key and first approval step before inserting both linked records       | Implemented       |
+| Approval outcomes synchronize safely             | A private trigger maps only the linked shared approval status to the Staff/HR request; the shared approval engine remains the decision owner     | Implemented       |
+| Tenant and school isolation remain enforced      | Composite foreign keys, RLS, active-assignment checks and existing staff capability evaluation bind every request to its organization and school | Verified remotely |
+| Direct request writes are denied                 | Authenticated clients receive SELECT only; submission uses the validated RPC and anonymous execution is revoked                                  | Verified remotely |
+| Feature is disabled and production data is empty | `staff.leave_permission` defaults to disabled, has zero enabled overrides, and both new business tables contain zero rows                        | Verified remotely |
+| Validation and failures remain fail-closed       | Focused tests reject invalid kind/type/range combinations, mismatched context and RPC failures without retries or protected database detail      | Verified locally  |
+
+Attendance integration, summaries, exception tasks, configuration/request UI
+and controlled production QA are intentionally outside this foundation slice.

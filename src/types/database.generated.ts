@@ -3867,6 +3867,65 @@ export type Database = {
           },
         ];
       };
+      curriculum_items: {
+        Row: {
+          academic_period_id: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          completed_on: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          learning_objectives: string | null;
+          organization_id: string;
+          planned_end: string;
+          planned_start: string;
+          school_id: string;
+          sequence: number;
+          session_id: string;
+          status: Database["public"]["Enums"]["curriculum_item_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          completed_on?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          learning_objectives?: string | null;
+          organization_id: string;
+          planned_end: string;
+          planned_start: string;
+          school_id: string;
+          sequence: number;
+          session_id: string;
+          status?: Database["public"]["Enums"]["curriculum_item_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          completed_on?: string | null;
+          learning_objectives?: string | null;
+          planned_end?: string;
+          planned_start?: string;
+          sequence?: number;
+          status?: Database["public"]["Enums"]["curriculum_item_status"];
+          title?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [];
+      };
       timetable_entries: {
         Row: {
           conflict_acknowledged: boolean;
@@ -4654,6 +4713,8 @@ export type Database = {
       approval_request_status:
         "pending" | "approved" | "rejected" | "returned" | "cancelled";
       assessment_attempt_status: "scheduled" | "completed" | "cancelled";
+      curriculum_item_status:
+        "planned" | "in_progress" | "completed" | "deferred" | "cancelled";
       assignment_scope: "organization" | "management_group" | "school";
       attendance_status:
         "present" | "late" | "absent" | "excused" | "left_early";

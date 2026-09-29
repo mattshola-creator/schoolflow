@@ -44,9 +44,14 @@ export default async function TeachingPage({
         title={`Teaching assignments at ${workspace.active.schoolName}`}
         description="Assign class and subject responsibilities without granting access to unrelated schools or classes."
         actions={
-          <ButtonLink href="/teaching/timetable" variant="secondary">
-            Open timetable
-          </ButtonLink>
+          <>
+            <ButtonLink href="/teaching/timetable" variant="secondary">
+              Timetable
+            </ButtonLink>
+            <ButtonLink href="/teaching/curriculum" variant="secondary">
+              Curriculum
+            </ButtonLink>
+          </>
         }
       />
       {notice.error || notice.message ? (

@@ -67,9 +67,14 @@ export default async function TimetablePage({
         title={`Manual timetable at ${workspace.active.schoolName}`}
         description="Build the weekly timetable from approved teaching assignments. Potential teacher and class clashes require an explicit review."
         actions={
-          <ButtonLink href="/teaching" variant="secondary">
-            Teaching assignments
-          </ButtonLink>
+          <>
+            <ButtonLink href="/teaching" variant="secondary">
+              Assignments
+            </ButtonLink>
+            <ButtonLink href="/teaching/curriculum" variant="secondary">
+              Curriculum
+            </ButtonLink>
+          </>
         }
       />
       {notice.error || notice.message || notice.warning ? (

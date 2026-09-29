@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-B6 Attendance Summaries and Exceptions In Progress
+M8 Attendance & Teaching — M8-E1 Teaching Assignment Management In Progress
 
 ## Completed milestones
 
@@ -102,6 +102,13 @@ exceptions. Later valid evidence resolves the exception and completes its
 still-open task while preserving audit history. Summary access and task
 generation remain separately permissioned, and the production feature remains
 disabled.
+
+M8-E1 exposes the existing effective-dated teaching-assignment foundation
+through a protected responsive workspace. Class-teacher and subject-teacher
+responsibilities remain distinct, assignment lifecycle is non-destructive, and
+all queries and writes retain exact active-school scope. Timetable, curriculum,
+lesson delivery and homework remain separate later slices; the production
+teaching feature remains disabled.
 
 ## M6 completion evidence
 

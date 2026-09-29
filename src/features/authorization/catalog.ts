@@ -72,6 +72,14 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     href: "/academic-setup",
   },
   {
+    module: "academics",
+    permission: "academics.teaching_assignments.view",
+    feature: "academics.teaching_management",
+    label: "Teaching",
+    description: "Teaching assignments and schedules",
+    href: "/teaching",
+  },
+  {
     module: "finance",
     permission: "finance.view",
     label: "Finance",

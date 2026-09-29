@@ -1,32 +1,49 @@
 import { describe, expect, it } from "vitest";
 import { teachingAssignmentSchema } from "./teaching-schemas";
 
-const assignment = {
+const base = {
   sessionId: crypto.randomUUID(),
   staffAssignmentId: crypto.randomUUID(),
   classLevelId: crypto.randomUUID(),
-  assignmentType: "subject_teacher",
-  status: "active",
+  classArmId: "",
   startedOn: "2026-09-01",
-} as const;
+  endedOn: "",
+};
 
-describe("teaching assignment validation", () => {
-  it("requires a subject for a subject-teacher assignment", () => {
-    expect(teachingAssignmentSchema.safeParse(assignment).success).toBe(false);
+describe("teaching assignment schema", () => {
+  it("accepts a class teacher without a subject", () => {
     expect(
       teachingAssignmentSchema.safeParse({
-        ...assignment,
+        ...base,
+        assignmentType: "class_teacher",
+        subjectId: "",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("requires a subject only for subject teachers", () => {
+    expect(
+      teachingAssignmentSchema.safeParse({
+        ...base,
+        assignmentType: "subject_teacher",
+        subjectId: "",
+      }).success,
+    ).toBe(false);
+    expect(
+      teachingAssignmentSchema.safeParse({
+        ...base,
+        assignmentType: "subject_teacher",
         subjectId: crypto.randomUUID(),
       }).success,
     ).toBe(true);
   });
 
-  it("preserves effective-dated assignment history", () => {
+  it("rejects reversed assignment dates", () => {
     expect(
       teachingAssignmentSchema.safeParse({
-        ...assignment,
-        subjectId: crypto.randomUUID(),
-        status: "ended",
+        ...base,
+        assignmentType: "class_teacher",
+        subjectId: "",
         endedOn: "2026-08-31",
       }).success,
     ).toBe(false);

@@ -293,3 +293,18 @@ cycle are outside this implementation slice.
 
 Production exception generation and live clock mutation are outside this
 implementation slice.
+
+## M8-E1 Teaching assignment management
+
+| Requirement                                            | Evidence                                                                                                                                  | Status                          |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Class and subject responsibilities are distinct        | Shared schema and database constraint require no subject for class teachers and exactly one subject for subject teachers                  | Verified locally                |
+| Assignment scope reuses academic and staff foundations | Existing composite foreign keys bind session, staff assignment, subject, class level and optional arm to the same organization and school | Implemented                     |
+| Dates and overlaps preserve historical truth           | Existing trigger confines dates to the session and staff assignment and rejects overlapping active/planned duplicate scope                | Implemented                     |
+| Viewing and management are separately authorized       | Route/service require the teaching feature and use distinct view/manage permissions through the active school context                     | Verified locally                |
+| Direct API access remains tenant-safe                  | Existing RLS, exact organization/school predicates and authenticated-only grants remain authoritative                                     | Verified locally                |
+| Lifecycle avoids destructive deletion                  | Responsive controls support active, ended and cancelled states; no delete grant or delete action is added                                 | Verified locally                |
+| Production remains disabled and empty                  | No feature override or production teaching assignment is introduced by this implementation slice                                          | Pending deployment verification |
+
+Manual timetable allocation, conflict warnings, curriculum, lesson delivery and
+homework remain outside M8-E1.

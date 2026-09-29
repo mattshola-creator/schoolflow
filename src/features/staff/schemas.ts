@@ -89,3 +89,27 @@ export const transferAssignmentSchema = z.object({
   positionId: z.string().uuid(),
   startedOn: z.iso.date(),
 });
+
+export const staffTimeRequestSchema = z
+  .object({
+    staffAssignmentId: z.string().uuid(),
+    kind: z.enum(["leave", "permission"]),
+    leaveTypeId: optionalUuid,
+    startsAt: z.iso.datetime({ offset: true }),
+    endsAt: z.iso.datetime({ offset: true }),
+    reason: z.string().trim().min(3).max(1000),
+    policyId: z.string().uuid(),
+  })
+  .refine((value) => new Date(value.endsAt) > new Date(value.startsAt), {
+    message: "The end must be after the start",
+    path: ["endsAt"],
+  })
+  .refine(
+    (value) =>
+      (value.kind === "leave" && value.leaveTypeId !== null) ||
+      (value.kind === "permission" && value.leaveTypeId === null),
+    {
+      message: "Leave type is required only for leave requests",
+      path: ["leaveTypeId"],
+    },
+  );

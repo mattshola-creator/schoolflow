@@ -4236,10 +4236,15 @@ export type Database = {
           target_school_id: string;
         };
         Returns: {
+          approved_time_off_ends_at: string | null;
+          approved_time_off_kind:
+            Database["public"]["Enums"]["staff_time_request_kind"] | null;
+          approved_time_off_starts_at: string | null;
           attendance_day_id: string;
           clock_in_at: string;
           clock_out_at: string;
           day_status: Database["public"]["Enums"]["staff_attendance_day_status"];
+          is_excused: boolean;
           policy_ends_at: string;
           policy_grace_minutes: number;
           policy_name: string;

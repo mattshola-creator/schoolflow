@@ -203,19 +203,24 @@ rolled back. The effective production feature state remained disabled.
 
 ## M8-B2 Protected staff attendance UI
 
-| Requirement                                        | Evidence                                                                                                                                                 | Status           |
-| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| Clock UI uses the M8-B1 authorization boundary     | Caller-bound list RPC reuses `can_access_staff_attendance_assignment`; service and route require `attendance.staff.record` plus `attendance.staff_clock` | Implemented      |
-| Self-service cannot enumerate unrelated staff      | Assignment rows are returned only when the existing helper authorizes that exact assignment and date                                                     | Implemented      |
-| Working-hours setup is separately protected        | Setup load/save require `attendance.configure`, active context and the staff-clock feature                                                               | Implemented      |
-| Browser cannot choose an arbitrary occurrence time | Server action generates the timestamp and submits one validated RPC call                                                                                 | Verified locally |
-| Failure remains generic and does not retry         | Focused action/service tests assert one call and safe redirects without database detail                                                                  | Verified locally |
-| Mobile layout avoids page-wide overflow            | Assignment state uses stacked responsive cards, wrapped identifiers and full-width mobile actions                                                        | Verified locally |
-| Historical clock state is read-only                | Clock action is rendered only for the current local school date                                                                                          | Verified locally |
-| Production activity remains zero                   | Rollback-only matrix passed; post-check policy/day/event/correction counts are 0/0/0/0 and the feature remains disabled                                  | Verified         |
+| Requirement                                        | Evidence                                                                                                                                                               | Status                             |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Clock UI uses the M8-B1 authorization boundary     | Caller-bound list RPC reuses `can_access_staff_attendance_assignment`; service and route require `attendance.staff.record` plus `attendance.staff_clock`               | Verified locally and in production |
+| Self-service cannot enumerate unrelated staff      | Assignment rows are returned only when the existing helper authorizes that exact assignment and date; the controlled QA actor saw only its authorized assignment       | Verified locally and in production |
+| Working-hours setup is separately protected        | Setup load/save require `attendance.configure`, active context and the staff-clock feature; one position-specific QA policy persisted under the expected school        | Verified locally and in production |
+| Browser cannot choose an arbitrary occurrence time | Server action generates the timestamp and submits one validated RPC call; the production cycle recorded server-authorized clock-in and clock-out events                | Verified locally and in production |
+| Failure remains generic and does not retry         | Focused action/service tests assert one call and safe redirects without database detail                                                                                | Verified locally                   |
+| Mobile layout avoids page-wide overflow            | Assignment state uses stacked responsive cards, wrapped identifiers and full-width mobile actions; real-phone verification passed                                      | Verified locally and in production |
+| Historical clock state is read-only                | Clock action is rendered only for the current local school date                                                                                                        | Verified locally                   |
+| Controlled production persistence and audit        | One authorized cycle persisted one policy, one daily summary and two ordered clock events with zero corrections; matching school-scoped audit events used the QA actor | Verified in production             |
+| Feature returns to its safe default                | `attendance.staff_clock` was disabled after verification, the QA session was signed out and the permanent owner account was untouched                                  | Verified in production             |
 
 M8-B2 does not include controlled correction UI, approved absence/permission,
-missing-clock Action Center exceptions, summaries or production enablement.
-The remote matrix verified authorized assignment and position discovery,
-cross-tenant non-disclosure and RLS-protected policy insertion before rolling
-back its actor, role, feature override and policy.
+missing-clock Action Center exceptions, summaries or continuing production
+enablement. The remote matrix verified authorized assignment and position
+discovery, cross-tenant non-disclosure and RLS-protected policy insertion
+before rolling back its actor, role, feature override and policy. Controlled
+production QA then verified the deployed working-hours and clock journey with
+one synthetic policy, one attendance day and two clock events. The resulting
+QA evidence is intentionally preserved; no correction was created. The feature
+override was disabled after the test.

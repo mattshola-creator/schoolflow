@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-B4 Staff Time-Off Foundation In Progress
+M8 Attendance & Teaching — M8-B5 Time-Off Attendance Integration In Progress
 
 ## Completed milestones
 
@@ -84,8 +84,16 @@ disabled. M8-B4 now adds the disabled-by-default Staff/HR leave and permission
 foundation, caller-bound submission and shared approval linkage. The follow-up
 workspace reuses the school's location-level IANA timezone, validates timezone
 changes, converts local civil times inside Postgres and adds protected leave,
-permission and leave-type forms. No leave type or request has been created;
-application publication remains pending the focused PR.
+permission and leave-type forms. PR #60 is deployed at revision
+`45ea3bb1ac574058936a0609c077e5f39103de1c`; no leave type or request has been
+created and the feature remains disabled.
+
+M8-B5 integrates approved Staff/HR time-off into the caller-bound staff clock
+workspace without copying or mutating business records. Full scheduled-policy
+coverage in the school's configured timezone is treated as excused and
+suppresses clock actions; partial permissions remain visible without excusing
+the whole day. Both production features remain disabled and no production
+request or attendance activity is created by this slice.
 
 ## M6 completion evidence
 

@@ -1324,6 +1324,135 @@ export type Database = {
           },
         ];
       };
+      curriculum_items: {
+        Row: {
+          academic_period_id: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          completed_on: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          learning_objectives: string | null;
+          organization_id: string;
+          planned_end: string;
+          planned_start: string;
+          school_id: string;
+          sequence: number;
+          session_id: string;
+          status: Database["public"]["Enums"]["curriculum_item_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          completed_on?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          learning_objectives?: string | null;
+          organization_id: string;
+          planned_end: string;
+          planned_start: string;
+          school_id: string;
+          sequence: number;
+          session_id: string;
+          status?: Database["public"]["Enums"]["curriculum_item_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id?: string;
+          completed_on?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          learning_objectives?: string | null;
+          organization_id?: string;
+          planned_end?: string;
+          planned_start?: string;
+          school_id?: string;
+          sequence?: number;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["curriculum_item_status"];
+          subject_id?: string;
+          teaching_assignment_id?: string;
+          title?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_items_academic_period_id_session_id_organizatio_fkey";
+            columns: [
+              "academic_period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "curriculum_items_class_arm_id_organization_id_school_id_fkey";
+            columns: ["class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "curriculum_items_class_level_id_organization_id_school_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "curriculum_items_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "curriculum_items_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "curriculum_items_subject_id_organization_id_school_id_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "curriculum_items_teaching_assignment_id_organization_id_sc_fkey";
+            columns: ["teaching_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "teaching_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       departments: {
         Row: {
           code: string | null;
@@ -1542,6 +1671,274 @@ export type Database = {
           },
         ];
       };
+      fee_categories: {
+        Row: {
+          code: string;
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          frequency: Database["public"]["Enums"]["fee_frequency"];
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["finance_record_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          frequency?: Database["public"]["Enums"]["fee_frequency"];
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["finance_record_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          frequency?: Database["public"]["Enums"]["fee_frequency"];
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["finance_record_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "fee_categories_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      fee_structure_items: {
+        Row: {
+          amount: number;
+          created_at: string;
+          created_by: string;
+          due_date: string | null;
+          fee_category_id: string;
+          fee_structure_id: string;
+          id: string;
+          incentive_amount: number;
+          installment_sequence: number;
+          organization_id: string;
+          penalty_amount: number;
+          school_id: string;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string;
+          created_by?: string;
+          due_date?: string | null;
+          fee_category_id: string;
+          fee_structure_id: string;
+          id?: string;
+          incentive_amount?: number;
+          installment_sequence?: number;
+          organization_id: string;
+          penalty_amount?: number;
+          school_id: string;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string;
+          created_by?: string;
+          due_date?: string | null;
+          fee_category_id?: string;
+          fee_structure_id?: string;
+          id?: string;
+          incentive_amount?: number;
+          installment_sequence?: number;
+          organization_id?: string;
+          penalty_amount?: number;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "fee_structure_items_fee_category_id_organization_id_school_fkey";
+            columns: ["fee_category_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "fee_categories";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "fee_structure_items_fee_structure_id_organization_id_schoo_fkey";
+            columns: ["fee_structure_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "fee_structures";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      fee_structures: {
+        Row: {
+          activated_at: string | null;
+          class_level_id: string | null;
+          created_at: string;
+          created_by: string;
+          currency_code: string;
+          effective_from: string;
+          effective_to: string | null;
+          id: string;
+          name: string;
+          organization_id: string;
+          period_id: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["finance_record_status"];
+          student_category_id: string | null;
+          updated_at: string;
+          updated_by: string;
+          version: number;
+        };
+        Insert: {
+          activated_at?: string | null;
+          class_level_id?: string | null;
+          created_at?: string;
+          created_by?: string;
+          currency_code?: string;
+          effective_from: string;
+          effective_to?: string | null;
+          id?: string;
+          name: string;
+          organization_id: string;
+          period_id?: string | null;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["finance_record_status"];
+          student_category_id?: string | null;
+          updated_at?: string;
+          updated_by?: string;
+          version?: number;
+        };
+        Update: {
+          activated_at?: string | null;
+          class_level_id?: string | null;
+          created_at?: string;
+          created_by?: string;
+          currency_code?: string;
+          effective_from?: string;
+          effective_to?: string | null;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          period_id?: string | null;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["finance_record_status"];
+          student_category_id?: string | null;
+          updated_at?: string;
+          updated_by?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "fee_structures_class_level_id_organization_id_school_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "fee_structures_period_id_organization_id_school_id_fkey";
+            columns: ["period_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "fee_structures_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "fee_structures_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "fee_structures_student_category_id_organization_id_school__fkey";
+            columns: ["student_category_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "student_categories";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      finance_settings: {
+        Row: {
+          allow_cross_student_allocation: boolean;
+          billing_locked_through: string | null;
+          created_at: string;
+          created_by: string;
+          currency_code: string;
+          organization_id: string;
+          payment_recorder_may_verify: boolean;
+          receipt_next_number: number;
+          receipt_prefix: string;
+          require_payment_verification: boolean;
+          school_id: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          allow_cross_student_allocation?: boolean;
+          billing_locked_through?: string | null;
+          created_at?: string;
+          created_by?: string;
+          currency_code?: string;
+          organization_id: string;
+          payment_recorder_may_verify?: boolean;
+          receipt_next_number?: number;
+          receipt_prefix?: string;
+          require_payment_verification?: boolean;
+          school_id: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          allow_cross_student_allocation?: boolean;
+          billing_locked_through?: string | null;
+          created_at?: string;
+          created_by?: string;
+          currency_code?: string;
+          organization_id?: string;
+          payment_recorder_may_verify?: boolean;
+          receipt_next_number?: number;
+          receipt_prefix?: string;
+          require_payment_verification?: boolean;
+          school_id?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "finance_settings_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: true;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       guardian_relationships: {
         Row: {
           created_at: string;
@@ -1612,6 +2009,152 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "student_profiles";
             referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      homework_assignments: {
+        Row: {
+          academic_period_id: string | null;
+          assigned_on: string;
+          class_arm_id: string | null;
+          class_level_id: string;
+          created_at: string;
+          created_by: string;
+          curriculum_item_id: string | null;
+          due_on: string;
+          id: string;
+          instructions: string;
+          lesson_delivery_id: string | null;
+          organization_id: string;
+          published_at: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["homework_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          assigned_on: string;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          created_at?: string;
+          created_by?: string;
+          curriculum_item_id?: string | null;
+          due_on: string;
+          id?: string;
+          instructions: string;
+          lesson_delivery_id?: string | null;
+          organization_id: string;
+          published_at?: string | null;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["homework_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          assigned_on?: string;
+          class_arm_id?: string | null;
+          class_level_id?: string;
+          created_at?: string;
+          created_by?: string;
+          curriculum_item_id?: string | null;
+          due_on?: string;
+          id?: string;
+          instructions?: string;
+          lesson_delivery_id?: string | null;
+          organization_id?: string;
+          published_at?: string | null;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["homework_status"];
+          subject_id?: string;
+          teaching_assignment_id?: string;
+          title?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "homework_assignments_academic_period_id_session_id_organiz_fkey";
+            columns: [
+              "academic_period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "homework_assignments_class_arm_id_organization_id_school_i_fkey";
+            columns: ["class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_class_level_id_organization_id_school_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_curriculum_item_id_organization_id_sc_fkey";
+            columns: ["curriculum_item_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "curriculum_items";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_lesson_delivery_id_organization_id_sc_fkey";
+            columns: ["lesson_delivery_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "lesson_deliveries";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_subject_id_organization_id_school_id_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "homework_assignments_teaching_assignment_id_organization_i_fkey";
+            columns: ["teaching_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "teaching_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
           },
         ];
       };
@@ -1782,6 +2325,303 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "schools";
             referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      lesson_deliveries: {
+        Row: {
+          academic_period_id: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          classwork: string | null;
+          coverage_notes: string;
+          created_at: string;
+          curriculum_item_id: string | null;
+          delivered_on: string;
+          homework: string | null;
+          id: string;
+          lesson_plan_id: string | null;
+          organization_id: string;
+          recorded_by: string;
+          reflection: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["lesson_delivery_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          topic: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          classwork?: string | null;
+          coverage_notes: string;
+          created_at?: string;
+          curriculum_item_id?: string | null;
+          delivered_on: string;
+          homework?: string | null;
+          id?: string;
+          lesson_plan_id?: string | null;
+          organization_id: string;
+          recorded_by?: string;
+          reflection?: string | null;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["lesson_delivery_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          topic: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id?: string;
+          classwork?: string | null;
+          coverage_notes?: string;
+          created_at?: string;
+          curriculum_item_id?: string | null;
+          delivered_on?: string;
+          homework?: string | null;
+          id?: string;
+          lesson_plan_id?: string | null;
+          organization_id?: string;
+          recorded_by?: string;
+          reflection?: string | null;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["lesson_delivery_status"];
+          subject_id?: string;
+          teaching_assignment_id?: string;
+          topic?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "lesson_deliveries_academic_period_id_session_id_organizati_fkey";
+            columns: [
+              "academic_period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_class_arm_id_organization_id_school_id_fkey";
+            columns: ["class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_class_level_id_organization_id_school_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_curriculum_item_id_organization_id_schoo_fkey";
+            columns: ["curriculum_item_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "curriculum_items";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_lesson_plan_id_organization_id_school_id_fkey";
+            columns: ["lesson_plan_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "lesson_plans";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_subject_id_organization_id_school_id_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_deliveries_teaching_assignment_id_organization_id_s_fkey";
+            columns: ["teaching_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "teaching_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      lesson_plans: {
+        Row: {
+          academic_period_id: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          content_outline: string;
+          created_at: string;
+          created_by: string;
+          curriculum_item_id: string | null;
+          id: string;
+          lesson_date: string;
+          objectives: string;
+          organization_id: string;
+          review_comment: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["lesson_plan_status"];
+          subject_id: string;
+          submitted_at: string | null;
+          teaching_assignment_id: string;
+          teaching_resources: string | null;
+          topic: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          content_outline: string;
+          created_at?: string;
+          created_by?: string;
+          curriculum_item_id?: string | null;
+          id?: string;
+          lesson_date: string;
+          objectives: string;
+          organization_id: string;
+          review_comment?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["lesson_plan_status"];
+          subject_id: string;
+          submitted_at?: string | null;
+          teaching_assignment_id: string;
+          teaching_resources?: string | null;
+          topic: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id?: string;
+          content_outline?: string;
+          created_at?: string;
+          created_by?: string;
+          curriculum_item_id?: string | null;
+          id?: string;
+          lesson_date?: string;
+          objectives?: string;
+          organization_id?: string;
+          review_comment?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["lesson_plan_status"];
+          subject_id?: string;
+          submitted_at?: string | null;
+          teaching_assignment_id?: string;
+          teaching_resources?: string | null;
+          topic?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "lesson_plans_academic_period_id_session_id_organization_id_fkey";
+            columns: [
+              "academic_period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "lesson_plans_class_arm_id_organization_id_school_id_fkey";
+            columns: ["class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_plans_class_level_id_organization_id_school_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_plans_curriculum_item_id_organization_id_school_id_fkey";
+            columns: ["curriculum_item_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "curriculum_items";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_plans_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "lesson_plans_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_plans_subject_id_organization_id_school_id_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_plans_teaching_assignment_id_organization_id_school_fkey";
+            columns: ["teaching_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "teaching_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
           },
         ];
       };
@@ -2794,102 +3634,6 @@ export type Database = {
           },
         ];
       };
-      staff_leave_types: {
-        Row: {
-          code: string;
-          created_at: string;
-          created_by: string;
-          id: string;
-          is_paid: boolean;
-          name: string;
-          organization_id: string;
-          school_id: string;
-          status: Database["public"]["Enums"]["lifecycle_status"];
-          updated_at: string;
-          updated_by: string;
-        };
-        Insert: {
-          code: string;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          is_paid?: boolean;
-          name: string;
-          organization_id: string;
-          school_id: string;
-          status?: Database["public"]["Enums"]["lifecycle_status"];
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Update: {
-          code?: string;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          is_paid?: boolean;
-          name?: string;
-          organization_id?: string;
-          school_id?: string;
-          status?: Database["public"]["Enums"]["lifecycle_status"];
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Relationships: [];
-      };
-      staff_time_requests: {
-        Row: {
-          approval_request_id: string | null;
-          created_at: string;
-          decided_at: string | null;
-          ends_at: string;
-          id: string;
-          kind: Database["public"]["Enums"]["staff_time_request_kind"];
-          leave_type_id: string | null;
-          organization_id: string;
-          reason: string;
-          requested_by: string;
-          school_id: string;
-          staff_assignment_id: string;
-          starts_at: string;
-          status: Database["public"]["Enums"]["staff_time_request_status"];
-          updated_at: string;
-        };
-        Insert: {
-          approval_request_id?: string | null;
-          created_at?: string;
-          decided_at?: string | null;
-          ends_at: string;
-          id?: string;
-          kind: Database["public"]["Enums"]["staff_time_request_kind"];
-          leave_type_id?: string | null;
-          organization_id: string;
-          reason: string;
-          requested_by?: string;
-          school_id: string;
-          staff_assignment_id: string;
-          starts_at: string;
-          status?: Database["public"]["Enums"]["staff_time_request_status"];
-          updated_at?: string;
-        };
-        Update: {
-          approval_request_id?: string | null;
-          created_at?: string;
-          decided_at?: string | null;
-          ends_at?: string;
-          id?: string;
-          kind?: Database["public"]["Enums"]["staff_time_request_kind"];
-          leave_type_id?: string | null;
-          organization_id?: string;
-          reason?: string;
-          requested_by?: string;
-          school_id?: string;
-          staff_assignment_id?: string;
-          starts_at?: string;
-          status?: Database["public"]["Enums"]["staff_time_request_status"];
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
       staff_assignments: {
         Row: {
           created_at: string;
@@ -2993,73 +3737,6 @@ export type Database = {
           },
         ];
       };
-      staff_attendance_exceptions: {
-        Row: {
-          action_task_id: string | null;
-          attendance_date: string;
-          created_at: string;
-          created_by: string;
-          id: string;
-          kind: Database["public"]["Enums"]["staff_attendance_exception_kind"];
-          organization_id: string;
-          resolved_at: string | null;
-          school_id: string;
-          staff_assignment_id: string;
-          status: Database["public"]["Enums"]["staff_attendance_exception_status"];
-          updated_at: string;
-        };
-        Insert: {
-          action_task_id?: string | null;
-          attendance_date: string;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          kind: Database["public"]["Enums"]["staff_attendance_exception_kind"];
-          organization_id: string;
-          resolved_at?: string | null;
-          school_id: string;
-          staff_assignment_id: string;
-          status?: Database["public"]["Enums"]["staff_attendance_exception_status"];
-          updated_at?: string;
-        };
-        Update: {
-          action_task_id?: string | null;
-          attendance_date?: string;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          kind?: Database["public"]["Enums"]["staff_attendance_exception_kind"];
-          organization_id?: string;
-          resolved_at?: string | null;
-          school_id?: string;
-          staff_assignment_id?: string;
-          status?: Database["public"]["Enums"]["staff_attendance_exception_status"];
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "staff_attendance_exceptions_action_task_id_organization_id_s_fkey";
-            columns: ["action_task_id", "organization_id", "school_id"];
-            isOneToOne: false;
-            referencedRelation: "action_tasks";
-            referencedColumns: ["id", "organization_id", "school_id"];
-          },
-          {
-            foreignKeyName: "staff_attendance_exceptions_school_id_organization_id_fkey";
-            columns: ["school_id", "organization_id"];
-            isOneToOne: false;
-            referencedRelation: "schools";
-            referencedColumns: ["id", "organization_id"];
-          },
-          {
-            foreignKeyName: "staff_attendance_exceptions_staff_assignment_id_organization__fkey";
-            columns: ["staff_assignment_id", "organization_id", "school_id"];
-            isOneToOne: false;
-            referencedRelation: "staff_assignments";
-            referencedColumns: ["id", "organization_id", "school_id"];
-          },
-        ];
-      };
       staff_attendance_days: {
         Row: {
           attendance_date: string;
@@ -3149,6 +3826,73 @@ export type Database = {
           },
           {
             foreignKeyName: "staff_attendance_days_staff_assignment_id_organization_id__fkey";
+            columns: ["staff_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      staff_attendance_exceptions: {
+        Row: {
+          action_task_id: string | null;
+          attendance_date: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          kind: Database["public"]["Enums"]["staff_attendance_exception_kind"];
+          organization_id: string;
+          resolved_at: string | null;
+          school_id: string;
+          staff_assignment_id: string;
+          status: Database["public"]["Enums"]["staff_attendance_exception_status"];
+          updated_at: string;
+        };
+        Insert: {
+          action_task_id?: string | null;
+          attendance_date: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          kind: Database["public"]["Enums"]["staff_attendance_exception_kind"];
+          organization_id: string;
+          resolved_at?: string | null;
+          school_id: string;
+          staff_assignment_id: string;
+          status?: Database["public"]["Enums"]["staff_attendance_exception_status"];
+          updated_at?: string;
+        };
+        Update: {
+          action_task_id?: string | null;
+          attendance_date?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["staff_attendance_exception_kind"];
+          organization_id?: string;
+          resolved_at?: string | null;
+          school_id?: string;
+          staff_assignment_id?: string;
+          status?: Database["public"]["Enums"]["staff_attendance_exception_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_attendance_exceptions_action_task_id_organization_id_fkey";
+            columns: ["action_task_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "action_tasks";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_exceptions_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "staff_attendance_exceptions_staff_assignment_id_organizati_fkey";
             columns: ["staff_assignment_id", "organization_id", "school_id"];
             isOneToOne: false;
             referencedRelation: "staff_assignments";
@@ -3345,6 +4089,56 @@ export type Database = {
           },
         ];
       };
+      staff_leave_types: {
+        Row: {
+          code: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          is_paid: boolean;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          is_paid?: boolean;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          is_paid?: boolean;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_leave_types_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       staff_profiles: {
         Row: {
           created_at: string;
@@ -3408,6 +4202,89 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "people";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      staff_time_requests: {
+        Row: {
+          approval_request_id: string | null;
+          created_at: string;
+          decided_at: string | null;
+          ends_at: string;
+          id: string;
+          kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          leave_type_id: string | null;
+          organization_id: string;
+          reason: string;
+          requested_by: string;
+          school_id: string;
+          staff_assignment_id: string;
+          starts_at: string;
+          status: Database["public"]["Enums"]["staff_time_request_status"];
+          updated_at: string;
+        };
+        Insert: {
+          approval_request_id?: string | null;
+          created_at?: string;
+          decided_at?: string | null;
+          ends_at: string;
+          id?: string;
+          kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          leave_type_id?: string | null;
+          organization_id: string;
+          reason: string;
+          requested_by?: string;
+          school_id: string;
+          staff_assignment_id: string;
+          starts_at: string;
+          status?: Database["public"]["Enums"]["staff_time_request_status"];
+          updated_at?: string;
+        };
+        Update: {
+          approval_request_id?: string | null;
+          created_at?: string;
+          decided_at?: string | null;
+          ends_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["staff_time_request_kind"];
+          leave_type_id?: string | null;
+          organization_id?: string;
+          reason?: string;
+          requested_by?: string;
+          school_id?: string;
+          staff_assignment_id?: string;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["staff_time_request_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "staff_time_requests_approval_request_id_fkey";
+            columns: ["approval_request_id"];
+            isOneToOne: true;
+            referencedRelation: "approval_requests";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "staff_time_requests_leave_type_id_organization_id_school_i_fkey";
+            columns: ["leave_type_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_leave_types";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "staff_time_requests_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "staff_time_requests_staff_assignment_id_organization_id_sc_fkey";
+            columns: ["staff_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "staff_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
           },
         ];
       };
@@ -3639,6 +4516,53 @@ export type Database = {
           },
         ];
       };
+      student_categories: {
+        Row: {
+          code: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["finance_record_status"];
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["finance_record_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["finance_record_status"];
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_categories_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       student_enrollments: {
         Row: {
           academic_session_id: string;
@@ -3867,342 +4791,6 @@ export type Database = {
           },
         ];
       };
-      curriculum_items: {
-        Row: {
-          academic_period_id: string | null;
-          class_arm_id: string | null;
-          class_level_id: string;
-          completed_on: string | null;
-          created_at: string;
-          created_by: string;
-          id: string;
-          learning_objectives: string | null;
-          organization_id: string;
-          planned_end: string;
-          planned_start: string;
-          school_id: string;
-          sequence: number;
-          session_id: string;
-          status: Database["public"]["Enums"]["curriculum_item_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          title: string;
-          updated_at: string;
-          updated_by: string;
-        };
-        Insert: {
-          academic_period_id?: string | null;
-          class_arm_id?: string | null;
-          class_level_id: string;
-          completed_on?: string | null;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          learning_objectives?: string | null;
-          organization_id: string;
-          planned_end: string;
-          planned_start: string;
-          school_id: string;
-          sequence: number;
-          session_id: string;
-          status?: Database["public"]["Enums"]["curriculum_item_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          title: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Update: {
-          academic_period_id?: string | null;
-          completed_on?: string | null;
-          learning_objectives?: string | null;
-          planned_end?: string;
-          planned_start?: string;
-          sequence?: number;
-          status?: Database["public"]["Enums"]["curriculum_item_status"];
-          title?: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Relationships: [];
-      };
-      homework_assignments: {
-        Row: {
-          academic_period_id: string | null;
-          assigned_on: string;
-          class_arm_id: string | null;
-          class_level_id: string;
-          created_at: string;
-          created_by: string;
-          curriculum_item_id: string | null;
-          due_on: string;
-          id: string;
-          instructions: string;
-          lesson_delivery_id: string | null;
-          organization_id: string;
-          published_at: string | null;
-          school_id: string;
-          session_id: string;
-          status: Database["public"]["Enums"]["homework_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          title: string;
-          updated_at: string;
-          updated_by: string;
-        };
-        Insert: {
-          academic_period_id?: string | null;
-          assigned_on: string;
-          class_arm_id?: string | null;
-          class_level_id: string;
-          created_at?: string;
-          created_by?: string;
-          curriculum_item_id?: string | null;
-          due_on: string;
-          id?: string;
-          instructions: string;
-          lesson_delivery_id?: string | null;
-          organization_id: string;
-          school_id: string;
-          session_id: string;
-          status?: Database["public"]["Enums"]["homework_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          title: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Update: {
-          academic_period_id?: string | null;
-          assigned_on?: string;
-          curriculum_item_id?: string | null;
-          due_on?: string;
-          instructions?: string;
-          lesson_delivery_id?: string | null;
-          status?: Database["public"]["Enums"]["homework_status"];
-          title?: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Relationships: [];
-      };
-      lesson_deliveries: {
-        Row: {
-          academic_period_id: string | null;
-          class_arm_id: string | null;
-          class_level_id: string;
-          classwork: string | null;
-          coverage_notes: string;
-          created_at: string;
-          curriculum_item_id: string | null;
-          delivered_on: string;
-          homework: string | null;
-          id: string;
-          lesson_plan_id: string | null;
-          organization_id: string;
-          recorded_by: string;
-          reflection: string | null;
-          school_id: string;
-          session_id: string;
-          status: Database["public"]["Enums"]["lesson_delivery_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          topic: string;
-          updated_at: string;
-          updated_by: string;
-        };
-        Insert: {
-          academic_period_id?: string | null;
-          class_arm_id?: string | null;
-          class_level_id: string;
-          classwork?: string | null;
-          coverage_notes: string;
-          created_at?: string;
-          curriculum_item_id?: string | null;
-          delivered_on: string;
-          homework?: string | null;
-          id?: string;
-          lesson_plan_id?: string | null;
-          organization_id: string;
-          recorded_by?: string;
-          reflection?: string | null;
-          school_id: string;
-          session_id: string;
-          status?: Database["public"]["Enums"]["lesson_delivery_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          topic: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Update: {
-          academic_period_id?: string | null;
-          classwork?: string | null;
-          coverage_notes?: string;
-          curriculum_item_id?: string | null;
-          delivered_on?: string;
-          homework?: string | null;
-          lesson_plan_id?: string | null;
-          reflection?: string | null;
-          status?: Database["public"]["Enums"]["lesson_delivery_status"];
-          topic?: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Relationships: [];
-      };
-      lesson_plans: {
-        Row: {
-          academic_period_id: string | null;
-          class_arm_id: string | null;
-          class_level_id: string;
-          content_outline: string;
-          created_at: string;
-          created_by: string;
-          curriculum_item_id: string | null;
-          id: string;
-          lesson_date: string;
-          objectives: string;
-          organization_id: string;
-          review_comment: string | null;
-          reviewed_at: string | null;
-          reviewed_by: string | null;
-          school_id: string;
-          session_id: string;
-          status: Database["public"]["Enums"]["lesson_plan_status"];
-          subject_id: string;
-          submitted_at: string | null;
-          teaching_assignment_id: string;
-          teaching_resources: string | null;
-          topic: string;
-          updated_at: string;
-          updated_by: string;
-        };
-        Insert: {
-          academic_period_id?: string | null;
-          class_arm_id?: string | null;
-          class_level_id: string;
-          content_outline: string;
-          created_at?: string;
-          created_by?: string;
-          curriculum_item_id?: string | null;
-          id?: string;
-          lesson_date: string;
-          objectives: string;
-          organization_id: string;
-          review_comment?: string | null;
-          school_id: string;
-          session_id: string;
-          status?: Database["public"]["Enums"]["lesson_plan_status"];
-          subject_id: string;
-          teaching_assignment_id: string;
-          teaching_resources?: string | null;
-          topic: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Update: {
-          academic_period_id?: string | null;
-          content_outline?: string;
-          curriculum_item_id?: string | null;
-          lesson_date?: string;
-          objectives?: string;
-          review_comment?: string | null;
-          status?: Database["public"]["Enums"]["lesson_plan_status"];
-          teaching_resources?: string | null;
-          topic?: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Relationships: [];
-      };
-      timetable_entries: {
-        Row: {
-          conflict_acknowledged: boolean;
-          created_at: string;
-          created_by: string;
-          id: string;
-          notes: string | null;
-          organization_id: string;
-          period_id: string;
-          school_id: string;
-          session_id: string;
-          status: Database["public"]["Enums"]["lifecycle_status"];
-          teaching_assignment_id: string;
-          updated_at: string;
-          updated_by: string;
-        };
-        Insert: {
-          conflict_acknowledged?: boolean;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          notes?: string | null;
-          organization_id: string;
-          period_id: string;
-          school_id: string;
-          session_id: string;
-          status?: Database["public"]["Enums"]["lifecycle_status"];
-          teaching_assignment_id: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Update: {
-          conflict_acknowledged?: boolean;
-          notes?: string | null;
-          period_id?: string;
-          status?: Database["public"]["Enums"]["lifecycle_status"];
-          teaching_assignment_id?: string;
-          updated_at?: string;
-          updated_by?: string;
-        };
-        Relationships: [];
-      };
-      timetable_periods: {
-        Row: {
-          created_at: string;
-          created_by: string;
-          ends_at: string;
-          id: string;
-          name: string;
-          organization_id: string;
-          school_id: string;
-          session_id: string;
-          sort_order: number;
-          starts_at: string;
-          status: Database["public"]["Enums"]["lifecycle_status"];
-          updated_at: string;
-          updated_by: string;
-          weekday: number;
-        };
-        Insert: {
-          created_at?: string;
-          created_by?: string;
-          ends_at: string;
-          id?: string;
-          name: string;
-          organization_id: string;
-          school_id: string;
-          session_id: string;
-          sort_order?: number;
-          starts_at: string;
-          status?: Database["public"]["Enums"]["lifecycle_status"];
-          updated_at?: string;
-          updated_by?: string;
-          weekday: number;
-        };
-        Update: {
-          ends_at?: string;
-          name?: string;
-          sort_order?: number;
-          starts_at?: string;
-          status?: Database["public"]["Enums"]["lifecycle_status"];
-          updated_at?: string;
-          updated_by?: string;
-          weekday?: number;
-        };
-        Relationships: [];
-      };
       teaching_assignments: {
         Row: {
           assignment_type: Database["public"]["Enums"]["teaching_assignment_type"];
@@ -4303,12 +4891,152 @@ export type Database = {
           },
         ];
       };
+      timetable_entries: {
+        Row: {
+          conflict_acknowledged: boolean;
+          created_at: string;
+          created_by: string;
+          id: string;
+          notes: string | null;
+          organization_id: string;
+          period_id: string;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          teaching_assignment_id: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          conflict_acknowledged?: boolean;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          notes?: string | null;
+          organization_id: string;
+          period_id: string;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          teaching_assignment_id: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          conflict_acknowledged?: boolean;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          notes?: string | null;
+          organization_id?: string;
+          period_id?: string;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          teaching_assignment_id?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "timetable_entries_period_id_organization_id_school_id_fkey";
+            columns: ["period_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "timetable_periods";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "timetable_entries_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "timetable_entries_teaching_assignment_id_organization_id_s_fkey";
+            columns: ["teaching_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "teaching_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      timetable_periods: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          ends_at: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          session_id: string;
+          sort_order: number;
+          starts_at: string;
+          status: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at: string;
+          updated_by: string;
+          weekday: number;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          ends_at: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          school_id: string;
+          session_id: string;
+          sort_order?: number;
+          starts_at: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+          weekday: number;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          ends_at?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          school_id?: string;
+          session_id?: string;
+          sort_order?: number;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["lifecycle_status"];
+          updated_at?: string;
+          updated_by?: string;
+          weekday?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "timetable_periods_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "timetable_periods_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       accept_invitation: { Args: { p_token_hash: string }; Returns: string };
+      activate_fee_structure: {
+        Args: { target_structure_id: string };
+        Returns: string;
+      };
       can_access_academic_setup: {
         Args: {
           permission_key: string;
@@ -4327,6 +5055,15 @@ export type Database = {
         Returns: boolean;
       };
       can_access_attendance: {
+        Args: {
+          feature_key: string;
+          permission_key: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: boolean;
+      };
+      can_access_finance: {
         Args: {
           feature_key: string;
           permission_key: string;
@@ -4357,6 +5094,15 @@ export type Database = {
         Args: {
           permission_key: string;
           target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+        };
+        Returns: boolean;
+      };
+      can_access_staff_time_request_assignment: {
+        Args: {
+          permission_key: string;
           target_organization_id: string;
           target_school_id: string;
           target_staff_assignment_id: string;
@@ -4434,20 +5180,6 @@ export type Database = {
         };
         Returns: string;
       };
-      get_staff_attendance_summary: {
-        Args: {
-          target_attendance_date: string;
-          target_organization_id: string;
-          target_school_id: string;
-        };
-        Returns: {
-          excused_staff: number;
-          incomplete_staff: number;
-          open_exceptions: number;
-          present_staff: number;
-          scheduled_staff: number;
-        }[];
-      };
       create_admission_application: {
         Args: {
           applicant_date_of_birth: string;
@@ -4477,6 +5209,23 @@ export type Database = {
           policy_name: string;
           target_organization_id: string;
           target_school_id: string;
+        };
+        Returns: string;
+      };
+      create_fee_structure: {
+        Args: {
+          target_amount: number;
+          target_class_level_id: string;
+          target_due_date: string;
+          target_effective_from: string;
+          target_effective_to: string;
+          target_fee_category_id: string;
+          target_name: string;
+          target_organization_id: string;
+          target_period_id: string;
+          target_school_id: string;
+          target_session_id: string;
+          target_student_category_id: string;
         };
         Returns: string;
       };
@@ -4570,6 +5319,20 @@ export type Database = {
         Args: { target_organization_id: string; target_school_id?: string };
         Returns: Json;
       };
+      get_staff_attendance_summary: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: {
+          excused_staff: number;
+          incomplete_staff: number;
+          open_exceptions: number;
+          present_staff: number;
+          scheduled_staff: number;
+        }[];
+      };
       get_student_attendance_roster: {
         Args: {
           target_attendance_date: string;
@@ -4653,10 +5416,9 @@ export type Database = {
           target_school_id: string;
         };
         Returns: {
-          approved_time_off_ends_at: string | null;
-          approved_time_off_kind:
-            Database["public"]["Enums"]["staff_time_request_kind"] | null;
-          approved_time_off_starts_at: string | null;
+          approved_time_off_ends_at: string;
+          approved_time_off_kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          approved_time_off_starts_at: string;
           attendance_day_id: string;
           clock_in_at: string;
           clock_out_at: string;
@@ -4752,6 +5514,14 @@ export type Database = {
         };
         Returns: string;
       };
+      refresh_staff_attendance_exceptions: {
+        Args: {
+          target_attendance_date: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: number;
+      };
       respond_to_admission_offer: {
         Args: { accept_offer: boolean; target_application_id: string };
         Returns: Database["public"]["Enums"]["offer_status"];
@@ -4779,6 +5549,14 @@ export type Database = {
         Args: { target_session_id: string };
         Returns: undefined;
       };
+      set_school_timezone: {
+        Args: {
+          target_organization_id: string;
+          target_school_id: string;
+          target_timezone: string;
+        };
+        Returns: string;
+      };
       submit_admission_document: {
         Args: { target_document_id: string; target_requirement_id: string };
         Returns: Database["public"]["Enums"]["admission_document_status"];
@@ -4791,6 +5569,34 @@ export type Database = {
           target_subject_id: string;
           target_subject_type: string;
           target_title: string;
+        };
+        Returns: string;
+      };
+      submit_staff_time_request: {
+        Args: {
+          target_ends_at: string;
+          target_kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          target_leave_type_id: string;
+          target_organization_id: string;
+          target_policy_id: string;
+          target_reason: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+          target_starts_at: string;
+        };
+        Returns: string;
+      };
+      submit_staff_time_request_local: {
+        Args: {
+          target_ends_local: string;
+          target_kind: Database["public"]["Enums"]["staff_time_request_kind"];
+          target_leave_type_id: string;
+          target_organization_id: string;
+          target_policy_id: string;
+          target_reason: string;
+          target_school_id: string;
+          target_staff_assignment_id: string;
+          target_starts_local: string;
         };
         Returns: string;
       };
@@ -4808,42 +5614,6 @@ export type Database = {
         };
         Returns: string;
       };
-      submit_staff_time_request: {
-        Args: {
-          target_ends_at: string;
-          target_kind: Database["public"]["Enums"]["staff_time_request_kind"];
-          target_leave_type_id: string | null;
-          target_organization_id: string;
-          target_policy_id: string;
-          target_reason: string;
-          target_school_id: string;
-          target_staff_assignment_id: string;
-          target_starts_at: string;
-        };
-        Returns: string;
-      };
-      submit_staff_time_request_local: {
-        Args: {
-          target_ends_local: string;
-          target_kind: Database["public"]["Enums"]["staff_time_request_kind"];
-          target_leave_type_id: string | null;
-          target_organization_id: string;
-          target_policy_id: string;
-          target_reason: string;
-          target_school_id: string;
-          target_staff_assignment_id: string;
-          target_starts_local: string;
-        };
-        Returns: string;
-      };
-      set_school_timezone: {
-        Args: {
-          target_organization_id: string;
-          target_school_id: string;
-          target_timezone: string;
-        };
-        Returns: string;
-      };
       transfer_staff_assignment: {
         Args: {
           target_assignment_id: string;
@@ -4853,14 +5623,6 @@ export type Database = {
           target_started_on: string;
         };
         Returns: string;
-      };
-      refresh_staff_attendance_exceptions: {
-        Args: {
-          target_attendance_date: string;
-          target_organization_id: string;
-          target_school_id: string;
-        };
-        Returns: number;
       };
       transition_admission_application: {
         Args: {
@@ -4903,13 +5665,13 @@ export type Database = {
       approval_request_status:
         "pending" | "approved" | "rejected" | "returned" | "cancelled";
       assessment_attempt_status: "scheduled" | "completed" | "cancelled";
-      curriculum_item_status:
-        "planned" | "in_progress" | "completed" | "deferred" | "cancelled";
       assignment_scope: "organization" | "management_group" | "school";
       attendance_status:
         "present" | "late" | "absent" | "excused" | "left_early";
       checklist_item_status: "pending" | "complete" | "waived";
       class_membership_status: "active" | "ended" | "cancelled";
+      curriculum_item_status:
+        "planned" | "in_progress" | "completed" | "deferred" | "cancelled";
       document_status:
         "pending_upload" | "available" | "archived" | "quarantined";
       employment_status:
@@ -4929,16 +5691,18 @@ export type Database = {
         | "withdrawn"
         | "expelled"
         | "cancelled";
+      fee_frequency: "one_time" | "term" | "session";
+      finance_record_status: "draft" | "active" | "inactive" | "archived";
+      homework_status: "draft" | "published" | "closed" | "cancelled";
       import_batch_status:
         "draft" | "validated" | "ready" | "committed" | "failed" | "cancelled";
       import_row_status: "valid" | "warning" | "invalid";
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
-      homework_status: "draft" | "published" | "closed" | "cancelled";
-      lifecycle_status: "active" | "inactive" | "archived";
       lesson_delivery_status:
         "scheduled" | "delivered" | "partially_delivered" | "cancelled";
       lesson_plan_status:
         "draft" | "submitted" | "approved" | "rejected" | "withdrawn";
+      lifecycle_status: "active" | "inactive" | "archived";
       membership_status: "invited" | "active" | "suspended" | "ended";
       notification_kind: "system" | "action_required" | "approval" | "document";
       offer_status:
@@ -5141,6 +5905,13 @@ export const Constants = {
       attendance_status: ["present", "late", "absent", "excused", "left_early"],
       checklist_item_status: ["pending", "complete", "waived"],
       class_membership_status: ["active", "ended", "cancelled"],
+      curriculum_item_status: [
+        "planned",
+        "in_progress",
+        "completed",
+        "deferred",
+        "cancelled",
+      ],
       document_status: [
         "pending_upload",
         "available",
@@ -5171,6 +5942,9 @@ export const Constants = {
         "expelled",
         "cancelled",
       ],
+      fee_frequency: ["one_time", "term", "session"],
+      finance_record_status: ["draft", "active", "inactive", "archived"],
+      homework_status: ["draft", "published", "closed", "cancelled"],
       import_batch_status: [
         "draft",
         "validated",
@@ -5181,6 +5955,19 @@ export const Constants = {
       ],
       import_row_status: ["valid", "warning", "invalid"],
       invitation_status: ["pending", "accepted", "revoked", "expired"],
+      lesson_delivery_status: [
+        "scheduled",
+        "delivered",
+        "partially_delivered",
+        "cancelled",
+      ],
+      lesson_plan_status: [
+        "draft",
+        "submitted",
+        "approved",
+        "rejected",
+        "withdrawn",
+      ],
       lifecycle_status: ["active", "inactive", "archived"],
       membership_status: ["invited", "active", "suspended", "ended"],
       notification_kind: ["system", "action_required", "approval", "document"],

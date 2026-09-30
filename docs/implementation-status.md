@@ -255,3 +255,22 @@ tenancy, authorization, entitlement, Storage, audit and mutation boundaries.
 The floating Netlify status badge is hosting-platform UI outside the
 SchoolFlow source. Approved tenant branding or Experience Studio work and M8
 remain separate milestones and were not started during M7.5.
+
+## M9 progress
+
+- M8 is closed at production revision `d8419ec90ae125eed5bb89ae5141adfe2612747d`;
+  its accepted evidence and disabled feature state remain untouched.
+- M9-A Finance Foundation is implemented in branch
+  `feat/m9-finance-foundation`: six feature gates, granular Finance
+  permissions, school settings, fee and student categories, effective-dated
+  fee structures/items, exact `numeric(14,2)` money, audit triggers, RLS and a
+  responsive `/finance` setup workspace.
+- Supabase migrations `m9_finance` and `m9_fee_structure_rpc` are applied.
+  The latter keeps structure-plus-first-item creation atomic and supplies the
+  controlled activation boundary.
+- RLS is enabled on all five M9-A tables with scoped policies. Advisors show
+  the established intentional caller-bound `SECURITY DEFINER` warning class
+  and unused-new-index observations; no missing-RLS or new critical finding.
+- Local M9-A validation passes formatting, strict TypeScript and 244 tests
+  across 54 files. The next task is M9-B billing preview, generation and
+  immutable charge snapshots.

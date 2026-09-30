@@ -227,7 +227,7 @@ export async function submitStaffTimeRequest(input: unknown) {
       target_school_id: context.active.schoolId!,
       target_staff_assignment_id: parsed.staffAssignmentId,
       target_kind: parsed.kind,
-      target_leave_type_id: parsed.leaveTypeId,
+      target_leave_type_id: (parsed.leaveTypeId ?? null) as unknown as string,
       target_starts_local: parsed.startsAt,
       target_ends_local: parsed.endsAt,
       target_reason: parsed.reason,

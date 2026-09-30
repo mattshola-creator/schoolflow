@@ -82,8 +82,10 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   {
     module: "finance",
     permission: "finance.view",
+    feature: "finance.fee_management",
     label: "Finance",
     description: "School finance",
+    href: "/finance",
   },
   {
     module: "communication",

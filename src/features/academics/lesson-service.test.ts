@@ -8,6 +8,7 @@ const { requireTeachingContext, from, insert, update } = vi.hoisted(() => ({
 }));
 vi.mock("./teaching-service", () => ({ requireTeachingContext }));
 import {
+  createHomeworkAssignment,
   createLessonDelivery,
   createLessonPlan,
   updateLessonPlanStatus,
@@ -104,6 +105,29 @@ describe("lesson service", () => {
     expect(insert).toHaveBeenCalledTimes(1);
     expect(insert).toHaveBeenCalledWith(
       expect.objectContaining({ lesson_plan_id: null }),
+    );
+  });
+
+  it("derives standalone homework scope from the authorized assignment", async () => {
+    await createHomeworkAssignment({
+      sessionId: crypto.randomUUID(),
+      teachingAssignmentId: crypto.randomUUID(),
+      title: "Fractions practice",
+      instructions: "Complete questions one to five.",
+      assignedOn: "2026-09-29",
+      dueOn: "2026-09-30",
+    });
+    expect(requireTeachingContext).toHaveBeenCalledWith(
+      "academics.homework.manage",
+    );
+    expect(insert).toHaveBeenCalledTimes(1);
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organization_id: organizationId,
+        school_id: schoolId,
+        lesson_delivery_id: null,
+        subject_id: assignment.subject_id,
+      }),
     );
   });
 });

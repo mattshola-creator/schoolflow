@@ -308,3 +308,17 @@ implementation slice.
 
 Manual timetable allocation, conflict warnings, curriculum, lesson delivery and
 homework remain outside M8-E1.
+
+## M8-E6 Standalone homework workflow
+
+| Requirement                                     | Evidence                                                                                                   | Status                 |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Homework is distinct from lesson-delivery notes | `homework_assignments` owns learner-facing assignment lifecycle; the existing delivery note is unchanged   | Verified locally       |
+| Scope is derived server-side                    | Service resolves the authorized subject teaching assignment and writes its subject/class scope             | Verified locally       |
+| Dates and optional links remain in scope        | Database trigger validates session/period dates and delivery/curriculum assignment links                   | Verified locally       |
+| Lifecycle is explicit and non-destructive       | Draft, published, closed and cancelled states are exposed; delete is neither granted nor implemented       | Verified locally       |
+| Authorization remains tenant and school safe    | Permission, entitlement, feature gate, exact active context, RLS and composite foreign keys are cumulative | Verified locally       |
+| Production remains disabled and empty           | Feature default is false, enabled overrides are zero and homework count is zero                            | Verified in production |
+
+Learner/guardian access, submissions, grading, reminders and communication are
+outside M8-E6.

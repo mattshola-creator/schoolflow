@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { loadLessonWorkspace } from "@/features/academics/lesson-service";
 import {
   changeLessonPlanStatus,
+  changeHomeworkStatus,
+  saveHomeworkAssignment,
   saveLessonDelivery,
   saveLessonPlan,
 } from "./actions";
@@ -35,6 +37,7 @@ export default async function LessonsPage({
   const canPlan = permissions.includes("academics.lesson_plans.manage");
   const canApprove = permissions.includes("academics.lesson_plans.approve");
   const canDeliver = permissions.includes("academics.lesson_delivery.record");
+  const canManageHomework = permissions.includes("academics.homework.manage");
   const assignmentLabel = (id: string) => {
     const item = workspace.assignments.find((x) => x.id === id);
     return item
@@ -69,13 +72,19 @@ export default async function LessonsPage({
       ) : null}
 
       <section
-        className="mt-7 grid gap-4 sm:grid-cols-3"
+        className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
         aria-label="Lesson summary"
       >
         <div className={panel}>
           <p className="text-sm text-slate-500">Lesson plans</p>
           <p className="mt-2 text-3xl font-semibold">
             {workspace.plans.length}
+          </p>
+        </div>
+        <div className={panel}>
+          <p className="text-sm text-slate-500">Homework</p>
+          <p className="mt-2 text-3xl font-semibold">
+            {workspace.homework.length}
           </p>
         </div>
         <div className={panel}>
@@ -221,6 +230,126 @@ export default async function LessonsPage({
           </section>
         ) : null}
       </div>
+
+      {canManageHomework ? (
+        <section
+          className={`${panel} mt-7`}
+          aria-labelledby="homework-create-heading"
+        >
+          <h2 id="homework-create-heading" className="text-xl font-semibold">
+            Create homework
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Create a standalone class assignment. Publishing is a separate,
+            deliberate step.
+          </p>
+          <form
+            action={saveHomeworkAssignment}
+            className="mt-5 grid gap-4 sm:grid-cols-2"
+          >
+            <ScopeFields workspace={workspace} />
+            <label className="text-sm font-medium sm:col-span-2">
+              Lesson delivery <span className="text-slate-500">(optional)</span>
+              <select className={fieldClass} name="lessonDeliveryId">
+                <option value="">No linked lesson delivery</option>
+                {workspace.deliveries.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.topic} · {x.delivered_on}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm font-medium sm:col-span-2">
+              Title
+              <input className={fieldClass} name="title" required />
+            </label>
+            <label className="text-sm font-medium sm:col-span-2">
+              Instructions
+              <textarea
+                className={`${fieldClass} min-h-28`}
+                name="instructions"
+                required
+              />
+            </label>
+            <label className="text-sm font-medium">
+              Assigned on
+              <input
+                className={fieldClass}
+                name="assignedOn"
+                type="date"
+                required
+              />
+            </label>
+            <label className="text-sm font-medium">
+              Due on
+              <input className={fieldClass} name="dueOn" type="date" required />
+            </label>
+            <Button className="sm:w-fit" type="submit">
+              Save draft homework
+            </Button>
+          </form>
+        </section>
+      ) : null}
+
+      <section className="mt-7" aria-labelledby="homework-heading">
+        <h2 id="homework-heading" className="text-xl font-semibold">
+          Homework assignments
+        </h2>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          {workspace.homework.map((item) => (
+            <article className={panel} key={item.id}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold break-words">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Due {item.due_on} ·{" "}
+                    {assignmentLabel(item.teaching_assignment_id)}
+                  </p>
+                </div>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold capitalize">
+                  {item.status}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 whitespace-pre-wrap">
+                {item.instructions}
+              </p>
+              {canManageHomework ? (
+                <form
+                  action={changeHomeworkStatus}
+                  className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+                >
+                  <input
+                    type="hidden"
+                    name="homeworkAssignmentId"
+                    value={item.id}
+                  />
+                  <label className="flex-1 text-sm font-medium">
+                    Status
+                    <select
+                      className={fieldClass}
+                      name="status"
+                      defaultValue={item.status}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                      <option value="closed">Closed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </label>
+                  <Button type="submit">Update</Button>
+                </form>
+              ) : null}
+            </article>
+          ))}
+          {!workspace.homework.length ? (
+            <p className={`${panel} text-sm text-slate-600`}>
+              No homework assignments recorded.
+            </p>
+          ) : null}
+        </div>
+      </section>
 
       <section className="mt-7" aria-labelledby="plans-heading">
         <h2 id="plans-heading" className="text-xl font-semibold">

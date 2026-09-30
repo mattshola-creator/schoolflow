@@ -72,6 +72,9 @@ export default async function CurriculumPage({
             <ButtonLink href="/teaching/timetable" variant="secondary">
               Timetable
             </ButtonLink>
+            <ButtonLink href="/teaching/lessons" variant="secondary">
+              Lessons
+            </ButtonLink>
           </>
         }
       />

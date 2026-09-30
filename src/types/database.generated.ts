@@ -3926,6 +3926,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      homework_assignments: {
+        Row: {
+          academic_period_id: string | null;
+          assigned_on: string;
+          class_arm_id: string | null;
+          class_level_id: string;
+          created_at: string;
+          created_by: string;
+          curriculum_item_id: string | null;
+          due_on: string;
+          id: string;
+          instructions: string;
+          lesson_delivery_id: string | null;
+          organization_id: string;
+          published_at: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["homework_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          assigned_on: string;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          created_at?: string;
+          created_by?: string;
+          curriculum_item_id?: string | null;
+          due_on: string;
+          id?: string;
+          instructions: string;
+          lesson_delivery_id?: string | null;
+          organization_id: string;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["homework_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          title: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          assigned_on?: string;
+          curriculum_item_id?: string | null;
+          due_on?: string;
+          instructions?: string;
+          lesson_delivery_id?: string | null;
+          status?: Database["public"]["Enums"]["homework_status"];
+          title?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [];
+      };
       lesson_deliveries: {
         Row: {
           academic_period_id: string | null;
@@ -4873,6 +4933,7 @@ export type Database = {
         "draft" | "validated" | "ready" | "committed" | "failed" | "cancelled";
       import_row_status: "valid" | "warning" | "invalid";
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
+      homework_status: "draft" | "published" | "closed" | "cancelled";
       lifecycle_status: "active" | "inactive" | "archived";
       lesson_delivery_status:
         "scheduled" | "delivered" | "partially_delivered" | "cancelled";

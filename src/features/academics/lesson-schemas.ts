@@ -64,6 +64,30 @@ export const lessonDeliverySchema = z.object({
   ]),
 });
 
+export const homeworkAssignmentSchema = z
+  .object({
+    sessionId: z.string().uuid(),
+    academicPeriodId: optionalId,
+    teachingAssignmentId: z.string().uuid(),
+    lessonDeliveryId: optionalId,
+    curriculumItemId: optionalId,
+    title: z.string().trim().min(2).max(160),
+    instructions: z.string().trim().min(2).max(6000),
+    assignedOn: z.iso.date(),
+    dueOn: z.iso.date(),
+  })
+  .refine((value) => value.dueOn >= value.assignedOn, {
+    path: ["dueOn"],
+    message: "The due date cannot be before the assigned date.",
+  });
+
+export const homeworkStatusSchema = z.object({
+  homeworkAssignmentId: z.string().uuid(),
+  status: z.enum(["draft", "published", "closed", "cancelled"]),
+});
+
 export type LessonPlanInput = z.infer<typeof lessonPlanSchema>;
 export type LessonPlanReviewInput = z.infer<typeof lessonPlanReviewSchema>;
 export type LessonDeliveryInput = z.infer<typeof lessonDeliverySchema>;
+export type HomeworkAssignmentInput = z.infer<typeof homeworkAssignmentSchema>;
+export type HomeworkStatusInput = z.infer<typeof homeworkStatusSchema>;

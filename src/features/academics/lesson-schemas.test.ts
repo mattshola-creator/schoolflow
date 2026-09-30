@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  homeworkAssignmentSchema,
   lessonDeliverySchema,
   lessonPlanReviewSchema,
   lessonPlanSchema,
@@ -54,5 +55,31 @@ describe("lesson schemas", () => {
         status: "complete",
       }),
     ).toThrow();
+  });
+
+  it("accepts standalone homework without a lesson link", () => {
+    const result = homeworkAssignmentSchema.parse({
+      sessionId: id,
+      teachingAssignmentId: id,
+      lessonDeliveryId: "",
+      title: "Fractions practice",
+      instructions: "Complete questions one to five.",
+      assignedOn: "2026-09-29",
+      dueOn: "2026-09-30",
+    });
+    expect(result.lessonDeliveryId).toBeUndefined();
+  });
+
+  it("rejects homework due before it is assigned", () => {
+    expect(() =>
+      homeworkAssignmentSchema.parse({
+        sessionId: id,
+        teachingAssignmentId: id,
+        title: "Fractions practice",
+        instructions: "Complete questions one to five.",
+        assignedOn: "2026-09-30",
+        dueOn: "2026-09-29",
+      }),
+    ).toThrow("due date");
   });
 });

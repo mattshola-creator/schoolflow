@@ -1,6 +1,6 @@
 # SchoolFlow Implementation Status
 
-Last updated: 29 September 2026
+Last updated: 30 September 2026
 
 ## Current milestone
 
@@ -8,7 +8,7 @@ M7 Admissions — Completed — Deployed & Verified
 
 M7.5 UI/UX — Completed — Deployed & Verified
 
-M8 Attendance & Teaching — M8-E1 Teaching Assignment Management In Progress
+M8 Attendance & Teaching — M8-E6 Standalone Homework Workflow In Progress
 
 ## Completed milestones
 
@@ -109,6 +109,15 @@ responsibilities remain distinct, assignment lifecycle is non-destructive, and
 all queries and writes retain exact active-school scope. Timetable, curriculum,
 lesson delivery and homework remain separate later slices; the production
 teaching feature remains disabled.
+
+M8-E2 adds protected manual timetable allocation with conflict review. M8-E3
+adds ordered curriculum coverage. M8-E4 establishes separate lesson-plan and
+lesson-delivery records, while M8-E5 exposes their protected responsive
+workspace. M8-E6 adds standalone homework assignments with explicit draft,
+publish, close and cancel lifecycle, optional curriculum and lesson-delivery
+links, and server-derived teaching scope. Learner/guardian access, submission,
+grading and messaging are not introduced. The production teaching feature
+remains disabled and all curriculum, lesson and homework tables remain empty.
 
 ## M6 completion evidence
 

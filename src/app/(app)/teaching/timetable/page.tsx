@@ -74,6 +74,9 @@ export default async function TimetablePage({
             <ButtonLink href="/teaching/curriculum" variant="secondary">
               Curriculum
             </ButtonLink>
+            <ButtonLink href="/teaching/lessons" variant="secondary">
+              Lessons
+            </ButtonLink>
           </>
         }
       />

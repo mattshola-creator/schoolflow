@@ -3926,6 +3926,136 @@ export type Database = {
         };
         Relationships: [];
       };
+      lesson_deliveries: {
+        Row: {
+          academic_period_id: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          classwork: string | null;
+          coverage_notes: string;
+          created_at: string;
+          curriculum_item_id: string | null;
+          delivered_on: string;
+          homework: string | null;
+          id: string;
+          lesson_plan_id: string | null;
+          organization_id: string;
+          recorded_by: string;
+          reflection: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["lesson_delivery_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          topic: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          classwork?: string | null;
+          coverage_notes: string;
+          created_at?: string;
+          curriculum_item_id?: string | null;
+          delivered_on: string;
+          homework?: string | null;
+          id?: string;
+          lesson_plan_id?: string | null;
+          organization_id: string;
+          recorded_by?: string;
+          reflection?: string | null;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["lesson_delivery_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          topic: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          classwork?: string | null;
+          coverage_notes?: string;
+          curriculum_item_id?: string | null;
+          delivered_on?: string;
+          homework?: string | null;
+          lesson_plan_id?: string | null;
+          reflection?: string | null;
+          status?: Database["public"]["Enums"]["lesson_delivery_status"];
+          topic?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [];
+      };
+      lesson_plans: {
+        Row: {
+          academic_period_id: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          content_outline: string;
+          created_at: string;
+          created_by: string;
+          curriculum_item_id: string | null;
+          id: string;
+          lesson_date: string;
+          objectives: string;
+          organization_id: string;
+          review_comment: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["lesson_plan_status"];
+          subject_id: string;
+          submitted_at: string | null;
+          teaching_assignment_id: string;
+          teaching_resources: string | null;
+          topic: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          academic_period_id?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          content_outline: string;
+          created_at?: string;
+          created_by?: string;
+          curriculum_item_id?: string | null;
+          id?: string;
+          lesson_date: string;
+          objectives: string;
+          organization_id: string;
+          review_comment?: string | null;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["lesson_plan_status"];
+          subject_id: string;
+          teaching_assignment_id: string;
+          teaching_resources?: string | null;
+          topic: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          academic_period_id?: string | null;
+          content_outline?: string;
+          curriculum_item_id?: string | null;
+          lesson_date?: string;
+          objectives?: string;
+          review_comment?: string | null;
+          status?: Database["public"]["Enums"]["lesson_plan_status"];
+          teaching_resources?: string | null;
+          topic?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [];
+      };
       timetable_entries: {
         Row: {
           conflict_acknowledged: boolean;
@@ -4744,6 +4874,10 @@ export type Database = {
       import_row_status: "valid" | "warning" | "invalid";
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
       lifecycle_status: "active" | "inactive" | "archived";
+      lesson_delivery_status:
+        "scheduled" | "delivered" | "partially_delivered" | "cancelled";
+      lesson_plan_status:
+        "draft" | "submitted" | "approved" | "rejected" | "withdrawn";
       membership_status: "invited" | "active" | "suspended" | "ended";
       notification_kind: "system" | "action_required" | "approval" | "document";
       offer_status:

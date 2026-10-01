@@ -285,7 +285,23 @@ remain separate milestones and were not started during M7.5.
   `m9_finance_hardening` and `m9_finance_corrections_completion` are applied.
   The completion migration was first rehearsed inside a rollback-only
   transaction and then applied successfully.
-- The current local checkpoint passes zero-warning lint, strict TypeScript and
-  247 tests across 54 files. Application publication, full production build,
-  advisors and controlled synthetic production acceptance remain before M9
-  can be closed.
+- PR #72 passed GitHub Actions run #163 and merged as revision
+  `7caead2fe9b7da1404bee1924a0526509c01dd51`. Netlify production deploy
+  `6abe3fff67649b00084a8d8d` is Ready for that exact revision with no secret
+  scan matches.
+- Controlled production acceptance used a dedicated synthetic Finance tenant,
+  school, learner and two QA actors. Billing idempotency, verification
+  segregation, allocation, receipt, reversal/balance restoration, full
+  settlement, expense completion with evidence, cashier close/handover,
+  reconciliation, other income, reports, audit evidence and cross-tenant
+  denial passed.
+- Production acceptance found PostgreSQL CASE enum coercion in payment,
+  expense and reconciliation transitions. Additive migration
+  `m9_finance_enum_status_fixes` was rollback-rehearsed and applied; the full
+  acceptance lifecycle then passed. All six temporary Finance feature flags
+  are disabled again. No authenticated browser QA session was created, and the
+  permanent owner plus M7/M8 evidence remain untouched.
+- The final local checkpoint passes formatting, zero-warning lint, strict
+  TypeScript, 248 tests across 55 files, production build, dependency audit
+  and secret scan. M9 awaits only publication/deployment of the narrow enum
+  regression fix and final documentation checkpoint before formal closeout.

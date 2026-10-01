@@ -48,6 +48,11 @@
 
 ## Closed
 
+- M9 production acceptance found PostgreSQL CASE literals resolving as text in
+  payment verification, expense decision and reconciliation RPC updates.
+  `m9_finance_enum_status_fixes` explicitly casts every branch to its domain
+  enum; rollback rehearsal, application and the full synthetic lifecycle pass.
+
 - M7.5 UI/UX passed its complete incremental acceptance gate. PRs #34–#47
   delivered the responsive shell, shared visual foundation, focused module
   layouts and accessibility interactions without weakening authorization or

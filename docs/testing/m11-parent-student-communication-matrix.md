@@ -1,20 +1,22 @@
 # M11 Parent / Student / Communication Acceptance Matrix
 
-## Durable checkpoint — 2026-10-01
+## Final checkpoint — 2026-10-01
 
-- Phase: M11-A–M11-I implemented locally; release/production acceptance pending.
-- Branch: `feat/m11-parent-student-communication`.
-- Base: completed M10 local checkpoint `11c355e`; production M10 merge `7005180cb4d1840e5a840901ac4d590f38806aef`.
-- Migration: `20261001173322_m11_parent_student_communication.sql`.
-- Migration state: production rollback rehearsal passed; not applied.
-- Tests: 265 passing across 59 files.
-- Formatting/lint/TypeScript: passed.
-- Production build/security audit/secret scan: pending.
-- PR/CI/merge/deploy: pending.
-- Production QA: not started; no M11 fixtures exist.
-- Feature overrides: no M11 overrides enabled.
-- Safety: permanent owner and M7–M10 evidence untouched.
-- Exact next task: complete build/security gates, review migration, commit, push and open PR.
+- Status: **Completed — Deployed — Production-Verified**.
+- Phases: M11-A through M11-J complete; M12 not started.
+- PRs: #78 primary implementation; #79 notification enum correction; #80
+  portal result isolation; #81 caller-bound portal RLS predicates; #82 notice
+  read-state authorization; final documentation PR recorded at closeout.
+- Production migrations: `m11_parent_student_communication`,
+  `m11_notification_enum_fix`, `m11_portal_result_isolation`,
+  `m11_portal_rls_helper_fix`, and `m11_notice_read_rls_fix`.
+- Tests: 266 passing across 59 files.
+- Gate: formatting, zero-warning lint, strict TypeScript, production build,
+  production dependency audit and secret-pattern scan passed.
+- Production QA: dedicated synthetic portal identities, relationship, notice,
+  thread, message, notification, read-state and preference evidence persisted.
+- Safe state: all five M11 overrides disabled; synthetic actors have zero active
+  sessions; M9/M10 overrides remain disabled; owner and M7–M10 evidence untouched.
 
 Production QA initially found PostgreSQL enum coercion in the M6 notification
 insert paths. The fixture batch rolled back before evidence persisted. Additive
@@ -33,30 +35,36 @@ helper whose execution was intentionally revoked. Additive migration
 `m11_portal_rls_helper_fix` keeps private helpers inaccessible and routes policy
 evaluation through caller-bound public predicates for notices and threads.
 
+The final authenticated write probe found the same revoked-private-helper issue
+in the notice read-state policy. Additive migration `m11_notice_read_rls_fix`
+routes its `WITH CHECK` expression through the public caller-bound notice
+predicate. Rollback rehearsal, application, focused contract test and live
+authenticated read-state persistence all passed.
+
 ## Acceptance criteria
 
-| Area                     | Evidence                                                           | Status      |
-| ------------------------ | ------------------------------------------------------------------ | ----------- |
-| Guardian identity        | Account links to existing person; no duplicate guardian identity   | Implemented |
-| Student identity         | Account links to student person                                    | Implemented |
-| Relationship scope       | Active `has_portal_access` relationship required                   | Implemented |
-| Student self scope       | Student person must match requested learner                        | Implemented |
-| Multiple learners        | Portal context returns every authorized linked learner             | Implemented |
-| Unrelated learner denial | `portal_can_access_student` rejects missing relationship           | Implemented |
-| Published results        | Read model uses only `result_publications` snapshots               | Implemented |
-| Draft/internal denial    | Score/review tables are absent from portal read path               | Implemented |
-| Attendance               | Student-scoped M8 summary                                          | Implemented |
-| Finance                  | Student-scoped M9 billed/paid summary                              | Implemented |
-| Information center       | Targeted published/expiring notices                                | Implemented |
-| Messaging                | Participant-only idempotent thread messages                        | Implemented |
-| Notifications            | M6 notifications with recipient/event deduplication                | Implemented |
-| Attachments              | Notice/message links reuse private M6 documents                    | Implemented |
-| Preferences              | In-app and future-channel preferences represented                  | Implemented |
-| Permissions              | Granular account/notices/messages permissions                      | Implemented |
-| Entitlements             | Five M11 feature gates                                             | Implemented |
-| RLS                      | All ten M11 tables have policies                                   | Implemented |
-| Audit                    | Portal linkage, notices, audiences, threads and messages audited   | Implemented |
-| Mobile/accessibility     | Card-first portal, semantic headings, labeled forms, touch targets | Implemented |
-| PostgreSQL validation    | Full migration rollback rehearsal against production schema        | Passed      |
-| Automated suite          | 265 tests / 59 files                                               | Passed      |
-| Production acceptance    | Migration, deploy and synthetic lifecycle                          | Pending     |
+| Area                     | Evidence                                                             | Status |
+| ------------------------ | -------------------------------------------------------------------- | ------ |
+| Guardian identity        | Synthetic account maps to the existing guardian person               | Passed |
+| Student identity         | Synthetic account maps to the learner person                         | Passed |
+| Relationship scope       | Linked learner allowed; unrelated learner denied                     | Passed |
+| Student self scope       | Self allowed; second synthetic learner denied                        | Passed |
+| Multiple learners        | Relationship-derived learner collection is deterministic             | Passed |
+| Unrelated learner denial | Authenticated RPC and RLS probes deny missing relationships          | Passed |
+| Published results        | One-learner immutable `result_publications` projection               | Passed |
+| Draft/internal denial    | Portal path contains no score/review tables                          | Passed |
+| Attendance               | Student-scoped M8 summary returned without staff metadata            | Passed |
+| Finance                  | Student-scoped billed/paid/balance summary only                      | Passed |
+| Information center       | Targeted notice visible; unrelated authenticated actor sees zero     | Passed |
+| Messaging                | One participant thread/message; retry preserves one message          | Passed |
+| Notifications            | Two notice + one message notifications; retry creates no duplicate   | Passed |
+| Attachments              | Private M6 document FKs plus audience/participant RLS; outsider zero | Passed |
+| Preferences              | Optional in-app preference persisted; mandatory notice retained      | Passed |
+| Permissions              | Granular staff communication permissions enforced                    | Passed |
+| Entitlements             | Five enabled/disabled gates tested; final state disabled             | Passed |
+| RLS                      | Ten tables; linked/self allowed and unrelated actor sees zero        | Passed |
+| Audit                    | 10 scoped synthetic lifecycle events; no message bodies logged       | Passed |
+| Mobile/accessibility     | Card-first responsive layout and semantic/form interaction tests     | Passed |
+| PostgreSQL validation    | Full migration rollback rehearsal against production schema          | Passed |
+| Automated suite          | 266 tests / 59 files                                                 | Passed |
+| Production acceptance    | Migration, exact-revision deploy and synthetic lifecycle             | Passed |

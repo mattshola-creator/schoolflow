@@ -13,6 +13,8 @@ describe("M11 database contract", () => {
   });
   it("exposes only immutable published snapshots", () => {
     expect(sql).toContain("from public.result_publications");
+    expect(sql).toContain("item->>'student_id'=target_student::text");
+    expect(sql).toContain("jsonb_array_elements");
     expect(sql).not.toContain("from public.assessment_scores ae");
   });
   it("protects all M11 tables with RLS", () =>

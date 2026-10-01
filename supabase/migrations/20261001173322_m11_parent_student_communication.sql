@@ -300,6 +300,20 @@ returns boolean language sql stable security definer set search_path='' as $$
 $$;
 revoke all on function private.is_thread_participant(uuid,uuid) from public,anon,authenticated;
 
+create or replace function public.can_access_communication_notice(target_notice uuid)
+returns boolean language sql stable security definer set search_path='' as $$
+ select exists(select 1 from public.communication_notices n where n.id=target_notice and (public.can_manage_communication(n.organization_id,n.school_id,'communication.view') or private.portal_notice_visible(n,auth.uid())))
+$$;
+revoke all on function public.can_access_communication_notice(uuid) from public,anon;
+grant execute on function public.can_access_communication_notice(uuid) to authenticated;
+
+create or replace function public.can_access_communication_thread(target_thread uuid)
+returns boolean language sql stable security definer set search_path='' as $$
+ select exists(select 1 from public.communication_threads t where t.id=target_thread and (public.can_manage_communication(t.organization_id,t.school_id,'communication.messages.manage') or private.is_thread_participant(t.id,auth.uid())))
+$$;
+revoke all on function public.can_access_communication_thread(uuid) from public,anon;
+grant execute on function public.can_access_communication_thread(uuid) to authenticated;
+
 create or replace function public.publish_communication_notice(target_notice uuid)
 returns void language plpgsql security definer set search_path='' as $$
 declare n public.communication_notices; begin
@@ -348,19 +362,19 @@ alter table public.communication_preferences enable row level security;
 
 create policy portal_accounts_self_select on public.portal_accounts for select to authenticated using(user_id=(select auth.uid()) or public.can_manage_communication(organization_id,school_id,'communication.portal_accounts.manage'));
 create policy portal_accounts_manage on public.portal_accounts for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.portal_accounts.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.portal_accounts.manage'));
-create policy notices_select on public.communication_notices for select to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.view') or private.portal_notice_visible(communication_notices,(select auth.uid())));
+create policy notices_select on public.communication_notices for select to authenticated using(public.can_access_communication_notice(id));
 create policy notices_manage on public.communication_notices for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.notices.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.notices.manage'));
-create policy notice_audiences_select on public.communication_notice_audiences for select to authenticated using(exists(select 1 from public.communication_notices n where n.id=notice_id and (public.can_manage_communication(n.organization_id,n.school_id,'communication.view') or private.portal_notice_visible(n,(select auth.uid())))));
+create policy notice_audiences_select on public.communication_notice_audiences for select to authenticated using(public.can_access_communication_notice(notice_id));
 create policy notice_audiences_manage on public.communication_notice_audiences for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.notices.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.notices.manage'));
 create policy notice_reads_self on public.communication_notice_reads for all to authenticated using(user_id=(select auth.uid())) with check(user_id=(select auth.uid()) and exists(select 1 from public.communication_notices n where n.id=notice_id and private.portal_notice_visible(n,(select auth.uid()))));
-create policy notice_documents_select on public.communication_notice_documents for select to authenticated using(exists(select 1 from public.communication_notices n where n.id=notice_id and (public.can_manage_communication(n.organization_id,n.school_id,'communication.view') or private.portal_notice_visible(n,(select auth.uid())))));
+create policy notice_documents_select on public.communication_notice_documents for select to authenticated using(public.can_access_communication_notice(notice_id));
 create policy notice_documents_manage on public.communication_notice_documents for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.notices.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.notices.manage'));
-create policy threads_participant_select on public.communication_threads for select to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.messages.manage') or private.is_thread_participant(id,(select auth.uid())));
+create policy threads_participant_select on public.communication_threads for select to authenticated using(public.can_access_communication_thread(id));
 create policy threads_manage on public.communication_threads for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.messages.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.messages.manage'));
-create policy participants_select on public.communication_thread_participants for select to authenticated using(user_id=(select auth.uid()) or private.is_thread_participant(thread_id,(select auth.uid())) or public.can_manage_communication(organization_id,school_id,'communication.messages.manage'));
+create policy participants_select on public.communication_thread_participants for select to authenticated using(public.can_access_communication_thread(thread_id));
 create policy participants_manage on public.communication_thread_participants for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.messages.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.messages.manage'));
-create policy messages_participant_select on public.communication_messages for select to authenticated using(private.is_thread_participant(thread_id,(select auth.uid())) or public.can_manage_communication(organization_id,school_id,'communication.messages.manage'));
-create policy message_documents_select on public.communication_message_documents for select to authenticated using(exists(select 1 from public.communication_messages m join public.communication_thread_participants p on p.thread_id=m.thread_id where m.id=message_id and p.user_id=(select auth.uid()) and p.left_at is null) or public.can_manage_communication(organization_id,school_id,'communication.messages.manage'));
+create policy messages_participant_select on public.communication_messages for select to authenticated using(public.can_access_communication_thread(thread_id));
+create policy message_documents_select on public.communication_message_documents for select to authenticated using(exists(select 1 from public.communication_messages m where m.id=message_id and public.can_access_communication_thread(m.thread_id)));
 create policy message_documents_manage on public.communication_message_documents for all to authenticated using(public.can_manage_communication(organization_id,school_id,'communication.messages.manage')) with check(public.can_manage_communication(organization_id,school_id,'communication.messages.manage'));
 create policy preferences_self on public.communication_preferences for all to authenticated using(user_id=(select auth.uid())) with check(user_id=(select auth.uid()));
 

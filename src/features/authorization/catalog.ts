@@ -98,8 +98,10 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   {
     module: "communication",
     permission: "communication.view",
+    feature: "communication.information_center",
     label: "Communication",
     description: "Messages and announcements",
+    href: "/communication",
   },
   {
     module: "reporting",

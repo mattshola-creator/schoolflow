@@ -4,7 +4,7 @@ Last updated: 1 October 2026
 
 ## Current milestone
 
-M10 Assessment & Results — M10-A through M10-G implemented; integration, deployment and production acceptance in progress. The additive migration is applied, and TypeScript, lint and 256 tests across 57 files pass. See `docs/testing/m10-assessment-results-matrix.md`.
+M10 Assessment & Results — Completed — Deployed & Production-Verified. PR #75 merged as `8fe6eee03f1f778e83bc5fe6219c9300945bd45e`; Netlify deploy `6abe5f60483cbb00077f121f` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.
 
 M7 Admissions — Completed — Deployed & Verified
 
@@ -23,6 +23,9 @@ M8 Attendance & Teaching — M8-E6 Standalone Homework Workflow In Progress
 - M6 Shared Services — Completed — Deployed & Verified
 - M7 Admissions — Completed — Deployed & Verified
 - M7.5 UI/UX — Completed — Deployed & Verified
+- M8 Attendance & Teaching — Completed — Deployed & Production-Verified
+- M9 Finance — Completed — Deployed & Production-Verified
+- M10 Assessment & Results — Completed — Deployed & Production-Verified
 
 ## Implemented
 

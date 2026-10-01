@@ -271,6 +271,21 @@ remain separate milestones and were not started during M7.5.
 - RLS is enabled on all five M9-A tables with scoped policies. Advisors show
   the established intentional caller-bound `SECURITY DEFINER` warning class
   and unused-new-index observations; no missing-RLS or new critical finding.
-- Local M9-A validation passes formatting, strict TypeScript and 244 tests
-  across 54 files. The next task is M9-B billing preview, generation and
-  immutable charge snapshots.
+- PR #71 merged M9-A as revision
+  `734f52706bebfb2f778c1379be06abc79bad3c51`; GitHub Actions run #161 passed
+  and Netlify production deploy `6abd30cb945a2192b09f3236` is Ready.
+- M9-B through M9-H are implemented locally: idempotent student billing and
+  immutable charge snapshots; manual payment recording and independent
+  verification; transactional allocation and derived balances; immutable
+  receipts; controlled payment reversals; expense approval, evidence-backed
+  payout and completion; cashier close and cash handover; manual
+  reconciliation; other-income capture; and school-scoped Finance reports.
+- Supabase migrations `m9_student_billing`,
+  `m9_payments_allocations_receipts`, `m9_expenses_cashier_reporting`,
+  `m9_finance_hardening` and `m9_finance_corrections_completion` are applied.
+  The completion migration was first rehearsed inside a rollback-only
+  transaction and then applied successfully.
+- The current local checkpoint passes zero-warning lint, strict TypeScript and
+  247 tests across 54 files. Application publication, full production build,
+  advisors and controlled synthetic production acceptance remain before M9
+  can be closed.

@@ -1,8 +1,10 @@
 # SchoolFlow Implementation Status
 
-Last updated: 30 September 2026
+Last updated: 1 October 2026
 
 ## Current milestone
+
+M10 Assessment & Results — M10-A through M10-G implemented; integration, deployment and production acceptance in progress. The additive migration is applied, and TypeScript, lint and 256 tests across 57 files pass. See `docs/testing/m10-assessment-results-matrix.md`.
 
 M7 Admissions — Completed — Deployed & Verified
 

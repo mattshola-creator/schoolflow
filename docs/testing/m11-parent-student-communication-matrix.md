@@ -16,6 +16,11 @@
 - Safety: permanent owner and M7–M10 evidence untouched.
 - Exact next task: complete build/security gates, review migration, commit, push and open PR.
 
+Production QA initially found PostgreSQL enum coercion in the M6 notification
+insert paths. The fixture batch rolled back before evidence persisted. Additive
+migration `m11_notification_enum_fix` explicitly casts both notice and message
+notification kinds and passed its rollback rehearsal.
+
 ## Acceptance criteria
 
 | Area                     | Evidence                                                           | Status      |

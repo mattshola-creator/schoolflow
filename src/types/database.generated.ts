@@ -999,6 +999,226 @@ export type Database = {
           },
         ];
       };
+      assessment_components: {
+        Row: {
+          code: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          maximum_score: number;
+          name: string;
+          organization_id: string;
+          scheme_id: string;
+          school_id: string;
+          sequence: number;
+          weight_percent: number;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          maximum_score: number;
+          name: string;
+          organization_id: string;
+          scheme_id: string;
+          school_id: string;
+          sequence: number;
+          weight_percent: number;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          maximum_score?: number;
+          name?: string;
+          organization_id?: string;
+          scheme_id?: string;
+          school_id?: string;
+          sequence?: number;
+          weight_percent?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "assessment_components_scheme_id_organization_id_school_id_fkey";
+            columns: ["scheme_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "assessment_schemes";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      assessment_schemes: {
+        Row: {
+          activated_at: string | null;
+          class_level_id: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          pass_mark: number;
+          period_id: string;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["assessment_scheme_status"];
+          subject_id: string | null;
+          total_mark: number;
+          updated_at: string;
+          updated_by: string;
+          version: number;
+        };
+        Insert: {
+          activated_at?: string | null;
+          class_level_id: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          pass_mark: number;
+          period_id: string;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["assessment_scheme_status"];
+          subject_id?: string | null;
+          total_mark?: number;
+          updated_at?: string;
+          updated_by?: string;
+          version?: number;
+        };
+        Update: {
+          activated_at?: string | null;
+          class_level_id?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          pass_mark?: number;
+          period_id?: string;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["assessment_scheme_status"];
+          subject_id?: string | null;
+          total_mark?: number;
+          updated_at?: string;
+          updated_by?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "assessment_schemes_class_level_id_organization_id_school_i_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "assessment_schemes_period_id_session_id_organization_id_sc_fkey";
+            columns: [
+              "period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "assessment_schemes_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "assessment_schemes_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "assessment_schemes_subject_id_organization_id_school_id_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      assessment_scores: {
+        Row: {
+          batch_id: string;
+          component_id: string;
+          created_at: string;
+          entered_by: string;
+          id: string;
+          organization_id: string;
+          school_id: string;
+          score: number;
+          student_id: string;
+          updated_at: string;
+          updated_by: string;
+        };
+        Insert: {
+          batch_id: string;
+          component_id: string;
+          created_at?: string;
+          entered_by?: string;
+          id?: string;
+          organization_id: string;
+          school_id: string;
+          score: number;
+          student_id: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Update: {
+          batch_id?: string;
+          component_id?: string;
+          created_at?: string;
+          entered_by?: string;
+          id?: string;
+          organization_id?: string;
+          school_id?: string;
+          score?: number;
+          student_id?: string;
+          updated_at?: string;
+          updated_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "assessment_scores_batch_id_organization_id_school_id_fkey";
+            columns: ["batch_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "result_batches";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "assessment_scores_component_id_organization_id_school_id_fkey";
+            columns: ["component_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "assessment_components";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "assessment_scores_student_id_organization_id_fkey";
+            columns: ["student_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "student_profiles";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       attendance_settings: {
         Row: {
           closing_register_enabled: boolean;
@@ -2248,6 +2468,59 @@ export type Database = {
             isOneToOne: true;
             referencedRelation: "schools";
             referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
+      grade_bands: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          grade: string;
+          id: string;
+          is_pass: boolean;
+          maximum_percent: number;
+          minimum_percent: number;
+          organization_id: string;
+          remark: string;
+          scheme_id: string;
+          school_id: string;
+          sequence: number;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string;
+          grade: string;
+          id?: string;
+          is_pass: boolean;
+          maximum_percent: number;
+          minimum_percent: number;
+          organization_id: string;
+          remark: string;
+          scheme_id: string;
+          school_id: string;
+          sequence: number;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          grade?: string;
+          id?: string;
+          is_pass?: boolean;
+          maximum_percent?: number;
+          minimum_percent?: number;
+          organization_id?: string;
+          remark?: string;
+          scheme_id?: string;
+          school_id?: string;
+          sequence?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "grade_bands_scheme_id_organization_id_school_id_fkey";
+            columns: ["scheme_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "assessment_schemes";
+            referencedColumns: ["id", "organization_id", "school_id"];
           },
         ];
       };
@@ -4134,6 +4407,208 @@ export type Database = {
           },
         ];
       };
+      result_batches: {
+        Row: {
+          approved_at: string | null;
+          approved_by: string | null;
+          class_arm_id: string | null;
+          class_level_id: string;
+          correction_of_id: string | null;
+          correction_reason: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          organization_id: string;
+          period_id: string;
+          published_at: string | null;
+          published_by: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          scheme_id: string;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["result_batch_status"];
+          subject_id: string;
+          submitted_at: string | null;
+          submitted_by: string | null;
+          teaching_assignment_id: string | null;
+          updated_at: string;
+          updated_by: string;
+          version: number;
+        };
+        Insert: {
+          approved_at?: string | null;
+          approved_by?: string | null;
+          class_arm_id?: string | null;
+          class_level_id: string;
+          correction_of_id?: string | null;
+          correction_reason?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          organization_id: string;
+          period_id: string;
+          published_at?: string | null;
+          published_by?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          scheme_id: string;
+          school_id: string;
+          session_id: string;
+          status?: Database["public"]["Enums"]["result_batch_status"];
+          subject_id: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
+          teaching_assignment_id?: string | null;
+          updated_at?: string;
+          updated_by?: string;
+          version?: number;
+        };
+        Update: {
+          approved_at?: string | null;
+          approved_by?: string | null;
+          class_arm_id?: string | null;
+          class_level_id?: string;
+          correction_of_id?: string | null;
+          correction_reason?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          organization_id?: string;
+          period_id?: string;
+          published_at?: string | null;
+          published_by?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          scheme_id?: string;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["result_batch_status"];
+          subject_id?: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
+          teaching_assignment_id?: string | null;
+          updated_at?: string;
+          updated_by?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "result_batches_class_arm_id_organization_id_school_id_fkey";
+            columns: ["class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "result_batches_class_level_id_organization_id_school_id_fkey";
+            columns: ["class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "result_batches_correction_of_id_fkey";
+            columns: ["correction_of_id"];
+            isOneToOne: false;
+            referencedRelation: "result_batches";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "result_batches_period_id_session_id_organization_id_school_fkey";
+            columns: [
+              "period_id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "result_batches_scheme_id_organization_id_school_id_fkey";
+            columns: ["scheme_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "assessment_schemes";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "result_batches_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "result_batches_session_id_organization_id_school_id_fkey";
+            columns: ["session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "result_batches_subject_id_organization_id_school_id_fkey";
+            columns: ["subject_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "result_batches_teaching_assignment_id_organization_id_scho_fkey";
+            columns: ["teaching_assignment_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "teaching_assignments";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      result_publications: {
+        Row: {
+          batch_id: string;
+          id: string;
+          organization_id: string;
+          published_at: string;
+          published_by: string;
+          school_id: string;
+          snapshot: Json;
+          version: number;
+        };
+        Insert: {
+          batch_id: string;
+          id?: string;
+          organization_id: string;
+          published_at?: string;
+          published_by: string;
+          school_id: string;
+          snapshot: Json;
+          version: number;
+        };
+        Update: {
+          batch_id?: string;
+          id?: string;
+          organization_id?: string;
+          published_at?: string;
+          published_by?: string;
+          school_id?: string;
+          snapshot?: Json;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "result_publications_batch_id_organization_id_school_id_fkey";
+            columns: ["batch_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "result_batches";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
       role_assignments: {
         Row: {
           created_at: string;
@@ -5913,6 +6388,206 @@ export type Database = {
           },
         ];
       };
+      student_promotions: {
+        Row: {
+          created_at: string;
+          id: string;
+          idempotency_key: string;
+          notes: string | null;
+          organization_id: string;
+          outcome: Database["public"]["Enums"]["promotion_outcome"];
+          promoted_at: string;
+          promoted_by: string;
+          school_id: string;
+          source_class_arm_id: string | null;
+          source_class_level_id: string;
+          source_period_id: string;
+          source_session_id: string;
+          student_id: string;
+          target_class_arm_id: string | null;
+          target_class_level_id: string | null;
+          target_enrollment_id: string | null;
+          target_membership_id: string | null;
+          target_session_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          idempotency_key: string;
+          notes?: string | null;
+          organization_id: string;
+          outcome: Database["public"]["Enums"]["promotion_outcome"];
+          promoted_at?: string;
+          promoted_by?: string;
+          school_id: string;
+          source_class_arm_id?: string | null;
+          source_class_level_id: string;
+          source_period_id: string;
+          source_session_id: string;
+          student_id: string;
+          target_class_arm_id?: string | null;
+          target_class_level_id?: string | null;
+          target_enrollment_id?: string | null;
+          target_membership_id?: string | null;
+          target_session_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          idempotency_key?: string;
+          notes?: string | null;
+          organization_id?: string;
+          outcome?: Database["public"]["Enums"]["promotion_outcome"];
+          promoted_at?: string;
+          promoted_by?: string;
+          school_id?: string;
+          source_class_arm_id?: string | null;
+          source_class_level_id?: string;
+          source_period_id?: string;
+          source_session_id?: string;
+          student_id?: string;
+          target_class_arm_id?: string | null;
+          target_class_level_id?: string | null;
+          target_enrollment_id?: string | null;
+          target_membership_id?: string | null;
+          target_session_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_promotions_school_id_organization_id_fkey";
+            columns: ["school_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_source_class_arm_id_organization_id_sch_fkey";
+            columns: ["source_class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_source_class_level_id_organization_id_s_fkey";
+            columns: ["source_class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_source_period_id_source_session_id_orga_fkey";
+            columns: [
+              "source_period_id",
+              "source_session_id",
+              "organization_id",
+              "school_id",
+            ];
+            isOneToOne: false;
+            referencedRelation: "academic_periods";
+            referencedColumns: [
+              "id",
+              "session_id",
+              "organization_id",
+              "school_id",
+            ];
+          },
+          {
+            foreignKeyName: "student_promotions_source_session_id_organization_id_schoo_fkey";
+            columns: ["source_session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_student_id_organization_id_fkey";
+            columns: ["student_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "student_profiles";
+            referencedColumns: ["id", "organization_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_target_class_arm_id_organization_id_sch_fkey";
+            columns: ["target_class_arm_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_arms";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_target_class_level_id_organization_id_s_fkey";
+            columns: ["target_class_level_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "class_levels";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_promotions_target_session_id_organization_id_schoo_fkey";
+            columns: ["target_session_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_sessions";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+        ];
+      };
+      student_subject_results: {
+        Row: {
+          batch_id: string;
+          computed_at: string;
+          computed_by: string;
+          grade: string;
+          id: string;
+          is_pass: boolean;
+          organization_id: string;
+          remark: string;
+          school_id: string;
+          student_id: string;
+          total_score: number;
+          weighted_percent: number;
+        };
+        Insert: {
+          batch_id: string;
+          computed_at?: string;
+          computed_by: string;
+          grade: string;
+          id?: string;
+          is_pass: boolean;
+          organization_id: string;
+          remark: string;
+          school_id: string;
+          student_id: string;
+          total_score: number;
+          weighted_percent: number;
+        };
+        Update: {
+          batch_id?: string;
+          computed_at?: string;
+          computed_by?: string;
+          grade?: string;
+          id?: string;
+          is_pass?: boolean;
+          organization_id?: string;
+          remark?: string;
+          school_id?: string;
+          student_id?: string;
+          total_score?: number;
+          weighted_percent?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_subject_results_batch_id_organization_id_school_id_fkey";
+            columns: ["batch_id", "organization_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "result_batches";
+            referencedColumns: ["id", "organization_id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_subject_results_student_id_organization_id_fkey";
+            columns: ["student_id", "organization_id"];
+            isOneToOne: false;
+            referencedRelation: "student_profiles";
+            referencedColumns: ["id", "organization_id"];
+          },
+        ];
+      };
       subject_level_applicability: {
         Row: {
           class_level_id: string;
@@ -6358,6 +7033,10 @@ export type Database = {
     };
     Functions: {
       accept_invitation: { Args: { p_token_hash: string }; Returns: string };
+      activate_assessment_scheme: {
+        Args: { target_scheme_id: string };
+        Returns: undefined;
+      };
       activate_fee_structure: {
         Args: { target_structure_id: string };
         Returns: string;
@@ -6377,6 +7056,15 @@ export type Database = {
       can_access_admissions: {
         Args: {
           feature_key?: string;
+          permission_key: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: boolean;
+      };
+      can_access_assessments: {
+        Args: {
+          feature_key: string;
           permission_key: string;
           target_organization_id: string;
           target_school_id: string;
@@ -6867,6 +7555,19 @@ export type Database = {
         Args: { target_structure_id: string };
         Returns: Json;
       };
+      promote_student: {
+        Args: {
+          idempotency_key: string;
+          notes?: string;
+          outcome: Database["public"]["Enums"]["promotion_outcome"];
+          source_period: string;
+          target_arm: string;
+          target_level: string;
+          target_session: string;
+          target_student_id: string;
+        };
+        Returns: string;
+      };
       reconcile_payments: {
         Args: {
           target_payment_ids: string[];
@@ -6940,6 +7641,10 @@ export type Database = {
           target_school_id: string;
         };
         Returns: number;
+      };
+      reopen_result_batch: {
+        Args: { reason: string; target_batch_id: string };
+        Returns: string;
       };
       respond_to_admission_offer: {
         Args: { accept_offer: boolean; target_application_id: string };
@@ -7055,6 +7760,22 @@ export type Database = {
         };
         Returns: Database["public"]["Enums"]["admission_application_status"];
       };
+      transition_result_batch: {
+        Args: {
+          target_batch_id: string;
+          target_status: Database["public"]["Enums"]["result_batch_status"];
+        };
+        Returns: undefined;
+      };
+      upsert_assessment_score: {
+        Args: {
+          target_batch_id: string;
+          target_component_id: string;
+          target_score: number;
+          target_student_id: string;
+        };
+        Returns: string;
+      };
       verify_payment: {
         Args: {
           approve: boolean;
@@ -7097,6 +7818,7 @@ export type Database = {
       approval_request_status:
         "pending" | "approved" | "rejected" | "returned" | "cancelled";
       assessment_attempt_status: "scheduled" | "completed" | "cancelled";
+      assessment_scheme_status: "draft" | "active" | "archived";
       assignment_scope: "organization" | "management_group" | "school";
       attendance_status:
         "present" | "late" | "absent" | "excused" | "left_early";
@@ -7156,7 +7878,15 @@ export type Database = {
         "draft" | "issued" | "accepted" | "declined" | "expired" | "withdrawn";
       payment_method: "cash" | "bank_transfer" | "pos" | "other";
       payment_status: "recorded" | "verified" | "rejected" | "reversed";
+      promotion_outcome: "promoted" | "repeated" | "graduated" | "transferred";
       reconciliation_status: "draft" | "reconciled" | "exception";
+      result_batch_status:
+        | "draft"
+        | "submitted"
+        | "reviewed"
+        | "approved"
+        | "published"
+        | "reopened";
       staff_assignment_status: "planned" | "active" | "ended" | "cancelled";
       staff_attendance_day_status:
         "present" | "late" | "left_early" | "incomplete" | "excused";
@@ -7351,6 +8081,7 @@ export const Constants = {
         "cancelled",
       ],
       assessment_attempt_status: ["scheduled", "completed", "cancelled"],
+      assessment_scheme_status: ["draft", "active", "archived"],
       assignment_scope: ["organization", "management_group", "school"],
       attendance_status: ["present", "late", "absent", "excused", "left_early"],
       billing_run_status: ["previewed", "completed", "failed", "cancelled"],
@@ -7452,7 +8183,16 @@ export const Constants = {
       ],
       payment_method: ["cash", "bank_transfer", "pos", "other"],
       payment_status: ["recorded", "verified", "rejected", "reversed"],
+      promotion_outcome: ["promoted", "repeated", "graduated", "transferred"],
       reconciliation_status: ["draft", "reconciled", "exception"],
+      result_batch_status: [
+        "draft",
+        "submitted",
+        "reviewed",
+        "approved",
+        "published",
+        "reopened",
+      ],
       staff_assignment_status: ["planned", "active", "ended", "cancelled"],
       staff_attendance_day_status: [
         "present",

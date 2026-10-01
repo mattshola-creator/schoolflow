@@ -80,6 +80,14 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     href: "/teaching",
   },
   {
+    module: "academics",
+    permission: "academics.scores.view",
+    feature: "academics.score_entry",
+    label: "Assessment",
+    description: "Scores, results and report cards",
+    href: "/assessments",
+  },
+  {
     module: "finance",
     permission: "finance.view",
     feature: "finance.fee_management",

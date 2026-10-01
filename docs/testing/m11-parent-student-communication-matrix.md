@@ -21,6 +21,13 @@ insert paths. The fixture batch rolled back before evidence persisted. Additive
 migration `m11_notification_enum_fix` explicitly casts both notice and message
 notification kinds and passed its rollback rehearsal.
 
+The next synthetic read found that M10 stores snapshot learner keys as
+`student_id`. The original portal predicate used `studentId` and would have
+returned the complete class snapshot if corrected only at the predicate. The
+additive `m11_portal_result_isolation` migration recognizes the authoritative
+key and projects a one-learner result array, preserving immutable batch metadata
+without exposing classmates.
+
 ## Acceptance criteria
 
 | Area                     | Evidence                                                           | Status      |

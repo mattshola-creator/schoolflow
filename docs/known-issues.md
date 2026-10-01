@@ -28,6 +28,13 @@
   use fixed empty search paths, validate the authenticated caller through the
   centralized capability engine, revoke anonymous/public execution and are
   therefore part of the established advisor-warning class.
+- M9-B–H add caller-bound Finance workflow RPCs for billing, payment
+  verification/allocation/correction, receipts, expenses, cashier control and
+  reconciliation. Each has a fixed empty search path, explicit schema
+  qualification, centralized permission/feature validation, revoked
+  public/anonymous execution and an explicit authenticated grant. Advisor
+  findings for this established function class are reviewed as intentional;
+  any new missing-RLS or critical finding remains release-blocking.
 - Supabase Auth leaked-password protection is disabled. This is a non-blocking hardening recommendation for the development project and should be enabled before production launch.
 - M2 adds one intentional caller-bound `SECURITY DEFINER` inspection RPC. It has a fixed empty search path, accepts no target-user identifier, validates the authenticated caller and requested tenant/school context, and is executable only by `authenticated`, `service_role` and `postgres`.
 - M3 adds restricted caller-bound entitlement helpers and atomic academic RPCs. They have fixed empty search paths, derive the caller from `auth.uid()`, validate membership, school scope, permission, entitlement and feature state, and expose no target-user inspection surface. The security advisor therefore reports 12 intentional authenticated `SECURITY DEFINER` warnings in total.

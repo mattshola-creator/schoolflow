@@ -1,8 +1,16 @@
 import { fieldClass } from "@/components/auth-card";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
-import { loadFeeWorkspace } from "@/features/finance/service";
-import { saveFeeCategory, saveFeeStructure } from "./actions";
+import {
+  loadFeeWorkspace,
+  previewBillingRun,
+} from "@/features/finance/service";
+import {
+  activateStructure,
+  runBilling,
+  saveFeeCategory,
+  saveFeeStructure,
+} from "./actions";
 
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
 
@@ -28,6 +36,22 @@ export default async function FinancePage({
     );
   const canConfigure =
     workspace.authorization.permissions.includes("finance.configure");
+  const canBill = workspace.authorization.permissions.includes(
+    "finance.billing.manage",
+  );
+  const previews = new Map<
+    string,
+    { studentCount: number; expectedTotal: number; currencyCode: string }
+  >();
+  if (canBill)
+    await Promise.all(
+      workspace.structures
+        .filter((item) => item.status === "active")
+        .map(async (item) => {
+          const preview = await previewBillingRun(item.id).catch(() => null);
+          if (preview) previews.set(item.id, preview);
+        }),
+    );
   const categoryNames = new Map(
     workspace.categories.map((item) => [item.id, item.name]),
   );
@@ -37,6 +61,19 @@ export default async function FinancePage({
         eyebrow="Finance"
         title={`Fee setup at ${workspace.active.schoolName}`}
         description="Configure effective-dated fee policy. Published billing will snapshot these values so later changes cannot rewrite history."
+        actions={
+          <>
+            <ButtonLink href="/finance/payments" variant="secondary">
+              Payments
+            </ButtonLink>
+            <ButtonLink href="/finance/expenses" variant="secondary">
+              Expenses
+            </ButtonLink>
+            <ButtonLink href="/finance/reports" variant="secondary">
+              Reports
+            </ButtonLink>
+          </>
+        }
       />
       {notice.error || notice.message ? (
         <p
@@ -241,6 +278,48 @@ export default async function FinancePage({
                       </li>
                     ))}
                 </ul>
+                {canConfigure && structure.status === "draft" ? (
+                  <form action={activateStructure} className="mt-4">
+                    <input
+                      type="hidden"
+                      name="structureId"
+                      value={structure.id}
+                    />
+                    <Button type="submit" variant="secondary">
+                      Activate structure
+                    </Button>
+                  </form>
+                ) : null}
+                {canBill &&
+                structure.status === "active" &&
+                previews.get(structure.id) ? (
+                  <div className="mt-4 rounded-lg bg-emerald-50 p-4">
+                    <p className="text-sm font-semibold text-emerald-950">
+                      Billing preview
+                    </p>
+                    <p className="mt-1 text-sm text-emerald-900">
+                      {previews.get(structure.id)!.studentCount} students · ₦
+                      {Number(
+                        previews.get(structure.id)!.expectedTotal,
+                      ).toLocaleString("en-NG", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </p>
+                    <form action={runBilling} className="mt-3">
+                      <input
+                        type="hidden"
+                        name="structureId"
+                        value={structure.id}
+                      />
+                      <input
+                        type="hidden"
+                        name="idempotencyKey"
+                        value={crypto.randomUUID()}
+                      />
+                      <Button type="submit">Generate charges</Button>
+                    </form>
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>

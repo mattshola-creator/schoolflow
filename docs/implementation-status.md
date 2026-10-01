@@ -4,7 +4,7 @@ Last updated: 1 October 2026
 
 ## Current milestone
 
-M10 Assessment & Results — Completed — Deployed & Production-Verified. PR #75 merged as `8fe6eee03f1f778e83bc5fe6219c9300945bd45e`; Netlify deploy `6abe5f60483cbb00077f121f` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.
+M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.
 
 M7 Admissions — Completed — Deployed & Verified
 

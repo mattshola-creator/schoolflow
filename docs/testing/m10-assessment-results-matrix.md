@@ -16,13 +16,13 @@
 | TypeScript/lint                 | Strict TypeScript and zero-warning lint                             | Passed      |
 | Build/security/advisors         | Build/audit/secret scan pass; advisor warnings reviewed             | Passed      |
 | Production lifecycle QA         | `M10-QA-20261001` lifecycle and negative controls                   | Passed      |
-| PR/CI/Netlify                   | PR #75, CI #171, merge `8fe6eee`, deploy `6abe5f60` Ready           | Passed      |
+| PR/CI/Netlify                   | PRs #75/#76; CI #171/#173; merge `e5e2e46`; deploy `6abe8c38` Ready | Passed      |
 
 ## Final production checkpoint — 2026-10-01
 
 - Phase: M10-I closeout complete.
 - Migrations: `m10_assessment_results`, `m10_promotion_idempotency_fix`, and `m10_promotion_target_session_date_fix` applied after rollback rehearsals.
-- Release: PR #75; Actions run #171 passed; merge `8fe6eee03f1f778e83bc5fe6219c9300945bd45e`; Netlify deploy `6abe5f60483cbb00077f121f` Ready for that exact revision; health reports Supabase connected.
+- Release: PRs #75 and #76; Actions runs #171 and #173 passed; final runtime merge `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` Ready for that exact revision; health reports Supabase connected.
 - Production QA: one scheme, two components, two grade bands, two students, four source scores, two computed results (80.00 and 50.00), one published two-result snapshot, one linked correction batch with four copied scores, and one idempotent promotion/future membership.
 - Negative controls passed: score bound, enrollment, teacher assignment, cross-tenant scope, academic lock, feature disablement, and duplicate promotion.
 - Audit: 24 scoped assessment/result events plus academic-lock evidence. Published actor/timestamps and immutable snapshot persist.

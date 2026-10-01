@@ -19,6 +19,13 @@ describe("M11 database contract", () => {
   });
   it("protects all M11 tables with RLS", () =>
     expect(sql.match(/enable row level security/g)?.length).toBe(10));
+  it("uses caller-bound public RLS predicates", () => {
+    expect(sql).toContain("can_access_communication_notice");
+    expect(sql).toContain("can_access_communication_thread");
+    expect(sql).toContain(
+      "revoke all on function private.is_thread_participant",
+    );
+  });
   it("deduplicates notification and message retries", () => {
     expect(sql).toContain("notifications_recipient_event_key_idx");
     expect(sql).toContain("unique(thread_id,sender_user_id,client_request_id)");

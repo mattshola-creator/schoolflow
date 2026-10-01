@@ -5,6 +5,10 @@ const sql = readFileSync(
   "supabase/migrations/20261001173322_m11_parent_student_communication.sql",
   "utf8",
 );
+const noticeReadFix = readFileSync(
+  "supabase/migrations/20261001220500_m11_notice_read_rls_fix.sql",
+  "utf8",
+);
 describe("M11 database contract", () => {
   it("enforces relationship/self portal access", () => {
     expect(sql).toContain("portal_can_access_student");
@@ -25,6 +29,10 @@ describe("M11 database contract", () => {
     expect(sql).toContain(
       "revoke all on function private.is_thread_participant",
     );
+    expect(noticeReadFix).toContain(
+      "public.can_access_communication_notice(notice_id)",
+    );
+    expect(noticeReadFix).not.toContain("private.portal_notice_visible");
   });
   it("deduplicates notification and message retries", () => {
     expect(sql).toContain("notifications_recipient_event_key_idx");

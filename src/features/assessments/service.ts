@@ -229,15 +229,15 @@ export async function loadScoreSheet(batchId: string) {
   if (batch.error || !batch.data)
     throw new Error("Score sheet could not be loaded");
   let membershipQuery = context.supabase
-      .from("class_memberships")
-      .select(
-        "student_id,student_profiles!inner(student_number,people!inner(first_name,last_name))",
-      )
-      .eq("organization_id", context.active.organizationId)
-      .eq("school_id", context.active.schoolId!)
-      .eq("academic_session_id", batch.data.session_id)
-      .eq("class_level_id", batch.data.class_level_id)
-      .eq("status", "active");
+    .from("class_memberships")
+    .select(
+      "student_id,student_profiles!inner(student_number,people!inner(first_name,last_name))",
+    )
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .eq("academic_session_id", batch.data.session_id)
+    .eq("class_level_id", batch.data.class_level_id)
+    .eq("status", "active");
   membershipQuery = batch.data.class_arm_id
     ? membershipQuery.eq("class_arm_id", batch.data.class_arm_id)
     : membershipQuery.is("class_arm_id", null);

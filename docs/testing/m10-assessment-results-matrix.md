@@ -1,22 +1,22 @@
 # M10 Assessment & Results Acceptance Matrix
 
-| Area | Evidence | Status |
-| --- | --- | --- |
-| Configurable schemes/components | Versioned schemes, weighted components, activation RPC | Implemented |
-| Grade validation | Contiguous 0–100 bands and 100% weight validation | Implemented |
-| Score entry | Enrollment, bounds, assignment, lock, permission and feature checks | Implemented |
-| Computation | Server-side weighted totals, grades and remarks | Implemented |
-| Workflow | Valid server transitions with actor/timestamp evidence | Implemented |
-| Publication/correction | Immutable snapshots and linked correction versions | Implemented |
-| Report cards | Published-snapshot browser view/print foundation | Implemented |
-| Promotion | Published-result prerequisite, transaction and idempotency | Implemented |
-| RLS/isolation | School-scoped policies and composite foreign keys | Implemented; production QA pending |
-| Entitlements | Five disabled-by-default feature gates | Implemented; production QA pending |
-| Automated tests | 256 passing across 57 files | Passed |
-| TypeScript/lint | Strict TypeScript and zero-warning lint | Passed |
-| Build/security/advisors | Required before closeout | Pending |
-| Production lifecycle QA | Dedicated synthetic M10 fixtures | Pending |
-| PR/CI/Netlify | Focused M10 PR and intended revision verification | Pending |
+| Area                            | Evidence                                                            | Status                             |
+| ------------------------------- | ------------------------------------------------------------------- | ---------------------------------- |
+| Configurable schemes/components | Versioned schemes, weighted components, activation RPC              | Implemented                        |
+| Grade validation                | Contiguous 0–100 bands and 100% weight validation                   | Implemented                        |
+| Score entry                     | Enrollment, bounds, assignment, lock, permission and feature checks | Implemented                        |
+| Computation                     | Server-side weighted totals, grades and remarks                     | Implemented                        |
+| Workflow                        | Valid server transitions with actor/timestamp evidence              | Implemented                        |
+| Publication/correction          | Immutable snapshots and linked correction versions                  | Implemented                        |
+| Report cards                    | Published-snapshot browser view/print foundation                    | Implemented                        |
+| Promotion                       | Published-result prerequisite, transaction and idempotency          | Implemented                        |
+| RLS/isolation                   | School-scoped policies and composite foreign keys                   | Implemented; production QA pending |
+| Entitlements                    | Five disabled-by-default feature gates                              | Implemented; production QA pending |
+| Automated tests                 | 256 passing across 57 files                                         | Passed                             |
+| TypeScript/lint                 | Strict TypeScript and zero-warning lint                             | Passed                             |
+| Build/security/advisors         | Required before closeout                                            | Pending                            |
+| Production lifecycle QA         | Dedicated synthetic M10 fixtures                                    | Pending                            |
+| PR/CI/Netlify                   | Focused M10 PR and intended revision verification                   | Pending                            |
 
 ## Continuation checkpoint — 2026-10-01
 

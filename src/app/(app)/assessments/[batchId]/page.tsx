@@ -69,10 +69,10 @@ export default async function ScoreSheetPage({
               return (
                 <tr key={student.student_id} className="border-b last:border-0">
                   <td className="p-3 font-medium">
-                {student.student_profiles[0]?.people.first_name}{" "}
-                {student.student_profiles[0]?.people.last_name}
+                    {student.student_profiles[0]?.people.first_name}{" "}
+                    {student.student_profiles[0]?.people.last_name}
                     <span className="block text-xs font-normal text-slate-500">
-                  {student.student_profiles[0]?.student_number}
+                      {student.student_profiles[0]?.student_number}
                     </span>
                   </td>
                   {components.map((component) => (

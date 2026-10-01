@@ -315,3 +315,7 @@ remain separate milestones and were not started during M7.5.
   tests across 55 files, production build, dependency audit and secret scan.
   M9 Finance is Completed — Deployed & Production-Verified. M10 has not
   started and requires separate authorization.
+
+# M11 — Parent / Student / Communication (in progress)
+
+M11-A through M11-I are implemented locally on `feat/m11-parent-student-communication`. The additive migration introduces relationship/self-scoped portal accounts, five communication feature gates, targeted notices, controlled participant messaging, preferences, private document links, idempotent notification delivery, audit triggers and RLS. Portal read models consume immutable M10 publications and student-scoped M8 attendance/M9 Finance data without taking ownership of those records. The production-schema rollback rehearsal passed. Current quality checkpoint: 265 tests across 59 files, formatting, zero-warning lint and strict TypeScript passed. Migration application, PR/CI/deployment and controlled synthetic production QA remain pending. See `docs/testing/m11-parent-student-communication-matrix.md`.

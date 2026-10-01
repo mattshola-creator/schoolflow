@@ -1,7 +1,9 @@
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { loadPortalContext } from "@/features/communication/service";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
+import { redirect } from "next/navigation";
 import { switchContext } from "../actions";
 export default async function DashboardPage() {
   const { supabase, user } = await requireUser();
@@ -10,7 +12,9 @@ export default async function DashboardPage() {
     .select("organization_id, organizations(name), status")
     .eq("user_id", user.id)
     .eq("status", "active");
-  if (!memberships?.length)
+  if (!memberships?.length) {
+    const portalContexts = await loadPortalContext();
+    if (portalContexts.length) redirect("/portal");
     return (
       <main className="mx-auto max-w-3xl px-5 py-16">
         <PageHeader
@@ -23,6 +27,7 @@ export default async function DashboardPage() {
         </ButtonLink>
       </main>
     );
+  }
   const { options, active } = await loadTenantContext();
   return (
     <main className="py-12">

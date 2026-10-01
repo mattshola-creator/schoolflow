@@ -335,3 +335,21 @@ secret scan. Synthetic evidence remains preserved, all five M11 overrides are
 disabled, synthetic sessions are zero, the owner and M7–M10 evidence are
 untouched, and M12 has not started. See
 `docs/testing/m11-parent-student-communication-matrix.md`.
+
+# M12 — Management & Reporting (in progress)
+
+M12-A through M12-I are implemented on `feat/m12-management-reporting`. The
+milestone composes existing M3–M11 sources through caller-bound, per-school
+authorized aggregates; it introduces no shadow operational store. It includes
+the management dashboard, safe multi-school scope, standard student,
+admissions, attendance, staff, teaching, exact-decimal Finance,
+published-result, promotion, communication and operational summaries,
+permission-aware global search, server-reauthorized CSV/browser print, and
+audited academic close/rollover.
+
+Migration `m12_management_reporting` passed rollback rehearsal and is applied
+to production. Five M12 features and granular permissions default disabled.
+The local gate currently passes 276 tests across 62 files, strict TypeScript,
+zero-warning lint and production build. Release, controlled production QA and
+final closeout remain; see `docs/testing/m12-management-reporting-matrix.md`
+and `docs/testing/m12-continuation-checkpoint.md`.

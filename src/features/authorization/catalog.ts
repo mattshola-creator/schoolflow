@@ -105,9 +105,11 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   },
   {
     module: "reporting",
-    permission: "reporting.view",
-    label: "Reporting",
-    description: "Reports and exports",
+    permission: "reporting.dashboard.view",
+    feature: "reporting.management_dashboard",
+    label: "Management",
+    description: "Dashboards and scoped reports",
+    href: "/management",
   },
 ];
 

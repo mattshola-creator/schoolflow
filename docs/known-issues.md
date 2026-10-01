@@ -2,6 +2,13 @@
 
 ## Open
 
+- M12 adds intentional caller-bound reporting RPCs with fixed empty search
+  paths, explicit authentication, membership, school/management scope,
+  permission, module-entitlement and feature checks. Supabase reports these in
+  the established authenticated `SECURITY DEFINER` warning class. The new
+  reporting event index is also initially reported unused before production
+  workload; neither is a release blocker absent a missing-RLS or scope defect.
+
 - Netlify may inject a floating status badge that can cover underlying content.
   This overlay is outside the SchoolFlow application source; it is not an
   unresolved app-owned responsive-layout defect.

@@ -31,4 +31,24 @@ describe("assessment database contracts", () => {
     expect(migration).toContain("unique (school_id, idempotency_key)");
     expect(migration).toContain("correction_of_id");
   });
+
+  it("keeps promotion idempotent and starts future enrollment on the target session", () => {
+    const idempotencyFix = readFileSync(
+      join(
+        process.cwd(),
+        "supabase/migrations/20261001165000_m10_promotion_idempotency_fix.sql",
+      ),
+      "utf8",
+    );
+    const sessionDateFix = readFileSync(
+      join(
+        process.cwd(),
+        "supabase/migrations/20261001170000_m10_promotion_target_session_date_fix.sql",
+      ),
+      "utf8",
+    );
+    expect(idempotencyFix).toContain("sp.idempotency_key=trim($7)");
+    expect(sessionDateFix).toContain("select s.start_date into target_start");
+    expect(sessionDateFix).toContain("target_start,'active'");
+  });
 });

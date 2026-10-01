@@ -28,6 +28,11 @@ additive `m11_portal_result_isolation` migration recognizes the authoritative
 key and projects a one-learner result array, preserving immutable batch metadata
 without exposing classmates.
 
+An authenticated-role RLS probe then identified that policies invoked a private
+helper whose execution was intentionally revoked. Additive migration
+`m11_portal_rls_helper_fix` keeps private helpers inaccessible and routes policy
+evaluation through caller-bound public predicates for notices and threads.
+
 ## Acceptance criteria
 
 | Area                     | Evidence                                                           | Status      |

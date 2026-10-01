@@ -301,7 +301,12 @@ remain separate milestones and were not started during M7.5.
   acceptance lifecycle then passed. All six temporary Finance feature flags
   are disabled again. No authenticated browser QA session was created, and the
   permanent owner plus M7/M8 evidence remain untouched.
-- The final local checkpoint passes formatting, zero-warning lint, strict
-  TypeScript, 248 tests across 55 files, production build, dependency audit
-  and secret scan. M9 awaits only publication/deployment of the narrow enum
-  regression fix and final documentation checkpoint before formal closeout.
+- PR #73 passed GitHub Actions run #165 and merged the enum correction and
+  final acceptance evidence as revision
+  `665f668e8da8a48ab0a24b5f7b2805a7a93a384a`. Netlify production deploy
+  `6abe43bdde3f2d000866171c` is Ready for that exact revision with no secret
+  scan matches.
+- The final gate passes formatting, zero-warning lint, strict TypeScript, 248
+  tests across 55 files, production build, dependency audit and secret scan.
+  M9 Finance is Completed — Deployed & Production-Verified. M10 has not
+  started and requires separate authorization.

@@ -48,6 +48,13 @@
 
 ## Closed
 
+- M11 production acceptance found four narrow PostgreSQL authorization/data
+  boundary defects. Additive migrations corrected notification enum coercion,
+  isolated published result snapshots to one learner, routed notice/thread RLS
+  through caller-bound public predicates, and corrected notice read-state
+  authorization. Rollback rehearsals, CI and authenticated production probes
+  passed; no M11-blocking defect remains.
+
 - M9 production acceptance found PostgreSQL CASE literals resolving as text in
   payment verification, expense decision and reconciliation RPC updates.
   `m9_finance_enum_status_fixes` explicitly casts every branch to its domain

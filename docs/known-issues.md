@@ -55,6 +55,14 @@
 
 ## Closed
 
+- M12 production acceptance passed authorized A+B management aggregation,
+  explicit School C/non-member/direct-write denial, known-fixture KPI values,
+  scoped search/export evidence, academic locks and idempotent rollover. The
+  reporting RPCs intentionally remain in the established caller-bound
+  `SECURITY DEFINER` advisor class: they fix `search_path`, derive the actor
+  from `auth.uid()`, validate tenant/school permission and feature scope, and
+  revoke public/anonymous execution. No M12-blocking defect remains.
+
 - M11 production acceptance found four narrow PostgreSQL authorization/data
   boundary defects. Additive migrations corrected notification enum coercion,
   isolated published result snapshots to one learner, routed notice/thread RLS

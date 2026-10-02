@@ -336,9 +336,9 @@ disabled, synthetic sessions are zero, the owner and M7–M10 evidence are
 untouched, and M12 has not started. See
 `docs/testing/m11-parent-student-communication-matrix.md`.
 
-# M12 — Management & Reporting (in progress)
+# M12 — Management & Reporting (completed)
 
-M12-A through M12-I are implemented on `feat/m12-management-reporting`. The
+M12-A through M12-J are Completed — Deployed — Production-Verified. The
 milestone composes existing M3–M11 sources through caller-bound, per-school
 authorized aggregates; it introduces no shadow operational store. It includes
 the management dashboard, safe multi-school scope, standard student,
@@ -348,8 +348,22 @@ permission-aware global search, server-reauthorized CSV/browser print, and
 audited academic close/rollover.
 
 Migration `m12_management_reporting` passed rollback rehearsal and is applied
-to production. Five M12 features and granular permissions default disabled.
-The local gate currently passes 276 tests across 62 files, strict TypeScript,
-zero-warning lint and production build. Release, controlled production QA and
-final closeout remain; see `docs/testing/m12-management-reporting-matrix.md`
-and `docs/testing/m12-continuation-checkpoint.md`.
+to production as version `20261001231631`. PR #84 passed GitHub Actions run
+#190 and merged as `9bb9fdf59d3ebb6094b23438363ec0c9941b882b`.
+Netlify deploy `6abf3f247b0ea90008aead07` is Ready on that exact revision.
+
+Controlled production acceptance verified single- and authorized multi-school
+scope, zero School C aggregate leakage, cross-tenant/unauthorized denial,
+deterministic known-fixture KPIs, exact decimal Finance values, published-only
+result aggregation, scoped search/export auditing, academic locks and
+idempotent session rollover. The production A+B aggregate completed in 83.198
+ms from cache without disk reads. All five M12 overrides are disabled again;
+M9–M11 overrides remain disabled; the synthetic actor has zero sessions; the
+permanent owner and M7–M11 evidence remain untouched.
+
+The final gate passes formatting, zero-warning lint, strict TypeScript, 276
+tests across 62 files, production build, dependency audit and secret scan.
+Supabase advisors show established intentional caller-bound SECURITY DEFINER,
+policy-performance and unused-index warnings, with no new M12-blocking
+critical/error finding. See `docs/testing/m12-management-reporting-matrix.md`.
+M13 has not started and requires separate authorization.

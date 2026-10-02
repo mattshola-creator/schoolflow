@@ -17,8 +17,8 @@ vi.mock("next/link", () => ({
 }));
 
 const items = [
-  { href: "/admissions", label: "Admissions" },
-  { href: "/students", label: "Students" },
+  { href: "/admissions", label: "Admissions", group: "Operations" },
+  { href: "/students", label: "Students", group: "Operations" },
 ];
 
 describe("WorkspaceNavigation", () => {
@@ -121,5 +121,24 @@ describe("WorkspaceNavigation", () => {
       "aria-current",
       "page",
     );
+  });
+
+  it("explains feature-gated modules without turning them into links", () => {
+    render(
+      <WorkspaceNavigation
+        variant="desktop"
+        items={items}
+        unavailableItems={[
+          { label: "Finance", reason: "Not activated for this organization" },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+    expect(screen.getByText("Finance")).toBeInTheDocument();
+    expect(
+      screen.getByText("Not activated for this organization"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Finance" })).toBeNull();
   });
 });

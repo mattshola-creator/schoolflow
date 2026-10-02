@@ -2,8 +2,10 @@ import Link from "next/link";
 import { Building2, LogOut, UserRound } from "lucide-react";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
 import { SkipLink } from "@/components/ui/skip-link";
-import { moduleNavigation } from "@/features/authorization/catalog";
-import { evaluateAccess } from "@/features/authorization/evaluator";
+import {
+  buildWorkspaceAccess,
+  describeAccessReason,
+} from "@/features/authorization/navigation";
 import { requireUser } from "@/lib/auth";
 import { loadEffectiveAuthorization } from "@/lib/authorization";
 import { logout } from "./actions";
@@ -17,14 +19,17 @@ export default async function AppLayout({
 }) {
   const { user } = await requireUser();
   const authorization = await loadEffectiveAuthorization();
-  const visibleModules = authorization
-    ? moduleNavigation.filter(
-        (item) => evaluateAccess(authorization, item).allowed,
-      )
-    : [];
-  const navigationItems = visibleModules.map((item) => ({
+  const workspace = authorization
+    ? buildWorkspaceAccess(authorization)
+    : { available: [], unavailable: [] };
+  const navigationItems = workspace.available.map((item) => ({
     href: item.href ?? `/capabilities/${item.module}`,
     label: item.label,
+    group: item.group,
+  }));
+  const unavailableItems = workspace.unavailable.map((item) => ({
+    label: item.label,
+    reason: describeAccessReason(item.reason),
   }));
 
   return (
@@ -49,6 +54,7 @@ export default async function AppLayout({
             <WorkspaceNavigation
               variant="mobile"
               items={navigationItems}
+              unavailableItems={unavailableItems}
               userEmail={user.email}
             />
             <form action={logout}>
@@ -66,7 +72,11 @@ export default async function AppLayout({
       </header>
       <div className="mx-auto grid max-w-6xl px-4 sm:px-5 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-8">
         <aside className="hidden min-h-[calc(100vh-4.75rem)] border-r md:block">
-          <WorkspaceNavigation variant="desktop" items={navigationItems} />
+          <WorkspaceNavigation
+            variant="desktop"
+            items={navigationItems}
+            unavailableItems={unavailableItems}
+          />
         </aside>
         <div id="main-content" tabIndex={-1} className="min-w-0">
           {children}

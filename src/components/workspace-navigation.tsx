@@ -8,10 +8,17 @@ import { Building2, LayoutDashboard, Menu, X } from "lucide-react";
 export type WorkspaceNavigationItem = {
   href: string;
   label: string;
+  group?: string;
+};
+
+export type UnavailableNavigationItem = {
+  label: string;
+  reason: string;
 };
 
 type WorkspaceNavigationProps = {
   items: WorkspaceNavigationItem[];
+  unavailableItems?: UnavailableNavigationItem[];
   userEmail?: string;
   variant: "desktop" | "mobile";
 };
@@ -30,45 +37,91 @@ function isCurrentPath(pathname: string, href: string) {
 
 function NavigationLinks({
   items,
+  unavailableItems = [],
   onNavigate,
 }: {
   items: WorkspaceNavigationItem[];
+  unavailableItems?: UnavailableNavigationItem[];
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  const links = [dashboardItem, ...items];
+  const groups = [
+    {
+      label: "Workspace",
+      items: [
+        dashboardItem,
+        ...items.filter((item) => !item.group || item.group === "Workspace"),
+      ],
+    },
+    ...["Operations", "Insights", "Administration"].map((label) => ({
+      label,
+      items: items.filter((item) => item.group === label),
+    })),
+  ].filter((group) => group.items.length);
 
   return (
-    <nav aria-label="Workspace" className="space-y-1">
-      {links.map((item) => {
-        const current = isCurrentPath(pathname, item.href);
-        const Icon = item.href === "/dashboard" ? LayoutDashboard : null;
-
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={current ? "page" : undefined}
-            onClick={onNavigate}
-            className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
-              current
-                ? "bg-emerald-50 text-emerald-900"
-                : "text-slate-600 hover:bg-white hover:text-slate-950"
-            }`}
+    <nav aria-label="Workspace" className="space-y-5">
+      {groups.map((group) => (
+        <section
+          key={group.label}
+          aria-labelledby={`nav-${group.label.toLowerCase()}`}
+        >
+          <h2
+            id={`nav-${group.label.toLowerCase()}`}
+            className="px-3 text-[0.68rem] font-semibold tracking-wider text-slate-400 uppercase"
           >
-            {Icon ? (
-              <Icon aria-hidden="true" className="size-4 shrink-0" />
-            ) : null}
-            <span className="min-w-0 break-words">{item.label}</span>
-          </Link>
-        );
-      })}
+            {group.label}
+          </h2>
+          <div className="mt-1 space-y-1">
+            {group.items.map((item) => {
+              const current = isCurrentPath(pathname, item.href);
+              const Icon = item.href === "/dashboard" ? LayoutDashboard : null;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={current ? "page" : undefined}
+                  onClick={onNavigate}
+                  className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${current ? "bg-emerald-50 text-emerald-900" : "text-slate-600 hover:bg-white hover:text-slate-950"}`}
+                >
+                  {Icon ? (
+                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                  ) : null}
+                  <span className="min-w-0 break-words">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+      {unavailableItems.length ? (
+        <section aria-labelledby="nav-unavailable">
+          <h2
+            id="nav-unavailable"
+            className="px-3 text-[0.68rem] font-semibold tracking-wider text-slate-400 uppercase"
+          >
+            Unavailable
+          </h2>
+          <ul className="mt-1 space-y-1">
+            {unavailableItems.map((item) => (
+              <li
+                key={item.label}
+                className="rounded-lg px-3 py-2 text-sm text-slate-400"
+              >
+                <span className="font-medium">{item.label}</span>
+                <span className="mt-0.5 block text-xs">{item.reason}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </nav>
   );
 }
 
 export function WorkspaceNavigation({
   items,
+  unavailableItems = [],
   userEmail,
   variant,
 }: WorkspaceNavigationProps) {
@@ -116,7 +169,7 @@ export function WorkspaceNavigation({
   if (variant === "desktop") {
     return (
       <div className="sticky top-4 py-6 pr-5">
-        <NavigationLinks items={items} />
+        <NavigationLinks items={items} unavailableItems={unavailableItems} />
       </div>
     );
   }
@@ -183,6 +236,7 @@ export function WorkspaceNavigation({
             <div className="flex-1 px-4 py-4">
               <NavigationLinks
                 items={items}
+                unavailableItems={unavailableItems}
                 onNavigate={() => setOpen(false)}
               />
             </div>

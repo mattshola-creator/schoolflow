@@ -4,6 +4,7 @@ export type ModuleNavigationItem = CapabilityRequirement & {
   label: string;
   description: string;
   href?: string;
+  group: "Workspace" | "Operations" | "Insights" | "Administration";
 };
 
 export const moduleNavigation: ModuleNavigationItem[] = [
@@ -14,6 +15,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Action Center",
     description: "Tasks and approvals",
     href: "/action-center",
+    group: "Workspace",
   },
   {
     module: "foundation",
@@ -22,6 +24,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Documents",
     description: "Secure school documents",
     href: "/documents",
+    group: "Workspace",
   },
   {
     module: "foundation",
@@ -30,6 +33,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Audit",
     description: "Protected activity history",
     href: "/audit",
+    group: "Administration",
   },
   {
     module: "admissions",
@@ -38,6 +42,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Admissions",
     description: "Applicant lifecycle",
     href: "/admissions",
+    group: "Operations",
   },
   {
     module: "students",
@@ -46,6 +51,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Students",
     description: "Student and guardian records",
     href: "/students",
+    group: "Operations",
   },
   {
     module: "staff",
@@ -54,6 +60,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Staff",
     description: "Staff operations",
     href: "/staff",
+    group: "Operations",
   },
   {
     module: "attendance",
@@ -62,6 +69,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Attendance",
     description: "Attendance operations",
     href: "/attendance",
+    group: "Operations",
   },
   {
     module: "academics",
@@ -70,6 +78,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Academics",
     description: "Academic operations",
     href: "/academic-setup",
+    group: "Operations",
   },
   {
     module: "academics",
@@ -78,6 +87,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Teaching",
     description: "Teaching assignments and schedules",
     href: "/teaching",
+    group: "Operations",
   },
   {
     module: "academics",
@@ -86,6 +96,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Assessment",
     description: "Scores, results and report cards",
     href: "/assessments",
+    group: "Operations",
   },
   {
     module: "finance",
@@ -94,6 +105,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Finance",
     description: "School finance",
     href: "/finance",
+    group: "Operations",
   },
   {
     module: "communication",
@@ -102,6 +114,7 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Communication",
     description: "Messages and announcements",
     href: "/communication",
+    group: "Operations",
   },
   {
     module: "reporting",
@@ -110,6 +123,16 @@ export const moduleNavigation: ModuleNavigationItem[] = [
     label: "Management",
     description: "Dashboards and scoped reports",
     href: "/management",
+    group: "Insights",
+  },
+  {
+    module: "foundation",
+    permission: "organization.view",
+    feature: "foundation.authorization_inspection",
+    label: "Administration",
+    description: "Access, modules and pilot configuration",
+    href: "/administration",
+    group: "Administration",
   },
 ];
 

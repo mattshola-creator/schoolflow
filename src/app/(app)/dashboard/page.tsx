@@ -1,6 +1,11 @@
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { loadPortalContext } from "@/features/communication/service";
+import { loadEffectiveAuthorization } from "@/lib/authorization";
+import {
+  buildWorkspaceAccess,
+  describeAccessReason,
+} from "@/features/authorization/navigation";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import { redirect } from "next/navigation";
@@ -28,7 +33,13 @@ export default async function DashboardPage() {
       </main>
     );
   }
-  const { options, active } = await loadTenantContext();
+  const [{ options, active }, authorization] = await Promise.all([
+    loadTenantContext(),
+    loadEffectiveAuthorization(),
+  ]);
+  const workspace = authorization
+    ? buildWorkspaceAccess(authorization)
+    : { available: [], unavailable: [] };
   return (
     <main className="py-12">
       <PageHeader eyebrow="Secure workspace" title="Your organizations" />
@@ -80,6 +91,58 @@ export default async function DashboardPage() {
           </section>
         ))}
       </div>
+      <section className="mt-10" aria-labelledby="available-modules">
+        <PageHeader
+          eyebrow="Workspace modules"
+          title="Available in this school"
+          description="Open a module directly. Availability follows your active school, role, plan and feature configuration."
+        />
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {workspace.available.map((item) => (
+            <article
+              key={item.href}
+              className="border-border bg-surface rounded-xl border p-5"
+            >
+              <h3 className="font-semibold text-slate-950">{item.label}</h3>
+              <p className="mt-1 text-sm text-slate-600">{item.description}</p>
+              <ButtonLink
+                href={item.href ?? `/capabilities/${item.module}`}
+                variant="quiet"
+                className="mt-4 px-0"
+              >
+                Open {item.label}
+              </ButtonLink>
+            </article>
+          ))}
+        </div>
+      </section>
+      {workspace.unavailable.length ? (
+        <section className="mt-10" aria-labelledby="unavailable-modules">
+          <h2
+            id="unavailable-modules"
+            className="text-lg font-semibold text-slate-950"
+          >
+            Not activated in this workspace
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            These capabilities are implemented but remain unavailable under the
+            current organization configuration.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {workspace.unavailable.map((item) => (
+              <article
+                key={item.href}
+                className="rounded-xl border border-amber-200 bg-amber-50 p-4"
+              >
+                <h3 className="font-semibold text-amber-950">{item.label}</h3>
+                <p className="mt-1 text-sm text-amber-900">
+                  {describeAccessReason(item.reason)}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const netlify = readFileSync("netlify.toml", "utf8");
+const next = readFileSync("next.config.ts", "utf8");
 const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
 
 describe("M13 production hardening contracts", () => {
@@ -13,6 +14,10 @@ describe("M13 production hardening contracts", () => {
       'Referrer-Policy = "strict-origin-when-cross-origin"',
     );
     expect(netlify).toContain('Cross-Origin-Opener-Policy = "same-origin"');
+    expect(next).toContain('key: "X-DNS-Prefetch-Control", value: "off"');
+    expect(next).toContain(
+      'key: "Cross-Origin-Opener-Policy", value: "same-origin"',
+    );
   });
 
   it("keeps production dependency and secret checks in CI", () => {

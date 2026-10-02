@@ -18,6 +18,7 @@
     "supabase:status": "supabase status",
     "db:reset": "supabase db reset",
     "db:lint": "supabase db lint --local",
+    "pilot:smoke-load": "node scripts/pilot-smoke-load.mjs",
     "types:database": "supabase gen types typescript --local > src/types/database.generated.ts"
   },
   "dependencies": {

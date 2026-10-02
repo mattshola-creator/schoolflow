@@ -24,3 +24,11 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Reject high or critical dependency vulnerabilities
+        run: pnpm audit --audit-level=high
+      - name: Scan tracked source for privileged secret patterns
+        run: |
+          if git grep -nE '(BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|sk_live_[A-Za-z0-9]+|ghp_[A-Za-z0-9]{30,}|SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=[[:space:]]*[^$])' -- ':!pnpm-lock.yaml'; then
+            echo 'Potential privileged secret found in tracked source.' >&2
+            exit 1
+          fi

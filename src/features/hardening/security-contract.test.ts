@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 const netlify = readFileSync("netlify.toml", "utf8");
 const next = readFileSync("next.config.ts", "utf8");
 const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
+const databaseBackup = readFileSync("scripts/backup-database.sh", "utf8");
+const storageBackup = readFileSync("scripts/backup-storage.mjs", "utf8");
 
 describe("M13 production hardening contracts", () => {
   it("sends baseline browser security headers", () => {
@@ -29,5 +31,14 @@ describe("M13 production hardening contracts", () => {
     expect(netlify).toContain(
       'Permissions-Policy = "camera=(), microphone=(), geolocation=()"',
     );
+  });
+
+  it("keeps database and private storage backups explicit and separate", () => {
+    expect(databaseBackup).toContain("supabase db dump");
+    expect(databaseBackup).toContain("--data-only --use-copy");
+    expect(databaseBackup).toContain("sha256sum");
+    expect(storageBackup).toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(storageBackup).toContain("client.storage.listBuckets()");
+    expect(storageBackup).toContain('join(destination, "manifest.json")');
   });
 });

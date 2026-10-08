@@ -1,14 +1,15 @@
-import Link from "next/link";
-import { Building2, LogOut, UserRound } from "lucide-react";
-import { WorkspaceNavigation } from "@/components/workspace-navigation";
+import { ApplicationShell } from "@/components/application-shell";
+import { ContextRibbon } from "@/components/context-ribbon";
 import { SkipLink } from "@/components/ui/skip-link";
 import {
   buildWorkspaceAccess,
   describeAccessReason,
 } from "@/features/authorization/navigation";
 import { requireUser } from "@/lib/auth";
+import { loadAcademicContext } from "@/lib/academic-context";
 import { loadEffectiveAuthorization } from "@/lib/authorization";
-import { logout } from "./actions";
+import { loadTenantContext } from "@/lib/tenant-context";
+import { logout, switchContext } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,22 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const { user } = await requireUser();
-  const authorization = await loadEffectiveAuthorization();
+  const [authorization, tenant] = await Promise.all([
+    loadEffectiveAuthorization(),
+    loadTenantContext(),
+  ]);
+  const academic = tenant.active
+    ? await loadAcademicContext(
+        tenant.active.organizationId,
+        tenant.active.schoolId,
+      )
+    : {
+        sessionId: null,
+        sessionName: null,
+        periodId: null,
+        periodName: null,
+        available: false,
+      };
   const workspace = authorization
     ? buildWorkspaceAccess(authorization)
     : { available: [], unavailable: [] };
@@ -33,55 +49,34 @@ export default async function AppLayout({
   }));
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
       <SkipLink />
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4">
-          <Link
-            href="/dashboard"
-            className="flex min-w-0 items-center gap-3 rounded-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
-          >
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-800 text-white">
-              <Building2 aria-hidden="true" className="size-4" />
-            </span>
-            <span className="truncate">SchoolFlow</span>
-          </Link>
-          <div className="flex shrink-0 items-center gap-2 text-sm text-slate-600 sm:gap-3">
-            <span className="hidden items-center gap-2 sm:flex">
-              <UserRound aria-hidden="true" className="size-4" />
-              {user.email}
-            </span>
-            <WorkspaceNavigation
-              variant="mobile"
-              items={navigationItems}
-              unavailableItems={unavailableItems}
-              userEmail={user.email}
-            />
-            <form action={logout}>
-              <button
-                type="submit"
-                className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 hover:bg-slate-50 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-              >
-                <LogOut aria-hidden="true" className="size-4" />
-                <span className="hidden sm:inline">Sign out</span>
-                <span className="sr-only sm:hidden">Sign out</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-      <div className="mx-auto grid max-w-6xl px-4 sm:px-5 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-8">
-        <aside className="hidden min-h-[calc(100vh-4.75rem)] border-r md:block">
-          <WorkspaceNavigation
-            variant="desktop"
-            items={navigationItems}
-            unavailableItems={unavailableItems}
+      <ApplicationShell
+        items={navigationItems}
+        searchHref={
+          navigationItems.some((item) => item.href === "/management")
+            ? "/management#workspace-search"
+            : undefined
+        }
+        notificationHref={
+          navigationItems.some((item) => item.href === "/action-center")
+            ? "/action-center"
+            : undefined
+        }
+        unavailableItems={unavailableItems}
+        userEmail={user.email}
+        signOutAction={logout}
+        contextRibbon={
+          <ContextRibbon
+            active={tenant.active}
+            academic={academic}
+            options={tenant.options}
+            switchAction={switchContext}
           />
-        </aside>
-        <div id="main-content" tabIndex={-1} className="min-w-0">
-          {children}
-        </div>
-      </div>
-    </div>
+        }
+      >
+        {children}
+      </ApplicationShell>
+    </>
   );
 }

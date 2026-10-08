@@ -20,7 +20,7 @@
 | Bounded synthetic reference route              | `/px1-reference`                                    | PASS                    |
 | No schema/data/account changes                 | Git diff and migration inventory                    | PASS                    |
 | Reduced-motion support                         | CSS and design contract test                        | PASS                    |
-| Formatting, lint, TypeScript, tests, build     | local gate; Actions #204 (pre-audit steps)          | PASS                    |
+| Formatting, lint, TypeScript, tests, build     | local gate; Actions #210 (pre-audit steps)          | PASS                    |
 | Desktop/tablet/mobile responsive review        | founder screenshots; refined protected preview      | PASS — FINAL REVIEW DUE |
 | Preview deployment                             | PR #91 latest Netlify deploy, Ready                 | PASS                    |
 | Dependency audit                               | unchanged base: 3 high, 4 moderate, 1 low           | BLOCKED — M13 HARDENING |

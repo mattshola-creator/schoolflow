@@ -6,7 +6,7 @@
 
 **Draft PR:** `#91`
 
-**Implementation revision:** `b7b3d5f90df78ad5f429abe33bec476201618830`
+**Implementation revision:** latest head of draft PR `#91` (recorded in the PR)
 
 **Production state:** not merged and not activated
 
@@ -188,8 +188,8 @@ is necessary.
 
 PX1 does not modify dependencies. The PX0/M13 audit findings for Next.js,
 `sharp`, `source-map-js` and `braces` remain tracked separately and are not
-suppressed by this work. GitHub Actions run `#204` passed install, formatting,
-lint, strict TypeScript, 295 tests across 69 files and the production build. It
+suppressed by this work. GitHub Actions run `#210` passed install, formatting,
+lint, strict TypeScript, 302 tests across 69 files and the production build. It
 failed only at the dependency-audit step because the unchanged base currently
 reports three high, four moderate and one low advisory. The preview remains
 protected by Netlify team login; production rollout remains withheld.

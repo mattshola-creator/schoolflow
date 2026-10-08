@@ -65,7 +65,7 @@ export default function ExperiencePreviewPage() {
       />
 
       <section
-        className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4"
         aria-label="Reference key indicators"
       >
         {[
@@ -92,7 +92,7 @@ export default function ExperiencePreviewPage() {
         ))}
       </section>
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.55fr)]">
+      <section className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] xl:gap-6">
         <SurfaceCard eyebrow="Register pattern" title="Learner overview">
           <div className="mb-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_12rem_auto]">
             <label className="sr-only" htmlFor="reference-search">
@@ -115,40 +115,74 @@ export default function ExperiencePreviewPage() {
               Apply filters
             </Button>
           </div>
-          <DataTable caption="Synthetic learner reference data">
-            <TableHead>
-              <tr>
-                <TableHeader>Learner</TableHeader>
-                <TableHeader>Class</TableHeader>
-                <TableHeader>Status</TableHeader>
-                <TableHeader>Attendance</TableHeader>
-              </tr>
-            </TableHead>
-            <tbody>
-              {learners.map((learner) => (
-                <tr key={learner.name}>
-                  <TableCell>
-                    <span className="font-semibold text-slate-900">
-                      {learner.name}
-                    </span>
-                  </TableCell>
-                  <TableCell>{learner.level}</TableCell>
-                  <TableCell>
-                    <StatusBadge
-                      tone={learner.status === "Active" ? "success" : "warning"}
-                    >
-                      {learner.status}
-                    </StatusBadge>
-                  </TableCell>
-                  <TableCell>{learner.attendance}</TableCell>
+          <div className="hidden md:block">
+            <DataTable caption="Synthetic learner reference data">
+              <TableHead>
+                <tr>
+                  <TableHeader>Learner</TableHeader>
+                  <TableHeader>Class</TableHeader>
+                  <TableHeader>Status</TableHeader>
+                  <TableHeader>Attendance</TableHeader>
                 </tr>
-              ))}
-            </tbody>
-          </DataTable>
-          <div className="mt-4 md:hidden">
+              </TableHead>
+              <tbody>
+                {learners.map((learner) => (
+                  <tr key={learner.name}>
+                    <TableCell>
+                      <span className="font-semibold text-slate-900">
+                        {learner.name}
+                      </span>
+                    </TableCell>
+                    <TableCell>{learner.level}</TableCell>
+                    <TableCell>
+                      <StatusBadge
+                        tone={
+                          learner.status === "Active" ? "success" : "warning"
+                        }
+                      >
+                        {learner.status}
+                      </StatusBadge>
+                    </TableCell>
+                    <TableCell>{learner.attendance}</TableCell>
+                  </tr>
+                ))}
+              </tbody>
+            </DataTable>
+          </div>
+          <ul
+            className="divide-border border-border divide-y rounded-xl border md:hidden"
+            aria-label="Synthetic learner reference data"
+          >
+            {learners.map((learner) => (
+              <li key={learner.name} className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900">
+                      {learner.name}
+                    </p>
+                    <p className="mt-0.5 text-sm text-slate-600">
+                      {learner.level}
+                    </p>
+                  </div>
+                  <StatusBadge
+                    tone={learner.status === "Active" ? "success" : "warning"}
+                  >
+                    {learner.status}
+                  </StatusBadge>
+                </div>
+                <p className="mt-3 text-sm text-slate-600">
+                  Attendance{" "}
+                  <strong className="text-slate-900">
+                    {learner.attendance}
+                  </strong>
+                </p>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 md:hidden">
             <p className="text-xs leading-5 text-slate-500">
-              Wide registers remain inside a controlled component-level scroll
-              area; the page itself does not overflow.
+              Common learner details use mobile cards; complex registers retain
+              the standard controlled-scroll table pattern.
             </p>
           </div>
         </SurfaceCard>
@@ -194,7 +228,7 @@ export default function ExperiencePreviewPage() {
       </section>
 
       <SurfaceCard
-        className="mt-8"
+        className="mt-6 sm:mt-8"
         eyebrow="Tabs and status"
         title="Interaction patterns"
       >
@@ -228,7 +262,10 @@ export default function ExperiencePreviewPage() {
         </div>
       </SurfaceCard>
 
-      <section id="guidance" className="mt-8 grid gap-6 lg:grid-cols-2">
+      <section
+        id="guidance"
+        className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-2 lg:gap-6"
+      >
         <SurfaceCard eyebrow="Loading" title="Predictable feedback">
           <LoadingSkeleton />
         </SurfaceCard>

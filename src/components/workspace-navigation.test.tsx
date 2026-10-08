@@ -51,6 +51,8 @@ describe("WorkspaceNavigation", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("qa@example.test")).toBeInTheDocument();
+    expect(screen.getByText("qa@example.test")).toHaveClass("break-all");
+    expect(screen.getByText("Signed in account:")).toHaveClass("sr-only");
     expect(screen.getByRole("link", { name: "Admissions" })).toHaveAttribute(
       "aria-current",
       "page",

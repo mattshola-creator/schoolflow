@@ -84,7 +84,7 @@ function NavigationLinks({
     }))
     .filter((group) => group.items.length);
   return (
-    <nav aria-label="Workspace" className="space-y-5">
+    <nav aria-label="Workspace" className="space-y-4">
       {groups.map((group) => {
         const GroupIcon =
           groupIcons[group.label as keyof typeof groupIcons] ?? BookOpenCheck;
@@ -204,7 +204,7 @@ export function WorkspaceNavigation({
   if (variant === "desktop")
     return (
       <div className="flex h-full flex-col">
-        <div className="flex-1 overflow-y-auto px-3 py-5">
+        <div className="flex-1 overflow-y-auto px-3 py-4">
           <NavigationLinks
             collapsed={collapsed}
             homeHref={homeHref}
@@ -259,7 +259,7 @@ export function WorkspaceNavigation({
             aria-labelledby="mobile-workspace-navigation-title"
             className="absolute inset-y-0 left-0 flex w-[min(21rem,calc(100vw-2rem))] flex-col overflow-y-auto bg-white shadow-2xl"
           >
-            <div className="border-border flex items-center justify-between border-b px-5 py-4">
+            <div className="border-border flex items-center justify-between border-b px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="bg-tenant-accent grid size-10 shrink-0 place-items-center rounded-xl text-white shadow-sm">
                   <Building2 aria-hidden="true" className="size-5" />
@@ -272,7 +272,8 @@ export function WorkspaceNavigation({
                     SchoolFlow
                   </p>
                   {userEmail ? (
-                    <p className="truncate text-xs text-slate-500">
+                    <p className="mt-0.5 max-w-[13rem] text-xs leading-4 break-all text-slate-500">
+                      <span className="sr-only">Signed in account: </span>
                       {userEmail}
                     </p>
                   ) : null}

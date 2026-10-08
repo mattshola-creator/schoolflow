@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { ContextRibbon } from "./context-ribbon";
 
 const active = {
@@ -10,6 +10,7 @@ const active = {
 };
 
 describe("ContextRibbon", () => {
+  afterEach(() => cleanup());
   it("shows server-provided organization, school, session and period", () => {
     render(
       <ContextRibbon
@@ -54,5 +55,40 @@ describe("ContextRibbon", () => {
     expect(screen.getAllByText(/Term not configured/).length).toBeGreaterThan(
       0,
     );
+  });
+
+  it("offers a compact mobile summary with complete long-name disclosure", () => {
+    const longContext = {
+      ...active,
+      organizationName:
+        "Cedarbridge International Learning and Development Organization",
+      schoolName:
+        "Cedarbridge Nursery Primary and Secondary Demonstration School",
+    };
+    render(
+      <ContextRibbon
+        active={longContext}
+        options={[longContext]}
+        academic={{
+          sessionId: "session",
+          sessionName: "2026/2027 Academic Session",
+          periodId: "period",
+          periodName: "First Term",
+          available: true,
+        }}
+      />,
+    );
+
+    const disclosure = screen.getByText("Show complete SchoolFlow context");
+    expect(disclosure.closest("summary")).toHaveClass("min-h-11");
+    expect(
+      screen.getAllByText(longContext.organizationName).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(longContext.schoolName).length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      screen.getAllByText("2026/2027 Academic Session").length,
+    ).toBeGreaterThan(0);
   });
 });

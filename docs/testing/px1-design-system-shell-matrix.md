@@ -3,7 +3,7 @@
 | Criterion                                      | Evidence                                           | Status                  |
 | ---------------------------------------------- | -------------------------------------------------- | ----------------------- |
 | Semantic design-token system                   | `src/app/globals.css`; design contract test        | PASS                    |
-| Calm, professional visual character            | `/px1-reference`; review captures                  | PENDING FOUNDER REVIEW  |
+| Calm, professional visual character            | founder screenshot review; `/px1-reference`        | PASS IN PRINCIPLE       |
 | Shared action/form/card/status/data components | `src/components/ui` and primitive tests            | PASS                    |
 | Desktop collapsible sidebar                    | `ApplicationShell`, navigation tests               | PASS                    |
 | Purpose-built mobile drawer                    | navigation focus/Escape tests                      | PASS                    |
@@ -21,7 +21,7 @@
 | No schema/data/account changes                 | Git diff and migration inventory                   | PASS                    |
 | Reduced-motion support                         | CSS and design contract test                       | PASS                    |
 | Formatting, lint, TypeScript, tests, build     | local gate; Actions #204 (pre-audit steps)         | PASS                    |
-| Desktop/tablet/mobile screenshots              | protected-preview founder inspection              | BLOCKED — NETLIFY SSO   |
+| Desktop/tablet/mobile responsive review        | founder screenshots; refined protected preview     | PASS — FINAL REVIEW DUE |
 | Preview deployment                             | PR #91 latest Netlify deploy, Ready                | PASS                    |
 | Dependency audit                               | unchanged base: 3 high, 4 moderate, 1 low          | BLOCKED — M13 HARDENING |
 | Production rollout withheld                    | PR remains unmerged pending founder approval       | PASS                    |

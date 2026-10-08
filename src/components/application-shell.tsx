@@ -128,12 +128,17 @@ export function ApplicationShell({
             <details className="relative">
               <summary
                 className="text-muted-foreground hover:bg-surface-subtle flex size-11 cursor-pointer list-none items-center justify-center rounded-xl"
-                aria-label="Open account menu"
+                aria-label={
+                  userEmail
+                    ? `Open account menu for ${userEmail}`
+                    : "Open account menu"
+                }
+                title={userEmail ? `Account: ${userEmail}` : "Account"}
               >
                 <UserRound aria-hidden="true" className="size-5" />
               </summary>
               <div className="border-border bg-surface absolute right-0 mt-2 w-64 rounded-xl border p-2 shadow-lg">
-                <p className="truncate px-3 py-2 text-xs font-medium text-slate-500">
+                <p className="px-3 py-2 text-xs font-medium break-all text-slate-500">
                   {userEmail ?? "Signed in"}
                 </p>
                 <Link
@@ -166,7 +171,7 @@ export function ApplicationShell({
         className={
           collapsed
             ? "grid min-h-[calc(100vh-4rem)] md:grid-cols-[4.75rem_minmax(0,1fr)]"
-            : "grid min-h-[calc(100vh-4rem)] md:grid-cols-[15rem_minmax(0,1fr)]"
+            : "grid min-h-[calc(100vh-4rem)] md:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)]"
         }
       >
         <aside className="border-border bg-surface hidden border-r md:block">
@@ -182,13 +187,13 @@ export function ApplicationShell({
           </div>
         </aside>
         <div className="min-w-0">
-          <div className="border-border bg-surface/60 border-b px-3 py-3 sm:px-5 lg:px-8">
+          <div className="border-border bg-surface/60 border-b px-3 py-2 sm:px-5 sm:py-3 lg:px-8">
             {contextRibbon}
           </div>
           <div
             id="main-content"
             tabIndex={-1}
-            className="mx-auto max-w-[96rem] min-w-0 px-4 py-7 sm:px-6 lg:px-10 lg:py-9"
+            className="mx-auto max-w-[96rem] min-w-0 px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8 xl:px-10"
           >
             {children}
           </div>

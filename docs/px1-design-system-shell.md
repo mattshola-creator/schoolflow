@@ -110,6 +110,25 @@ produce visual evidence. Desktop, tablet and mobile inspection remain the
 founder visual-acceptance step; they do not block review of the implementation
 or the protected preview itself.
 
+## Founder responsive-review refinement
+
+The founder accepted the overall desktop/mobile direction in principle and
+requested one bounded refinement pass. The reference now provides:
+
+- a compact mobile Context Ribbon whose disclosure reveals untruncated
+  organization, school, session and term values;
+- mobile learner cards for the common four-field register, while retaining the
+  standard table at tablet/desktop sizes and for genuinely complex datasets;
+- complete, wrapping account identity in the mobile navigation drawer and
+  account menu;
+- explicit accessible names and 44-pixel targets for navigation, search,
+  notifications, profile and context controls;
+- reduced mobile introductory spacing and denser desktop navigation; and
+- improved tablet/intermediate-width register and form balance.
+
+The refinement is presentational only. It does not change context validation,
+authorization, entitlements, RLS, domain services, accounts or tenant data.
+
 ## Accessibility and responsive behavior
 
 - Minimum 44-pixel interactive targets.

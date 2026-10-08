@@ -58,4 +58,34 @@ describe("ApplicationShell", () => {
       screen.getByRole("button", { name: "Expand sidebar" }),
     ).toBeInTheDocument();
   });
+
+  it("gives utility and account controls explicit accessible identities", () => {
+    render(
+      <ApplicationShell
+        items={[]}
+        unavailableItems={[]}
+        searchHref="/management#workspace-search"
+        notificationHref="/action-center"
+        userEmail="long.account.identity@schoolflow.example"
+        contextRibbon={<div>Context</div>}
+      >
+        <p>Content</p>
+      </ApplicationShell>,
+    );
+
+    expect(screen.getByRole("link", { name: "Global search" })).toHaveClass(
+      "size-11",
+    );
+    expect(
+      screen.getByRole("link", { name: "Notifications and actions" }),
+    ).toHaveClass("size-11");
+    expect(
+      screen.getByLabelText(
+        "Open account menu for long.account.identity@schoolflow.example",
+      ),
+    ).toHaveClass("size-11");
+    expect(
+      screen.getByText("long.account.identity@schoolflow.example"),
+    ).toHaveClass("break-all");
+  });
 });

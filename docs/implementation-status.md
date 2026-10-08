@@ -473,6 +473,14 @@ shell. No migration, production data, account, permission, entitlement or
 feature flag changes are part of PX1. The implementation must remain unmerged
 until founder visual acceptance; PX2 is not started.
 
+The founder accepted the PX1 visual direction in principle and requested a
+single responsive refinement pass. That pass adds expandable full context for
+long mobile organization/school names, a compact mobile Context Ribbon,
+mobile learner cards with the standard table retained at larger widths,
+complete account identity in the navigation drawer, tighter mobile/desktop
+density and focused accessible-name/touch-target coverage. PR #91 remains a
+draft and unmerged pending final founder approval.
+
 M13 remains open. The credentialed production database/Storage backup,
 encrypted off-site copy, disposable non-production restore verification and
 representative human UAT/signoff remain mandatory and are not replaced by PX0.

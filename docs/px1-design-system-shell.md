@@ -6,7 +6,7 @@
 
 **Draft PR:** `#91`
 
-**Published branch revision:** `b7b3d5f90df78ad5f429abe33bec476201618830`
+**Implementation revision:** `b7b3d5f90df78ad5f429abe33bec476201618830`
 
 **Production state:** not merged and not activated
 
@@ -96,7 +96,7 @@ The Context Ribbon presents:
 
 - Authenticated reference: `/experience-preview`
 - Synthetic visual-review route: `/px1-reference`
-- Netlify deploy preview: `6ac7992cd9480a0008182c2a` (`Ready`)
+- Netlify deploy preview: PR `#91` latest deploy (`Ready`)
 - Preview URL: `https://deploy-preview-91--schoolflow-app.netlify.app/px1-reference`
 
 The reference demonstrates the new shell, Context Ribbon, KPI cards, filters,

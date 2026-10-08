@@ -9,10 +9,34 @@ and constrains transitive Sharp and source-map-js resolution to their patched
 versions. It does not change application behavior or weaken the audit gate.
 
 One development-only `braces` advisory remains. No patched npm release exists
-as of this assessment. It is not included in a production dependency path and
-SchoolFlow does not provide attacker-controlled glob patterns to its lint
-toolchain. The audit must continue reporting it until an upstream patch or a
-separately approved security exception is available.
+as of this assessment. The founder approved a narrowly scoped residual-risk
+exception on 2026-10-09, conditional on production exclusion and CI exposure
+review. The audit remains unsuppressed and must continue reporting the finding
+until an upstream patch is available.
+
+## Approved `braces` exception evidence
+
+- `pnpm list --prod braces --depth Infinity --json` returns no `braces`
+  package. It is excluded from the production dependency graph.
+- `pnpm list --dev braces --depth Infinity` resolves only
+  `eslint-config-next -> @next/eslint-plugin-next -> fast-glob -> micromatch ->
+braces@3.0.3`.
+- CI calls ESLint with the repository-owned static command `eslint .
+--max-warnings=0`; no request, tenant or production data becomes a glob
+  pattern.
+- GitHub Actions uses read-only `contents` permission, placeholder Supabase
+  values and no privileged production secret in the workflow.
+- The quality job has a 20-minute timeout, which bounds a denial-of-service
+  attempt against the lint runner.
+- The audit command remains `pnpm audit --audit-level=high`; no ignore,
+  filtering or audit suppression was introduced.
+
+Residual CI/development exposure is limited to a contributor deliberately
+changing repository lint/glob inputs to cause excessive recursion on an
+ephemeral runner or developer workstation. Repository review, frozen lockfile
+installation, read-only workflow permissions and the job timeout are the
+controls. The exception does not extend to any future production dependency
+path or a newly published patched version.
 
 ## Findings
 

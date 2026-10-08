@@ -3,30 +3,57 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Building2, LayoutDashboard, Menu, X } from "lucide-react";
+import {
+  BarChart3,
+  BookOpenCheck,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  CircleEllipsis,
+  GraduationCap,
+  House,
+  Menu,
+  MessageSquareText,
+  Settings2,
+  UsersRound,
+  X,
+} from "lucide-react";
 
 export type WorkspaceNavigationItem = {
   href: string;
   label: string;
   group?: string;
 };
-
-export type UnavailableNavigationItem = {
-  label: string;
-  reason: string;
-};
+export type UnavailableNavigationItem = { label: string; reason: string };
 
 type WorkspaceNavigationProps = {
+  collapsed?: boolean;
+  homeHref?: string;
   items: WorkspaceNavigationItem[];
+  onCollapsedChange?: (collapsed: boolean) => void;
   unavailableItems?: UnavailableNavigationItem[];
   userEmail?: string;
   variant: "desktop" | "mobile";
 };
 
-const dashboardItem: WorkspaceNavigationItem = {
-  href: "/dashboard",
-  label: "Dashboard",
-};
+const groupIcons = {
+  Home: House,
+  People: UsersRound,
+  Academics: GraduationCap,
+  Operations: CircleEllipsis,
+  Communication: MessageSquareText,
+  Insights: BarChart3,
+  Administration: Settings2,
+} as const;
+const groupOrder = [
+  "Home",
+  "People",
+  "Academics",
+  "Operations",
+  "Communication",
+  "Insights",
+  "Administration",
+];
 
 function isCurrentPath(pathname: string, href: string) {
   return (
@@ -36,69 +63,78 @@ function isCurrentPath(pathname: string, href: string) {
 }
 
 function NavigationLinks({
+  collapsed = false,
+  homeHref = "/dashboard",
   items,
   unavailableItems = [],
   onNavigate,
 }: {
+  collapsed?: boolean;
+  homeHref?: string;
   items: WorkspaceNavigationItem[];
   unavailableItems?: UnavailableNavigationItem[];
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  const groups = [
-    {
-      label: "Workspace",
-      items: [
-        dashboardItem,
-        ...items.filter((item) => !item.group || item.group === "Workspace"),
-      ],
-    },
-    ...["Operations", "Insights", "Administration"].map((label) => ({
+  const allItems = [{ href: homeHref, label: "Home", group: "Home" }, ...items];
+  const groups = groupOrder
+    .map((label) => ({
       label,
-      items: items.filter((item) => item.group === label),
-    })),
-  ].filter((group) => group.items.length);
-
+      items: allItems.filter((item) => item.group === label),
+    }))
+    .filter((group) => group.items.length);
   return (
     <nav aria-label="Workspace" className="space-y-5">
-      {groups.map((group) => (
-        <section
-          key={group.label}
-          aria-labelledby={`nav-${group.label.toLowerCase()}`}
-        >
-          <h2
-            id={`nav-${group.label.toLowerCase()}`}
-            className="px-3 text-[0.68rem] font-semibold tracking-wider text-slate-400 uppercase"
+      {groups.map((group) => {
+        const GroupIcon =
+          groupIcons[group.label as keyof typeof groupIcons] ?? BookOpenCheck;
+        return (
+          <section
+            key={group.label}
+            aria-labelledby={`nav-${group.label.toLowerCase()}`}
           >
-            {group.label}
-          </h2>
-          <div className="mt-1 space-y-1">
-            {group.items.map((item) => {
-              const current = isCurrentPath(pathname, item.href);
-              const Icon = item.href === "/dashboard" ? LayoutDashboard : null;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={current ? "page" : undefined}
-                  onClick={onNavigate}
-                  className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${current ? "bg-emerald-50 text-emerald-900" : "text-slate-600 hover:bg-white hover:text-slate-950"}`}
-                >
-                  {Icon ? (
-                    <Icon aria-hidden="true" className="size-4 shrink-0" />
-                  ) : null}
-                  <span className="min-w-0 break-words">{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-      {unavailableItems.length ? (
+            <h2
+              id={`nav-${group.label.toLowerCase()}`}
+              className={
+                collapsed
+                  ? "sr-only"
+                  : "px-3 text-[0.65rem] font-bold tracking-[0.16em] text-slate-400 uppercase"
+              }
+            >
+              {group.label}
+            </h2>
+            <div className={collapsed ? "space-y-1" : "mt-1 space-y-1"}>
+              {group.items.map((item) => {
+                const current = isCurrentPath(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={current ? "page" : undefined}
+                    aria-label={collapsed ? item.label : undefined}
+                    title={collapsed ? item.label : undefined}
+                    onClick={onNavigate}
+                    className={`group flex min-h-11 items-center rounded-xl text-sm font-semibold ${collapsed ? "justify-center px-2" : "gap-3 px-3"} ${current ? "bg-tenant-accent-soft text-tenant-accent-strong shadow-sm" : "text-slate-600 hover:bg-white hover:text-slate-950"}`}
+                  >
+                    <GroupIcon
+                      aria-hidden="true"
+                      className={`size-4 shrink-0 ${current ? "text-tenant-accent" : "text-slate-400 group-hover:text-slate-700"}`}
+                    />
+                    {collapsed ? null : (
+                      <span className="min-w-0 break-words">{item.label}</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+      {unavailableItems.length && !collapsed ? (
         <section aria-labelledby="nav-unavailable">
           <h2
             id="nav-unavailable"
-            className="px-3 text-[0.68rem] font-semibold tracking-wider text-slate-400 uppercase"
+            className="px-3 text-[0.65rem] font-bold tracking-[0.16em] text-slate-400 uppercase"
           >
             Unavailable
           </h2>
@@ -106,10 +142,12 @@ function NavigationLinks({
             {unavailableItems.map((item) => (
               <li
                 key={item.label}
-                className="rounded-lg px-3 py-2 text-sm text-slate-400"
+                className="rounded-xl px-3 py-2 text-sm text-slate-400"
               >
-                <span className="font-medium">{item.label}</span>
-                <span className="mt-0.5 block text-xs">{item.reason}</span>
+                <span className="font-semibold">{item.label}</span>
+                <span className="mt-0.5 block text-xs leading-5">
+                  {item.reason}
+                </span>
               </li>
             ))}
           </ul>
@@ -120,7 +158,10 @@ function NavigationLinks({
 }
 
 export function WorkspaceNavigation({
+  collapsed = false,
+  homeHref = "/dashboard",
   items,
+  onCollapsedChange,
   unavailableItems = [],
   userEmail,
   variant,
@@ -129,26 +170,21 @@ export function WorkspaceNavigation({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
-
   useEffect(() => {
     if (!open) return;
-
     const previousOverflow = document.body.style.overflow;
     const trigger = triggerRef.current;
     document.body.style.overflow = "hidden";
     closeRef.current?.focus();
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
       if (event.key !== "Tab") return;
-
-      const focusableElements = panelRef.current?.querySelectorAll<HTMLElement>(
+      const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
-      if (!focusableElements?.length) return;
-
-      const first = focusableElements[0];
-      const last = focusableElements[focusableElements.length - 1];
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
@@ -157,7 +193,6 @@ export function WorkspaceNavigation({
         first.focus();
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -166,13 +201,34 @@ export function WorkspaceNavigation({
     };
   }, [open]);
 
-  if (variant === "desktop") {
+  if (variant === "desktop")
     return (
-      <div className="sticky top-4 py-6 pr-5">
-        <NavigationLinks items={items} unavailableItems={unavailableItems} />
+      <div className="flex h-full flex-col">
+        <div className="flex-1 overflow-y-auto px-3 py-5">
+          <NavigationLinks
+            collapsed={collapsed}
+            homeHref={homeHref}
+            items={items}
+            unavailableItems={unavailableItems}
+          />
+        </div>
+        <div className="border-border border-t p-3">
+          <button
+            type="button"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={() => onCollapsedChange?.(!collapsed)}
+            className={`text-muted-foreground hover:bg-surface-subtle flex min-h-11 w-full items-center rounded-xl text-sm font-semibold ${collapsed ? "justify-center" : "gap-3 px-3"}`}
+          >
+            {collapsed ? (
+              <ChevronRight aria-hidden="true" className="size-4" />
+            ) : (
+              <ChevronLeft aria-hidden="true" className="size-4" />
+            )}
+            {collapsed ? null : "Collapse"}
+          </button>
+        </div>
       </div>
     );
-  }
 
   return (
     <>
@@ -183,18 +239,17 @@ export function WorkspaceNavigation({
         aria-controls="mobile-workspace-navigation"
         aria-label="Open workspace navigation"
         onClick={() => setOpen(true)}
-        className="inline-flex size-11 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 md:hidden"
+        className="border-border text-muted-foreground hover:bg-surface-subtle inline-flex size-11 items-center justify-center rounded-xl border md:hidden"
       >
         <Menu aria-hidden="true" className="size-5" />
       </button>
-
       {open ? (
         <div className="fixed inset-0 z-50 md:hidden">
           <button
             type="button"
             aria-label="Dismiss workspace navigation"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-slate-950/40"
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
           />
           <aside
             ref={panelRef}
@@ -202,12 +257,12 @@ export function WorkspaceNavigation({
             role="dialog"
             aria-modal="true"
             aria-labelledby="mobile-workspace-navigation-title"
-            className="absolute inset-y-0 left-0 flex w-[min(20rem,calc(100vw-3rem))] flex-col overflow-y-auto bg-white shadow-xl"
+            className="absolute inset-y-0 left-0 flex w-[min(21rem,calc(100vw-2rem))] flex-col overflow-y-auto bg-white shadow-2xl"
           >
-            <div className="flex items-center justify-between border-b px-5 py-4">
+            <div className="border-border flex items-center justify-between border-b px-5 py-4">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-800 text-white">
-                  <Building2 aria-hidden="true" className="size-4" />
+                <span className="bg-tenant-accent grid size-10 shrink-0 place-items-center rounded-xl text-white shadow-sm">
+                  <Building2 aria-hidden="true" className="size-5" />
                 </span>
                 <div className="min-w-0">
                   <p
@@ -228,13 +283,14 @@ export function WorkspaceNavigation({
                 type="button"
                 aria-label="Close workspace navigation"
                 onClick={() => setOpen(false)}
-                className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                className="text-muted-foreground hover:bg-surface-subtle inline-flex size-11 shrink-0 items-center justify-center rounded-xl"
               >
                 <X aria-hidden="true" className="size-5" />
               </button>
             </div>
-            <div className="flex-1 px-4 py-4">
+            <div className="flex-1 px-3 py-4">
               <NavigationLinks
+                homeHref={homeHref}
                 items={items}
                 unavailableItems={unavailableItems}
                 onNavigate={() => setOpen(false)}

@@ -49,16 +49,30 @@ describe("WorkspaceNavigation", () => {
     fireEvent.click(trigger);
 
     expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toHaveClass(
+      "h-dvh",
+      "max-h-dvh",
+      "overflow-hidden",
+    );
     expect(screen.getByText("qa@example.test")).toBeInTheDocument();
-    expect(screen.getByText("qa@example.test")).toHaveClass("break-all");
-    expect(screen.getByText("Signed in account:")).toHaveClass("sr-only");
+    expect(screen.getByText("qa@example.test")).toHaveClass("break-words");
+    expect(screen.getByText("qa@example.test")).not.toHaveClass("break-all");
+    expect(screen.getByText("Signed in account")).toBeInTheDocument();
+    expect(screen.getByTestId("mobile-navigation-header")).toHaveClass(
+      "shrink-0",
+    );
+    expect(screen.getByTestId("mobile-navigation-scroll")).toHaveClass(
+      "min-h-0",
+      "overflow-y-auto",
+      "overscroll-contain",
+    );
     expect(screen.getByRole("link", { name: "Admissions" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     expect(screen.getByRole("link", { name: "Students" })).toBeInTheDocument();
     expect(document.body.style.overflow).toBe("hidden");
+    expect(document.documentElement.style.overscrollBehavior).toBe("none");
   });
 
   it("closes with Escape, restores scrolling, and returns focus", () => {
@@ -76,8 +90,55 @@ describe("WorkspaceNavigation", () => {
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(document.body.style.overflow).toBe("");
+    expect(document.documentElement.style.overscrollBehavior).toBe("");
     expect(trigger).toHaveFocus();
   });
+
+  it("dismisses from the backdrop and restores the navigation trigger", () => {
+    render(<WorkspaceNavigation variant="mobile" items={items} />);
+
+    const trigger = screen.getByRole("button", {
+      name: "Open workspace navigation",
+    });
+    fireEvent.click(trigger);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Dismiss workspace navigation" }),
+    );
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it.each([320, 375, 390])(
+    "keeps a long account identity bounded at %ipx",
+    (width) => {
+      Object.defineProperty(window, "innerWidth", {
+        configurable: true,
+        value: width,
+      });
+      render(
+        <WorkspaceNavigation
+          variant="mobile"
+          items={items}
+          userEmail="long.school.owner.identity@multi-campus-example.school"
+        />,
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Open workspace navigation" }),
+      );
+
+      const identity = screen.getByText(
+        "long.school.owner.identity@multi-campus-example.school",
+      );
+      expect(screen.getByTestId("mobile-navigation-panel")).toHaveClass(
+        "w-[min(21rem,calc(100vw-1rem))]",
+        "overflow-hidden",
+      );
+      expect(identity).toHaveClass("min-w-0", "break-words");
+      expect(identity).not.toHaveClass("break-all");
+    },
+  );
 
   it("keeps keyboard focus inside the open mobile dialog", () => {
     render(<WorkspaceNavigation variant="mobile" items={items} />);

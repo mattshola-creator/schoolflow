@@ -75,7 +75,10 @@ Management or Action Center routes are present.
 
 Desktop navigation may collapse to icons and stores only that presentation
 preference in local storage. Mobile navigation retains focus trapping, Escape,
-body-scroll locking and focus return.
+body-scroll locking and focus return. Its modal panel uses the dynamic viewport
+height, keeps the identity/close header fixed and gives the grouped navigation
+its own overscroll-contained region. The backdrop remains pointer-dismissible
+without entering the dialog's keyboard focus order.
 
 ## Context Ribbon contract
 
@@ -128,6 +131,28 @@ requested one bounded refinement pass. The reference now provides:
 
 The refinement is presentational only. It does not change context validation,
 authorization, entitlements, RLS, domain services, accounts or tenant data.
+
+## Final mobile-navigation correction
+
+The final founder-review correction isolates drawer behavior at 320, 375 and
+390 CSS-pixel widths:
+
+- the panel occupies the usable dynamic viewport and clips its outer frame;
+- the branded account header and 44-pixel close control remain visible;
+- navigation groups scroll independently with overscroll containment and safe
+  area padding;
+- the document background is locked while the dialog is open and restored on
+  every close path;
+- a stronger modal backdrop distinguishes the drawer from expanded context
+  content behind it;
+- long account identities receive a full-width, naturally wrapping region
+  instead of character-by-character breaking; and
+- backdrop dismissal, Escape, focus trapping and trigger-focus restoration are
+  covered by focused component tests.
+
+Navigation items still come from the unchanged permission/entitlement-aware
+catalog. The unavailable Platform Console remains a non-link behind its
+separate platform-operator authorization boundary.
 
 ## Accessibility and responsive behavior
 

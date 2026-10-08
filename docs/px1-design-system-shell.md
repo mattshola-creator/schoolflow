@@ -4,6 +4,10 @@
 
 **Branch:** `feat/px1-design-system-shell`
 
+**Draft PR:** `#91`
+
+**Published branch revision:** `b7b3d5f90df78ad5f429abe33bec476201618830`
+
 **Production state:** not merged and not activated
 
 ## Boundary
@@ -92,10 +96,19 @@ The Context Ribbon presents:
 
 - Authenticated reference: `/experience-preview`
 - Synthetic visual-review route: `/px1-reference`
+- Netlify deploy preview: `6ac7992cd9480a0008182c2a` (`Ready`)
+- Preview URL: `https://deploy-preview-91--schoolflow-app.netlify.app/px1-reference`
 
 The reference demonstrates the new shell, Context Ribbon, KPI cards, filters,
 forms, tables, tabs, badges, loading, dialog and distinct access/setup states.
 All names and figures on `/px1-reference` are synthetic.
+
+The existing Netlify non-production team-login protection remains enabled.
+Automated screenshot capture therefore stops at Netlify's access boundary until
+an invited founder authenticates. PX1 does not weaken that protection merely to
+produce visual evidence. Desktop, tablet and mobile inspection remain the
+founder visual-acceptance step; they do not block review of the implementation
+or the protected preview itself.
 
 ## Accessibility and responsive behavior
 
@@ -131,4 +144,8 @@ is necessary.
 
 PX1 does not modify dependencies. The PX0/M13 audit findings for Next.js,
 `sharp`, `source-map-js` and `braces` remain tracked separately and are not
-suppressed by this work.
+suppressed by this work. GitHub Actions run `#204` passed install, formatting,
+lint, strict TypeScript, 295 tests across 69 files and the production build. It
+failed only at the dependency-audit step because the unchanged base currently
+reports three high, four moderate and one low advisory. The preview remains
+protected by Netlify team login; production rollout remains withheld.

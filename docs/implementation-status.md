@@ -366,4 +366,97 @@ tests across 62 files, production build, dependency audit and secret scan.
 Supabase advisors show established intentional caller-bound SECURITY DEFINER,
 policy-performance and unused-index warnings, with no new M12-blocking
 critical/error finding. See `docs/testing/m12-management-reporting-matrix.md`.
-M13 has not started and requires separate authorization.
+
+# M13 — Hardening & Pilot (in progress)
+
+M13 technical hardening is implemented under feature freeze. The production
+catalog review found no exposed API table without RLS, and all 119
+SECURITY DEFINER functions have fixed search paths with zero anonymous/PUBLIC
+execution. The private document bucket, feature gates, audit metadata, major
+domain integrity checks and zero-QA-session safety state pass review.
+
+Two moderate development-only dependency advisories were eliminated; the
+audit now reports zero known vulnerabilities. CI now enforces high/critical
+dependency and tracked-secret checks, and production headers add HSTS, COOP
+and DNS-prefetch controls. The quality gate passes 280 tests across 63 files,
+formatting, zero-warning lint, strict TypeScript and the production build.
+
+Two verified M8 lesson migrations were present in production schema but absent
+from migration bookkeeping. After confirming tables, RLS, policies, triggers,
+functions and 30 indexes, M13 repaired only those ledger entries; no schema or
+business data was reapplied.
+
+PRs #86–#88 passed GitHub Actions through run #198 and merged the technical
+hardening, live header correction, and credential-safe Free-tier backup
+tooling. Netlify deploy `6abf77fe42116100084276fa` is Ready for exact merge
+revision `520e5ed92c54cdbfc14f485262cc2ff813a385ac`; its secret scan checked 342
+files with zero matches. Production health is `ok` with Supabase connected.
+
+The owner approved remaining on Supabase Free for the controlled pilot. The
+repository now provides separate logical database and private Storage export
+commands, while the protected recovery runbook specifies encrypted off-site
+storage, 14 daily/8 weekly/12 monthly retention, checksum verification, a
+disposable-target restore drill, and clear Free-plan/PITR limitations. The role
+UAT package is prepared and approved for scheduling.
+
+M13 cannot yet be marked complete or pilot-ready: the first credentialed
+production export and non-production restore rehearsal must be executed and
+recorded by an authorized operator, and representative humans must complete
+and sign the UAT package. No human signoff or recovery evidence has been
+fabricated. See the M13 matrix, risk register and protected runbooks.
+
+## M13 owner access and navigation verification
+
+A read-only production review confirmed the permanent owner's organization has
+an active organization-wide owner role, all-school scope, 116 effective
+permissions, a trialing Starter plan and all nine modules entitled. Finance,
+Teaching, Attendance, Assessment and Management were missing because their
+controlled-rollout feature defaults are disabled and the organization has no
+overrides—not because of a missing owner permission or paid-plan denial.
+
+PR #89 corrected the pilot-blocking discoverability defect without enabling a
+feature or weakening authorization. Desktop/mobile navigation is now grouped,
+feature-gated modules are shown as unavailable with a reason, the dashboard
+provides authorized module entry points, and `/administration` provides a
+read-only active-context/access overview. CI run #200 passed 283 tests across
+64 files. Merge `ec025f147fefd04da82f05413fd57e2df285fa98` is deployed as
+Netlify `6abfbfaa6659fa0009936803`, Ready, with zero secret-scan matches and
+healthy Supabase connectivity.
+
+No permanent-owner authentication state changed. The owner approved the full
+controlled-pilot set, and 19 organization-scoped feature overrides were
+enabled for Alpha and Omega only. This activates Attendance, Teaching,
+Finance, Assessment & Results, and Management & Reporting without changing the
+Starter plan, module entitlements, roles, permissions, RLS, or another
+organization's configuration. Representative human UAT may proceed after the
+owner refreshes production and confirms the corrected navigation. M13 remains
+open pending the credentialed backup/restore drill and signed human UAT.
+Complete role/membership/organization/management-group/platform
+administration mutation screens remain documented UI gaps; entitlement and
+feature writes intentionally remain unavailable to ordinary authenticated
+users.
+
+## Product Experience 2.0 — PX0 baseline
+
+Product Experience 2.0 is an approved modernization program separate from the
+M0–M13 roadmap; it is not M14 and does not replace the validated domain,
+tenancy, authorization, RLS, entitlement, audit or business architecture.
+
+PX0 inspected the application at local durable revision
+`b4e8b942397e4f8449e942533b9b06d3013be7cd`. The inspection covered public and
+authenticated routes, shell/navigation, design tokens/components, every major
+operational module, family access, reporting, operator boundaries and branding.
+It produced the authoritative Product Experience 2.0 specification, current UX
+inventory, route map, five-pack prototype plan, synthetic demo/training design
+and PX0–PX10 migration plan. No application code, production schema, feature
+state, account, credential, fixture or business data changed.
+
+PX0 confirms that existing server services and security contracts should be
+reused while page composition, role focus, administration coverage, family
+experience, public commercial presentation and platform operations require
+substantial presentation work. PX1 is not authorized by PX0 and must not begin
+without explicit founder approval.
+
+M13 remains open. The credentialed production database/Storage backup,
+encrypted off-site copy, disposable non-production restore verification and
+representative human UAT/signoff remain mandatory and are not replaced by PX0.

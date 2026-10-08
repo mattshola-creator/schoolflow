@@ -1,12 +1,13 @@
 # PX1 — Design System v2 and Application Shell
 
-**Status:** implementation complete; founder visual acceptance pending
+**Status:** founder visually accepted; production merge security-gated
 
 **Branch:** `feat/px1-design-system-shell`
 
 **Draft PR:** `#91`
 
-**Implementation revision:** latest head of draft PR `#91` (recorded in the PR)
+**Founder-accepted application revision:**
+`6eac996685104784cca8e18df26c3ea7ecc5d41f`
 
 **Production state:** not merged and not activated
 
@@ -154,6 +155,18 @@ Navigation items still come from the unchanged permission/entitlement-aware
 catalog. The unavailable Platform Console remains a non-link behind its
 separate platform-operator authorization boundary.
 
+## Founder acceptance and release gate
+
+The founder completed visual and interaction inspection and formally accepted
+the PX1 reference, including the final mobile drawer correction, at revision
+`6eac996685104784cca8e18df26c3ea7ecc5d41f`. Documentation-only acceptance
+changes after that revision do not alter the accepted application files.
+
+Production merge remains withheld. The release assessment found patchable
+production dependency advisories and created focused M13 hardening PR #92.
+That PR must be resolved before PX1 is updated onto hardened `main`, retested
+and separately authorized for production merge.
+
 ## Accessibility and responsive behavior
 
 - Minimum 44-pixel interactive targets.
@@ -186,10 +199,11 @@ is necessary.
 
 ## Dependency status
 
-PX1 does not modify dependencies. The PX0/M13 audit findings for Next.js,
-`sharp`, `source-map-js` and `braces` remain tracked separately and are not
-suppressed by this work. GitHub Actions run `#210` passed install, formatting,
-lint, strict TypeScript, 302 tests across 69 files and the production build. It
-failed only at the dependency-audit step because the unchanged base currently
-reports three high, four moderate and one low advisory. The preview remains
-protected by Netlify team login; production rollout remains withheld.
+PX1 does not modify dependencies. The release audit reports four high, four
+moderate and one low advisory on the unchanged base. Focused M13 PR #92 patches
+the Next.js, Sharp and source-map-js production paths; its remaining
+development-only `braces` finding has no published patch and is not
+suppressed. GitHub Actions #210/#211 passed install, formatting, lint, strict
+TypeScript, 302 tests across 69 files and the production build, then failed at
+the deliberately enforced dependency-audit step. Production rollout remains
+withheld.

@@ -3,7 +3,7 @@
 | Criterion                                      | Evidence                                            | Status                  |
 | ---------------------------------------------- | --------------------------------------------------- | ----------------------- |
 | Semantic design-token system                   | `src/app/globals.css`; design contract test         | PASS                    |
-| Calm, professional visual character            | founder screenshot review; `/px1-reference`         | PASS IN PRINCIPLE       |
+| Calm, professional visual character            | founder acceptance at `6eac996`                     | PASS                    |
 | Shared action/form/card/status/data components | `src/components/ui` and primitive tests             | PASS                    |
 | Desktop collapsible sidebar                    | `ApplicationShell`, navigation tests                | PASS                    |
 | Purpose-built mobile drawer                    | viewport/scroll/backdrop/focus tests at 320/375/390 | PASS                    |
@@ -21,13 +21,15 @@
 | No schema/data/account changes                 | Git diff and migration inventory                    | PASS                    |
 | Reduced-motion support                         | CSS and design contract test                        | PASS                    |
 | Formatting, lint, TypeScript, tests, build     | local gate; Actions #210 (pre-audit steps)          | PASS                    |
-| Desktop/tablet/mobile responsive review        | founder screenshots; refined protected preview      | PASS — FINAL REVIEW DUE |
+| Desktop/tablet/mobile responsive review        | founder inspection and formal acceptance            | PASS                    |
 | Preview deployment                             | PR #91 latest Netlify deploy, Ready                 | PASS                    |
-| Dependency audit                               | unchanged base: 3 high, 4 moderate, 1 low           | BLOCKED — M13 HARDENING |
+| Dependency audit                               | 4 high, 4 moderate, 1 low; M13 PR #92 prepared      | BLOCKED — M13 HARDENING |
 | Production rollout withheld                    | PR remains unmerged pending founder approval        | PASS                    |
 
 ## Founder gate
 
-PX1 must remain unmerged until the founder reviews the reference deployment and
-explicitly approves production rollout or requests a revision. PX2 and
-Prototype Packs A–E are not authorized by this matrix.
+Founder visual acceptance is complete at revision `6eac996`. PX1 must remain
+unmerged until M13 PR #92 resolves the production dependency paths, the
+residual development-only advisory receives an explicit release decision, PX1
+is updated onto hardened `main`, and production merge is explicitly
+authorized. PX2 and Prototype Packs A–E are not authorized by this matrix.

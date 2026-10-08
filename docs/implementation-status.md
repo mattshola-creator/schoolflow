@@ -473,13 +473,20 @@ shell. No migration, production data, account, permission, entitlement or
 feature flag changes are part of PX1. The implementation must remain unmerged
 until founder visual acceptance; PX2 is not started.
 
-The founder accepted the PX1 visual direction in principle and requested a
-single responsive refinement pass. That pass adds expandable full context for
-long mobile organization/school names, a compact mobile Context Ribbon,
-mobile learner cards with the standard table retained at larger widths,
-complete account identity in the navigation drawer, tighter mobile/desktop
-density and focused accessible-name/touch-target coverage. PR #91 remains a
-draft and unmerged pending final founder approval.
+The founder formally accepted PX1 revision
+`6eac996685104784cca8e18df26c3ea7ecc5d41f`, including the compact Context
+Ribbon, responsive learner presentation and final viewport-height mobile
+navigation correction. The accepted application revision remains in PR #91's
+history; subsequent PX1 changes are limited to this acceptance record. PR #91
+remains draft and unmerged while the independent M13 dependency security gate
+is resolved. PX2 has not started.
+
+The release assessment identified patchable production-path advisories in
+Next.js 16.3.6, Sharp 0.35.4 and source-map-js 1.2.1, plus one development-only
+`braces` 3.0.3 advisory for which no patched npm release is published. Focused
+M13 PR #92 upgrades/pins the patchable dependencies and leaves the residual
+finding visible. PR #91 must not merge until PR #92 is resolved first, PX1 is
+updated onto hardened `main`, and its full gate is rerun.
 
 M13 remains open. The credentialed production database/Storage backup,
 encrypted off-site copy, disposable non-production restore verification and

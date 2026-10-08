@@ -457,6 +457,22 @@ experience, public commercial presentation and platform operations require
 substantial presentation work. PX1 is not authorized by PX0 and must not begin
 without explicit founder approval.
 
+## Product Experience 2.0 — PX1 reference implementation
+
+PX1 was subsequently authorized as a bounded Design System and Application
+Shell reference. Branch `feat/px1-design-system-shell` introduces semantic
+tokens, shared primitives, the work-oriented navigation hierarchy, a
+collapsible desktop sidebar, accessible mobile drawer, shell utilities, and a
+server-derived Organization → School → Session → Term Context Ribbon. The
+existing authorization evaluator, tenant context switch, routes and domain
+services remain authoritative.
+
+`/px1-reference` provides a synthetic-only visual review surface, while
+`/experience-preview` exercises the same patterns inside the authenticated
+shell. No migration, production data, account, permission, entitlement or
+feature flag changes are part of PX1. The implementation must remain unmerged
+until founder visual acceptance; PX2 is not started.
+
 M13 remains open. The credentialed production database/Storage backup,
 encrypted off-site copy, disposable non-production restore verification and
 representative human UAT/signoff remain mandatory and are not replaced by PX0.

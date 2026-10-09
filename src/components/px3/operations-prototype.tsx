@@ -14,6 +14,8 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ApplicationShell } from "@/components/application-shell";
+import { ContextRibbon } from "@/components/context-ribbon";
 import {
   DataTable,
   TableCell,
@@ -32,16 +34,16 @@ import {
   StickyPrototypeActions,
   WorkflowRail,
 } from "@/components/px3/operations-patterns";
-
-const perspectives = [
-  "Organization Owner / Director",
-  "Principal / Head Teacher",
-  "Teacher / Class Teacher",
-  "Admissions Officer",
-  "Bursar / Finance Officer",
-  "Assessment / Examination Officer",
-  "Student Administrator / Registrar",
-] as const;
+import {
+  formatMoney,
+  getScopeFixture,
+  percentage,
+  perspectiveOptions,
+  roleHomeCopy,
+  scopeOptions,
+  type PerspectiveId,
+  type ScopeId,
+} from "@/components/px3/operations-fixtures";
 
 const workspaces = [
   ["home", "Home", Building2],
@@ -56,97 +58,197 @@ const workspaces = [
 
 type Workspace = (typeof workspaces)[number][0];
 
-const students = [
-  {
-    name: "Amara Okafor",
-    number: "CBP-0261",
-    className: "Primary 5 A",
-    attendance: "96%",
-    balance: "₦18,500.00",
-    status: "Active",
-  },
-  {
-    name: "Tobi Adeyemi",
-    number: "CBP-0268",
-    className: "Primary 5 A",
-    attendance: "88%",
-    balance: "₦0.00",
-    status: "Follow-up",
-  },
-  {
-    name: "Musa Ibrahim",
-    number: "CBA-1142",
-    className: "JSS 2 Gold",
-    attendance: "93%",
-    balance: "₦42,750.00",
-    status: "Active",
-  },
-];
-
-function HomeView({ school }: { school: string }) {
+function HomeView({
+  scopeId,
+  perspective,
+}: {
+  scopeId: ScopeId;
+  perspective: PerspectiveId;
+}) {
+  const scope = getScopeFixture(scopeId);
+  const role = roleHomeCopy[perspective];
+  const outstanding = scope.billedCents - scope.collectedCents;
+  const roleMetrics = {
+    owner: [
+      [
+        "Active learners",
+        scope.learners.toLocaleString(),
+        "Current enrollment",
+      ],
+      [
+        "Attendance today",
+        percentage(scope.present, scope.learners),
+        `${scope.attendanceFollowUps} follow-ups`,
+      ],
+      [
+        "Collections this term",
+        formatMoney(scope.collectedCents),
+        `${percentage(scope.collectedCents, scope.billedCents)} of billed value`,
+      ],
+      [
+        "Pending decisions",
+        String(scope.pendingApprovals),
+        "Across authorized workflows",
+      ],
+    ],
+    principal: [
+      [
+        "Learners present",
+        scope.present.toLocaleString(),
+        `${percentage(scope.present, scope.learners)} attendance`,
+      ],
+      [
+        "Attendance follow-ups",
+        String(scope.attendanceFollowUps),
+        "Require school action",
+      ],
+      [
+        "Registers overdue",
+        String(scope.overdueRegisters),
+        "Teaching operations",
+      ],
+      [
+        "School approvals",
+        String(scope.pendingApprovals),
+        "Awaiting leadership",
+      ],
+    ],
+    teacher: [
+      ["Classes today", scopeId === "academy" ? "4" : "5", "Your timetable"],
+      [
+        "Learners to follow up",
+        String(Math.min(scope.attendanceFollowUps, 8)),
+        "Assigned classes",
+      ],
+      [
+        "Plans approved",
+        `${scope.lessonPlansApproved}/${scope.lessonPlansTotal}`,
+        "Current week",
+      ],
+      [
+        "Score blockers",
+        String(scope.assessmentBlockers),
+        "Your assigned subjects",
+      ],
+    ],
+    admissions: [
+      [
+        "Open applications",
+        String(scope.admissionStages.slice(0, 4).reduce((a, b) => a + b, 0)),
+        "Enquiry through assessment",
+      ],
+      [
+        "Awaiting review",
+        String(scope.admissionStages[2]),
+        "Document and eligibility checks",
+      ],
+      ["Offers issued", String(scope.admissionStages[4]), "Current intake"],
+      [
+        "Ready to enroll",
+        String(scope.admissionStages[5]),
+        "All checks complete",
+      ],
+    ],
+    bursar: [
+      [
+        "Billed this term",
+        formatMoney(scope.billedCents),
+        "Authoritative billed value",
+      ],
+      [
+        "Collected",
+        formatMoney(scope.collectedCents),
+        `${percentage(scope.collectedCents, scope.billedCents)} allocated`,
+      ],
+      ["Outstanding", formatMoney(outstanding), "Current balance"],
+      [
+        "Awaiting verification",
+        String(scope.verificationCount),
+        formatMoney(scope.verificationCents),
+      ],
+    ],
+    assessment: [
+      ["Score sheets", String(scope.scoreSheets), "Current term"],
+      [
+        "Submitted",
+        String(scope.submittedSheets),
+        percentage(scope.submittedSheets, scope.scoreSheets),
+      ],
+      [
+        "Review blockers",
+        String(scope.assessmentBlockers),
+        "Missing or invalid entries",
+      ],
+      [
+        "Published snapshots",
+        String(scope.publishedSnapshots),
+        "Immutable results",
+      ],
+    ],
+    registrar: [
+      [
+        "Active learners",
+        scope.learners.toLocaleString(),
+        "Current enrollment",
+      ],
+      [
+        "Records to follow up",
+        String(scope.attendanceFollowUps),
+        "Attendance-linked checks",
+      ],
+      [
+        "Ready to enroll",
+        String(scope.admissionStages[5]),
+        "Admissions conversion",
+      ],
+      [
+        "Pending approvals",
+        String(scope.pendingApprovals),
+        "Student record actions",
+      ],
+    ],
+  } satisfies Record<PerspectiveId, string[][]>;
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Operations overview"
+        eyebrow={role.eyebrow}
         title={
-          school === "All authorized schools"
-            ? "Your school group today"
-            : `${school} today`
+          scopeId === "all" ? role.title : `${scope.shortLabel}: ${role.title}`
         }
-        description="A focused view of the work, exceptions and decisions that need attention now."
+        description={role.description}
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          label="Active learners"
-          value={school === "All authorized schools" ? "1,284" : "684"}
-          detail="Current enrollment"
-          tone="success"
-        />
-        <KpiCard
-          label="Attendance today"
-          value="94.2%"
-          detail="38 learners require follow-up"
-        />
-        <KpiCard
-          label="Collections this term"
-          value="₦24,680,450.00"
-          detail="78.4% of billed value"
-        />
-        <KpiCard
-          label="Pending decisions"
-          value="12"
-          detail="Across admissions, finance and results"
-          tone="warning"
-        />
+        {roleMetrics[perspective].map(([label, value, detail], index) => (
+          <KpiCard
+            key={label}
+            label={label}
+            value={value}
+            detail={detail}
+            tone={index === 3 ? "warning" : index === 1 ? "success" : undefined}
+          />
+        ))}
       </div>
       <div className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
         <SurfaceCard eyebrow="Needs attention" title="Operational exceptions">
           <div className="grid gap-3">
-            <ExceptionCard
-              urgent
-              title="Attendance register overdue"
-              detail="Primary 3 Blue has not submitted attendance for today."
-              action="Review attendance"
-            />
-            <ExceptionCard
-              title="Payment verification queue"
-              detail="Four bank-transfer payments await independent verification."
-              action="Open verification queue"
-            />
-            <ExceptionCard
-              title="Result publication blocker"
-              detail="JSS 2 Mathematics has one incomplete score sheet."
-              action="View assessment readiness"
-            />
+            {role.tasks.map((task, index) => (
+              <ExceptionCard
+                key={task}
+                urgent={index === 0}
+                title={task}
+                detail={`${scope.shortLabel} · ${index === 0 ? "Priority today" : "Within your current responsibilities"}`}
+                action="Open reference workspace"
+              />
+            ))}
           </div>
         </SurfaceCard>
         <SurfaceCard eyebrow="Approvals" title="Waiting for you">
           <ul className="divide-border divide-y">
             {[
-              "2 admission decisions",
-              "3 expense approvals",
-              "1 result publication",
-              "6 document reviews",
+              `${scope.admissionStages[2]} admission reviews`,
+              `${scope.verificationCount} payment verifications`,
+              `${scope.assessmentBlockers} assessment blockers`,
+              `${scope.pendingApprovals} total scoped decisions`,
             ].map((item) => (
               <li
                 key={item}
@@ -163,19 +265,31 @@ function HomeView({ school }: { school: string }) {
   );
 }
 
-function MyDayView({ perspective }: { perspective: string }) {
-  const teacher = perspective.includes("Teacher");
+function MyDayView({
+  perspective,
+  scopeId,
+}: {
+  perspective: PerspectiveId;
+  scopeId: ScopeId;
+}) {
+  const scope = getScopeFixture(scopeId);
+  const role = roleHomeCopy[perspective];
+  const teacher = perspective === "teacher";
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="Personal workspace"
         title="My Day"
-        description={`Prioritized for ${perspective}. Multiple responsibilities are combined without changing your underlying access.`}
+        description={`Prioritized for ${perspectiveOptions.find((option) => option.id === perspective)?.label} in ${scope.label}. Multiple responsibilities are combined without changing your underlying access.`}
       />
       <div className="grid gap-4 lg:grid-cols-3">
         <SurfaceCard title="Now">
           <p className="text-2xl font-semibold text-slate-950">
-            {teacher ? "Primary 5 English" : "12 items"}
+            {teacher
+              ? scopeId === "academy"
+                ? "JSS 2 Literature"
+                : "Primary 5 English"
+              : `${scope.pendingApprovals} items`}
           </p>
           <p className="text-muted-foreground mt-2 text-sm">
             {teacher
@@ -185,15 +299,13 @@ function MyDayView({ perspective }: { perspective: string }) {
         </SurfaceCard>
         <SurfaceCard title="Next">
           <p className="text-lg font-semibold text-slate-950">
-            {teacher ? "Take class attendance" : "Admissions review meeting"}
+            {teacher ? "Take class attendance" : role.tasks[0]}
           </p>
           <p className="text-muted-foreground mt-2 text-sm">Due before 10:30</p>
         </SurfaceCard>
         <SurfaceCard title="Later">
           <p className="text-lg font-semibold text-slate-950">
-            {teacher
-              ? "Enter Continuous Assessment"
-              : "Finance reconciliation review"}
+            {teacher ? "Enter Continuous Assessment" : role.tasks[1]}
           </p>
           <p className="text-muted-foreground mt-2 text-sm">
             Four related tasks grouped
@@ -244,7 +356,8 @@ function MyDayView({ perspective }: { perspective: string }) {
   );
 }
 
-function AdministrationView() {
+function AdministrationView({ scopeId }: { scopeId: ScopeId }) {
+  const scope = getScopeFixture(scopeId);
   return (
     <div className="space-y-6">
       <PageHeader
@@ -255,13 +368,17 @@ function AdministrationView() {
       <div className="grid gap-4 lg:grid-cols-3">
         <KpiCard
           label="Active members"
-          value="126"
-          detail="Across two authorized schools"
+          value={String(scope.activeMembers)}
+          detail={
+            scopeId === "all"
+              ? "Across two authorized schools"
+              : scope.shortLabel
+          }
         />
         <KpiCard
           label="Pending invitations"
-          value="4"
-          detail="Two expire this week"
+          value={String(scope.pendingInvitations)}
+          detail={`${scope.pendingInvitations} require follow-up`}
           tone="warning"
         />
         <KpiCard
@@ -325,8 +442,12 @@ function AdministrationView() {
   );
 }
 
-function StudentsView() {
-  const [selected, setSelected] = useState(students[0]);
+function StudentsView({ scopeId }: { scopeId: ScopeId }) {
+  const students = getScopeFixture(scopeId).students;
+  const [selectedNumber, setSelectedNumber] = useState(students[0].number);
+  const selected =
+    students.find((student) => student.number === selectedNumber) ??
+    students[0];
   return (
     <div className="space-y-6">
       <PageHeader
@@ -361,7 +482,7 @@ function StudentsView() {
             type="button"
             key={s.number}
             className="text-left"
-            onClick={() => setSelected(s)}
+            onClick={() => setSelectedNumber(s.number)}
           >
             <RecordCard
               title={s.name}
@@ -369,7 +490,8 @@ function StudentsView() {
               status={s.status}
             >
               <p className="text-sm">
-                Attendance {s.attendance} · Balance {s.balance}
+                Attendance {s.attendance} · Balance{" "}
+                {formatMoney(s.balanceCents)}
               </p>
             </RecordCard>
           </button>
@@ -391,7 +513,7 @@ function StudentsView() {
               <tr
                 key={s.number}
                 className="cursor-pointer hover:bg-slate-50"
-                onClick={() => setSelected(s)}
+                onClick={() => setSelectedNumber(s.number)}
               >
                 <TableCell>
                   <strong>{s.name}</strong>
@@ -400,7 +522,7 @@ function StudentsView() {
                 </TableCell>
                 <TableCell>{s.className}</TableCell>
                 <TableCell>{s.attendance}</TableCell>
-                <TableCell>{s.balance}</TableCell>
+                <TableCell>{formatMoney(s.balanceCents)}</TableCell>
                 <TableCell>
                   <StatusBadge>{s.status}</StatusBadge>
                 </TableCell>
@@ -435,7 +557,7 @@ function StudentsView() {
             <p className="text-xs font-bold text-slate-500 uppercase">
               Primary guardian
             </p>
-            <p className="mt-1 font-semibold">Chidi Okafor</p>
+            <p className="mt-1 font-semibold">{selected.guardian}</p>
           </div>
           <div>
             <p className="text-xs font-bold text-slate-500 uppercase">
@@ -453,7 +575,9 @@ function StudentsView() {
             <p className="text-xs font-bold text-slate-500 uppercase">
               Current balance
             </p>
-            <p className="mt-1 font-semibold">{selected.balance}</p>
+            <p className="mt-1 font-semibold">
+              {formatMoney(selected.balanceCents)}
+            </p>
           </div>
         </div>
       </SurfaceCard>
@@ -461,7 +585,12 @@ function StudentsView() {
   );
 }
 
-function AdmissionsView() {
+function AdmissionsView({ scopeId }: { scopeId: ScopeId }) {
+  const scope = getScopeFixture(scopeId);
+  const applicant =
+    scopeId === "academy"
+      ? "Daniel Mensah · APP-2026-0204"
+      : "Amina Bello · APP-2026-0142";
   return (
     <div className="space-y-6">
       <PageHeader
@@ -470,24 +599,21 @@ function AdmissionsView() {
         description="A visual pipeline over the existing admissions state machine—from enquiry through enrollment."
       />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-        {[
-          ["Enquiry", "18"],
-          ["Submitted", "12"],
-          ["Review", "7"],
-          ["Assessment", "9"],
-          ["Offer", "5"],
-          ["Ready", "3"],
-        ].map(([s, n]) => (
-          <div
-            key={s}
-            className="border-border bg-surface rounded-xl border p-4"
-          >
-            <p className="text-2xl font-semibold">{n}</p>
-            <p className="text-muted-foreground text-sm">{s}</p>
-          </div>
-        ))}
+        {["Enquiry", "Submitted", "Review", "Assessment", "Offer", "Ready"].map(
+          (s, index) => (
+            <div
+              key={s}
+              className="border-border bg-surface rounded-xl border p-4"
+            >
+              <p className="text-2xl font-semibold">
+                {scope.admissionStages[index]}
+              </p>
+              <p className="text-muted-foreground text-sm">{s}</p>
+            </div>
+          ),
+        )}
       </div>
-      <SurfaceCard eyebrow="Applicant 360" title="Amina Bello · APP-2026-0142">
+      <SurfaceCard eyebrow="Applicant 360" title={applicant}>
         <WorkflowRail
           steps={[
             "Submitted",
@@ -508,8 +634,8 @@ function AdmissionsView() {
           />
           <KpiCard
             label="Placement"
-            value="Primary 2"
-            detail="Cedarbridge Primary"
+            value={scopeId === "academy" ? "JSS 1" : "Primary 2"}
+            detail={scope.shortLabel}
           />
           <KpiCard
             label="Conversion readiness"
@@ -527,7 +653,9 @@ function AdmissionsView() {
   );
 }
 
-function TeachingView() {
+function TeachingView({ scopeId }: { scopeId: ScopeId }) {
+  const scope = getScopeFixture(scopeId);
+  const students = scope.students;
   const [marked, setMarked] = useState(false);
   return (
     <div className="space-y-6">
@@ -537,9 +665,17 @@ function TeachingView() {
         description="Designed for fast tablet and mobile use without weakening submission controls."
       />
       <div className="grid gap-4 lg:grid-cols-3">
-        <SurfaceCard title="09:30 · Primary 5 English">
+        <SurfaceCard
+          title={
+            scopeId === "academy"
+              ? "09:30 · JSS 2 Literature"
+              : "09:30 · Primary 5 English"
+          }
+        >
           <p className="text-muted-foreground text-sm">
-            31 learners · Room P5A
+            {scopeId === "academy"
+              ? "28 learners · Room J2G"
+              : "31 learners · Room P5A"}
           </p>
           <Button className="mt-4 w-full">Open class workspace</Button>
         </SurfaceCard>
@@ -552,13 +688,18 @@ function TeachingView() {
           </Button>
         </SurfaceCard>
         <SurfaceCard title="Teaching summary">
-          <p className="text-2xl font-semibold">4 of 5</p>
+          <p className="text-2xl font-semibold">
+            {scope.lessonPlansApproved} of {scope.lessonPlansTotal}
+          </p>
           <p className="text-muted-foreground text-sm">
             Lesson plans approved this week
           </p>
         </SurfaceCard>
       </div>
-      <SurfaceCard eyebrow="Fast attendance" title="Primary 5 A · Today">
+      <SurfaceCard
+        eyebrow="Fast attendance"
+        title={`${scopeId === "academy" ? "JSS 2 Gold" : "Primary 5 A"} · Today`}
+      >
         <div className="mb-4 flex flex-wrap gap-2">
           <Button onClick={() => setMarked(true)}>Mark all present</Button>
           <Button variant="secondary">Show exceptions only</Button>
@@ -597,7 +738,18 @@ function TeachingView() {
   );
 }
 
-function FinanceView() {
+function FinanceView({ scopeId }: { scopeId: ScopeId }) {
+  const scope = getScopeFixture(scopeId);
+  const paymentRows = scope.students.map((student, index) => [
+    `${scopeId === "academy" ? "SFA" : "SFP"}-${2048 + index}`,
+    student.name,
+    formatMoney(
+      index === 0
+        ? scope.verificationCents
+        : Math.round(scope.verificationCents / 3),
+    ),
+    scopeId === "academy" ? "E. James" : "M. Yusuf",
+  ]);
   return (
     <div className="space-y-6">
       <PageHeader
@@ -608,25 +760,25 @@ function FinanceView() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="Billed this term"
-          value="₦31,480,000.00"
+          value={formatMoney(scope.billedCents)}
           detail="Authoritative billed value"
         />
         <KpiCard
           label="Allocated payments"
-          value="₦24,680,450.00"
-          detail="78.4% collected"
+          value={formatMoney(scope.collectedCents)}
+          detail={`${percentage(scope.collectedCents, scope.billedCents)} collected`}
           tone="success"
         />
         <KpiCard
           label="Outstanding"
-          value="₦6,799,550.00"
-          detail="Across 186 learners"
+          value={formatMoney(scope.billedCents - scope.collectedCents)}
+          detail={`Across ${scope.attendanceFollowUps + 52} learners`}
           tone="warning"
         />
         <KpiCard
           label="Awaiting verification"
-          value="₦318,750.00"
-          detail="4 payments · separate verifier"
+          value={formatMoney(scope.verificationCents)}
+          detail={`${scope.verificationCount} payments · separate verifier`}
           tone="warning"
         />
       </div>
@@ -643,11 +795,7 @@ function FinanceView() {
               </tr>
             </TableHead>
             <tbody>
-              {[
-                ["SF-2048", "Amara Okafor", "₦125,500.00", "M. Yusuf"],
-                ["SF-2051", "Musa Ibrahim", "₦94,250.00", "M. Yusuf"],
-                ["SF-2054", "Tobi Adeyemi", "₦99,000.00", "E. James"],
-              ].map((r) => (
+              {paymentRows.map((r) => (
                 <tr key={r[0]}>
                   {r.map((c) => (
                     <TableCell key={c}>{c}</TableCell>
@@ -663,10 +811,7 @@ function FinanceView() {
           </DataTable>
         </div>
         <MobileRecordCards>
-          {[
-            ["SF-2048", "Amara Okafor", "₦125,500.00"],
-            ["SF-2051", "Musa Ibrahim", "₦94,250.00"],
-          ].map((r) => (
+          {paymentRows.map((r) => (
             <RecordCard
               key={r[0]}
               title={r[1]}
@@ -686,7 +831,16 @@ function FinanceView() {
   );
 }
 
-function AssessmentView() {
+function AssessmentView({ scopeId }: { scopeId: ScopeId }) {
+  const scope = getScopeFixture(scopeId);
+  const scoreRows = scope.students.map((student, index) => [
+    student.name,
+    index === 0 ? "17" : "14",
+    index === 0 ? "18" : "16",
+    index === 0 ? "52" : "",
+    index === 0 ? "87" : "—",
+    index === 0 ? "A" : "Draft",
+  ]);
   return (
     <div className="space-y-6">
       <PageHeader
@@ -695,24 +849,36 @@ function AssessmentView() {
         description="Scores remain draft until the existing server-authoritative workflow validates, reviews, approves and publishes them."
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Score sheets" value="42" detail="Current term" />
+        <KpiCard
+          label="Score sheets"
+          value={String(scope.scoreSheets)}
+          detail="Current term"
+        />
         <KpiCard
           label="Submitted"
-          value="34"
-          detail="81% complete"
+          value={String(scope.submittedSheets)}
+          detail={`${percentage(scope.submittedSheets, scope.scoreSheets)} complete`}
           tone="success"
         />
         <KpiCard
           label="Review blockers"
-          value="3"
+          value={String(scope.assessmentBlockers)}
           detail="Missing or invalid entries"
           tone="warning"
         />
-        <KpiCard label="Published" value="18" detail="Immutable snapshots" />
+        <KpiCard
+          label="Published"
+          value={String(scope.publishedSnapshots)}
+          detail="Immutable snapshots"
+        />
       </div>
       <SurfaceCard
         eyebrow="Score entry reference"
-        title="Primary 5 A · English"
+        title={
+          scopeId === "academy"
+            ? "JSS 2 Gold · Literature"
+            : "Primary 5 A · English"
+        }
       >
         <div className="hidden overflow-x-auto md:block">
           <DataTable caption="Synthetic score entry sheet">
@@ -727,11 +893,7 @@ function AssessmentView() {
               </tr>
             </TableHead>
             <tbody>
-              {[
-                ["Amara Okafor", "17", "18", "52", "87", "A"],
-                ["Tobi Adeyemi", "14", "16", "43", "73", "B"],
-                ["Musa Ibrahim", "12", "15", "", "—", "Draft"],
-              ].map((r) => (
+              {scoreRows.map((r) => (
                 <tr key={r[0]}>
                   {r.map((c, i) => (
                     <TableCell key={`${r[0]}-${i}`}>
@@ -754,19 +916,21 @@ function AssessmentView() {
         </div>
         <MobileRecordCards>
           <RecordCard
-            title="Amara Okafor"
+            title={scope.students[0].name}
             meta="17 + 18 + 52 = 87"
             status="A"
           />
           <RecordCard
-            title="Musa Ibrahim"
+            title={scope.students[1].name}
             meta="Exam score missing"
             status="Draft"
           />
         </MobileRecordCards>
         <StickyPrototypeActions>
           <span className="mr-auto self-center text-sm text-slate-600">
-            1 blocker · server calculation remains authoritative
+            {scope.assessmentBlockers} blocker
+            {scope.assessmentBlockers === 1 ? "" : "s"} · server calculation
+            remains authoritative
           </span>
           <Button variant="secondary">Save draft preview</Button>
           <Button disabled>Submit score sheet</Button>
@@ -787,27 +951,94 @@ function AssessmentView() {
 }
 
 export function OperationsPrototype() {
-  const [perspective, setPerspective] = useState<(typeof perspectives)[number]>(
-    perspectives[0],
-  );
-  const [school, setSchool] = useState("All authorized schools");
+  const [perspective, setPerspective] = useState<PerspectiveId>("owner");
+  const [scopeId, setScopeId] = useState<ScopeId>("all");
   const [workspace, setWorkspace] = useState<Workspace>("home");
+  const scope = getScopeFixture(scopeId);
   const content = useMemo(
     () =>
       ({
-        home: <HomeView school={school} />,
-        day: <MyDayView perspective={perspective} />,
-        admin: <AdministrationView />,
-        students: <StudentsView />,
-        admissions: <AdmissionsView />,
-        teaching: <TeachingView />,
-        finance: <FinanceView />,
-        assessment: <AssessmentView />,
+        home: <HomeView scopeId={scopeId} perspective={perspective} />,
+        day: <MyDayView perspective={perspective} scopeId={scopeId} />,
+        admin: <AdministrationView scopeId={scopeId} />,
+        students: <StudentsView key={scopeId} scopeId={scopeId} />,
+        admissions: <AdmissionsView scopeId={scopeId} />,
+        teaching: <TeachingView scopeId={scopeId} />,
+        finance: <FinanceView scopeId={scopeId} />,
+        assessment: <AssessmentView scopeId={scopeId} />,
       })[workspace],
-    [workspace, school, perspective],
+    [workspace, scopeId, perspective],
   );
+  const activeContext = {
+    organizationId: "synthetic-cedarbridge",
+    organizationName: "Cedarbridge Learning Group",
+    schoolId: scopeId === "all" ? null : `synthetic-${scopeId}`,
+    schoolName: scopeId === "all" ? null : scope.label,
+  };
   return (
-    <>
+    <ApplicationShell
+      items={[
+        {
+          href: "/px3-operations#students",
+          label: "Students",
+          group: "People",
+        },
+        {
+          href: "/px3-operations#assessment",
+          label: "Assessment",
+          group: "Academics",
+        },
+        {
+          href: "/px3-operations#teaching",
+          label: "Teaching",
+          group: "Academics",
+        },
+        {
+          href: "/px3-operations#finance",
+          label: "Finance",
+          group: "Operations",
+        },
+        {
+          href: "/px3-operations#admin",
+          label: "Administration",
+          group: "Administration",
+        },
+      ]}
+      unavailableItems={[
+        { label: "Northgate School", reason: "No membership in this school" },
+        {
+          label: "Platform Console",
+          reason: "Separate platform-operator authorization required",
+        },
+      ]}
+      userEmail="operations.preview@schoolflow.example"
+      homeHref="/px3-operations"
+      notificationHref="/px3-operations#day"
+      helpHref="/px3-operations#guidance"
+      contextRibbon={
+        <div className="space-y-1.5">
+          <p className="text-tenant-accent-strong text-[0.65rem] font-bold tracking-[0.14em] uppercase">
+            Synthetic prototype operating context · production context unchanged
+          </p>
+          <ContextRibbon
+            active={activeContext}
+            options={scopeOptions.map((option) => ({
+              organizationId: "synthetic-cedarbridge",
+              organizationName: "Cedarbridge Learning Group",
+              schoolId: option.id === "all" ? null : `synthetic-${option.id}`,
+              schoolName: option.id === "all" ? null : option.label,
+            }))}
+            academic={{
+              sessionId: "synthetic-2026",
+              sessionName: "2026/2027",
+              periodId: "synthetic-term-1",
+              periodName: "First Term",
+              available: true,
+            }}
+          />
+        </div>
+      }
+    >
       <PrototypeBanner />
       <section
         aria-label="Prototype controls"
@@ -822,22 +1053,28 @@ export function OperationsPrototype() {
             }
             className="border-border mt-1 min-h-11 w-full rounded-xl border bg-white px-3 font-normal"
           >
-            {perspectives.map((p) => (
-              <option key={p}>{p}</option>
+            {perspectiveOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
             ))}
           </select>
         </label>
         <label className="text-sm font-semibold text-slate-700">
           Operating scope
           <select
-            value={school}
-            onChange={(e) => setSchool(e.target.value)}
+            value={scopeId}
+            onChange={(e) => setScopeId(e.target.value as ScopeId)}
             className="border-border mt-1 min-h-11 w-full rounded-xl border bg-white px-3 font-normal"
           >
-            <option>All authorized schools</option>
-            <option>Cedarbridge Primary School</option>
-            <option>Cedarbridge Academy</option>
-            <option disabled>Northgate School — access required</option>
+            {scopeOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+            <option disabled value="northgate">
+              Northgate School — access required
+            </option>
           </select>
         </label>
         <div className="self-end rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-600">
@@ -866,6 +1103,6 @@ export function OperationsPrototype() {
         ))}
       </nav>
       {content}
-    </>
+    </ApplicationShell>
   );
 }

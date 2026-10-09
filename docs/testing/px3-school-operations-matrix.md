@@ -16,7 +16,7 @@
 
 | Reference area               | Evidence                                                     | Status |
 | ---------------------------- | ------------------------------------------------------------ | ------ |
-| Organization and School Home | KPI, exceptions and approval panels                          | PASS   |
+| Organization and School Home | Seven role-specific KPI, exception and approval compositions | PASS   |
 | My Day and Action Center     | Responsibility-aware daily queue                             | PASS   |
 | Administration               | Membership/effective access and module explanations          | PASS   |
 | Students and Student 360     | Responsive register, filters and eight 360 sections          | PASS   |
@@ -32,6 +32,13 @@ Principal / Head Teacher, Teacher / Class Teacher, Admissions Officer, Bursar /
 Finance Officer, Assessment / Examination Officer, and Student Administrator /
 Registrar. The perspective affects work prioritization without creating a second
 authorization system or assuming one identity has only one responsibility.
+
+Each perspective now changes the Home information hierarchy, metrics and
+priority tasks. Scope selection is carried across all eight workspaces. Primary
+has 684 active learners and Academy 600; organization-wide derives to 1,284.
+Attendance and collection percentages are calculated from summed counts/value,
+not added or averaged percentages. The scope-aware Context Ribbon is explicitly
+labelled synthetic and states that production context is unchanged.
 
 ## Reusable patterns
 
@@ -62,7 +69,7 @@ authorization system or assuming one identity has only one responsibility.
 | Formatting                  | PASS    | Prettier check                    |
 | Zero-warning lint           | PASS    | Local lint                        |
 | Strict TypeScript           | PASS    | Local typecheck                   |
-| Full regression suite       | PASS    | 320 tests across 72 files         |
+| Full regression suite       | PASS    | 324 tests across 72 files         |
 | Production build            | PASS    | Next.js 16.3.8 optimized build    |
 | Responsive layout tests     | PASS    | Mobile-card/table and shell tests |
 | Live desktop visual check   | PASS    | Protected preview at 1363px       |
@@ -78,6 +85,12 @@ The live preview inspection also verified every workspace without page-level
 horizontal overflow. A duplicated shell-level Home entry found during visual
 QA was removed before founder review; the dedicated prototype workspace Home
 control remains unchanged.
+
+Focused correction coverage verifies materially different Home content for all
+seven perspectives, exact additive fixture reconciliation, weighted attendance,
+scope-aware Student and Finance content, Context Ribbon agreement, persistence
+across workspace changes, disabled Northgate access and unchanged platform
+authorization wording.
 
 ## Deferred by design
 

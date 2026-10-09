@@ -61,6 +61,17 @@ perspectives. It uses deterministic synthetic data for two authorized schools
 and one inaccessible school. No production service, schema, entitlement or
 operational route is changed; full operational migration remains PX6.
 
+Founder review identified that the initial perspective selector changed labels
+without materially changing Home, most workspace values were not school-scoped,
+and the static Context Ribbon could disagree with the selected prototype scope.
+The correction now derives every additive organization total from explicit
+Primary (684 learners) and Academy (600 learners) fixtures, calculates weighted
+rates from underlying counts, provides seven distinct role priorities and
+scope-aware records across all eight workspaces, and binds a clearly labelled
+synthetic Context Ribbon to the same state. Northgate remains inaccessible and
+Platform Console remains separately authorized. PR #95 remains draft pending
+founder visual acceptance; production and Supabase remain unchanged.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

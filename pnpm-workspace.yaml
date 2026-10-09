@@ -4,3 +4,5 @@ allowBuilds:
 overrides:
   "brace-expansion@<2": 1.1.21
   "brace-expansion@>=4 <5.0.12": 5.0.12
+  sharp: 0.35.5
+  source-map-js: 1.2.2

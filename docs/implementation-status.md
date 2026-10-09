@@ -72,6 +72,14 @@ one navigation tree, and regression coverage asserts each authorized and
 unavailable entry appears exactly once at a short mobile viewport. PR #93
 remains draft and unmerged pending founder acceptance.
 
+Founder-supplied post-refinement mobile captures verify the public homepage,
+Product page, Modules page, public navigation drawer and authenticated
+organization dashboard on a real phone presentation. The authenticated drawer
+shows a single ordered module sequence; the earlier apparent repetition is
+therefore classified as a scrolling/long-capture artifact rather than a PX1 or
+PX2 rendering defect. Netlify collaboration controls visible at the bottom of
+the captures remain external preview infrastructure.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

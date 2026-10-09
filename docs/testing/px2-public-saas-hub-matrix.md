@@ -33,10 +33,10 @@
 
 | Viewport  | Coverage expectation                                          | Result                                        |
 | --------- | ------------------------------------------------------------- | --------------------------------------------- |
-| 320×700   | Small mobile; compact brand, scrollable menu, stacked content | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
-| 375×812   | Standard mobile                                               | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
-| 390×844   | Founder-representative mobile                                 | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
-| 430×932   | Large mobile                                                  | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
+| 320×700   | Small mobile; compact brand, scrollable menu, stacked content | PASS — AUTOMATED + FOUNDER CAPTURE            |
+| 375×812   | Standard mobile                                               | PASS — AUTOMATED + FOUNDER CAPTURE            |
+| 390×844   | Founder-representative mobile                                 | PASS — AUTOMATED + FOUNDER CAPTURE            |
+| 430×932   | Large mobile                                                  | PASS — AUTOMATED + FOUNDER CAPTURE            |
 | 820×1180  | Tablet; deliberate content-grid transition                    | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
 | 1280×800  | Small laptop; header, hero and card density                   | PASS — PREVIEW CAPTURED                       |
 | 1366×768  | Standard laptop; founder screenshot comparison                | PASS — PREVIEW CAPTURED                       |
@@ -48,5 +48,8 @@ The matrix covers `/`, `/product`, `/solutions`, `/modules`, `/plans`,
 visible in some founder captures is preview infrastructure, not SchoolFlow UI.
 All eight routes were checked at a live 1363×936 preview viewport with zero
 horizontal overflow. Mobile breakpoints, menu interactions and drawer uniqueness
-are covered by focused automated tests; final mobile visual acceptance remains
-the founder's review gate on the protected preview.
+are covered by focused automated tests. Founder captures `166697.jpg` through
+`166701.jpg` provide direct mobile evidence for the homepage, Product, Modules,
+public drawer and authenticated organization dashboard. The drawer capture
+shows one ordered navigation sequence with no repeated group or entry; the
+bottom collaboration controls are Netlify preview infrastructure.

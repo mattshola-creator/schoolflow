@@ -39,6 +39,27 @@ M13 Hardening & Pilot remains open for credentialed backup/storage evidence,
 off-site retention, non-production restoration, representative human UAT and
 multi-school context verification. PX1 closeout does not satisfy those gates.
 
+## Product Experience 2.0 — PX2 prototype
+
+Prototype Pack A is implemented on `feat/px2-public-saas-hub` in draft PR #93
+and remains isolated from production pending founder visual review. The public
+prototype covers the homepage, product, solutions, modules, non-binding plan
+comparison, synthetic tour entry, security/trust, support placeholders and a
+non-persistent onboarding walkthrough.
+
+Platform Super Admin remains separate from Organization Owner. No platform
+console, credentials, impersonation, live demo tenant, Supabase change,
+entitlement change or operational-module migration is included. The local gate
+passed formatting, zero-warning lint, strict TypeScript, 307 tests across 70
+files and the optimized production build.
+
+Netlify reports the PR preview Ready at the exact PR revision and protects all
+non-production deploys with team SSO. GitHub CI retains one expected non-zero
+audit result for the founder-approved, unsuppressed development-only `braces`
+advisory (GHSA-vfj7-8cjw-p6xm). PX2 introduces no dependency change and does
+not broaden that exception. PX2 must not merge, and PX3/Prototype Packs B–E
+must not begin, before explicit founder approval.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

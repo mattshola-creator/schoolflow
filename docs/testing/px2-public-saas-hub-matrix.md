@@ -16,8 +16,8 @@
 | Accessibility     | Skip link, labelled navigation, focus and touch sizes retained        | PASS               | Shared PX1 primitives plus focused source contract                                                                                                                       |
 | Regression        | Formatting, lint, strict TypeScript, tests and production build       | PASS               | Local gate: 307 tests across 70 files; optimized build generated all nine PX2 public routes                                                                              |
 | Security          | Dependency audit remains visible; no unrelated upgrade                | ACCEPTED EXCEPTION | `braces` GHSA-vfj7-8cjw-p6xm remains a development-only ESLint transitive path; one high finding, no production dependency path, no suppression or package change in PX2 |
-| Preview           | Protected Netlify deploy preview is Ready at exact PR revision        | PENDING            | Record deploy ID, URL and revision after PR publication                                                                                                                  |
-| Visual review     | Desktop, tablet and mobile screenshots captured                       | PENDING            | Record review artifacts after preview verification                                                                                                                       |
+| Preview           | Protected Netlify deploy preview is Ready at exact PR revision        | PASS               | PR #93 alias is protected by Netlify team SSO; Netlify and commit status report Ready/success at the PR head                                                             |
+| Visual review     | Reviewable responsive reference experience available                  | READY FOR REVIEW   | Protected PR #93 preview plus Netlify-rendered reference screenshot; founder acceptance remains outstanding                                                              |
 
 ## Prototype limitations
 

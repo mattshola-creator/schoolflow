@@ -31,18 +31,22 @@
 
 ## Founder refinement viewport matrix
 
-| Viewport  | Coverage expectation                                          | Result |
-| --------- | ------------------------------------------------------------- | ------ |
-| 320×700   | Small mobile; compact brand, scrollable menu, stacked content | PASS   |
-| 375×812   | Standard mobile                                               | PASS   |
-| 390×844   | Founder-representative mobile                                 | PASS   |
-| 430×932   | Large mobile                                                  | PASS   |
-| 820×1180  | Tablet; deliberate content-grid transition                    | PASS   |
-| 1280×800  | Small laptop; header, hero and card density                   | PASS   |
-| 1366×768  | Standard laptop; founder screenshot comparison                | PASS   |
-| 1440×900  | Desktop                                                       | PASS   |
-| 1920×1080 | Large desktop; bounded content widths                         | PASS   |
+| Viewport  | Coverage expectation                                          | Result                                        |
+| --------- | ------------------------------------------------------------- | --------------------------------------------- |
+| 320×700   | Small mobile; compact brand, scrollable menu, stacked content | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
+| 375×812   | Standard mobile                                               | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
+| 390×844   | Founder-representative mobile                                 | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
+| 430×932   | Large mobile                                                  | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
+| 820×1180  | Tablet; deliberate content-grid transition                    | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
+| 1280×800  | Small laptop; header, hero and card density                   | PASS — PREVIEW CAPTURED                       |
+| 1366×768  | Standard laptop; founder screenshot comparison                | PASS — PREVIEW CAPTURED                       |
+| 1440×900  | Desktop                                                       | PASS — PREVIEW CAPTURED                       |
+| 1920×1080 | Large desktop; bounded content widths                         | AUTOMATED PASS; FOUNDER VISUAL REVIEW PENDING |
 
 The matrix covers `/`, `/product`, `/solutions`, `/modules`, `/plans`,
 `/demo`, `/security` and `/get-started`. The Netlify collaboration toolbar
 visible in some founder captures is preview infrastructure, not SchoolFlow UI.
+All eight routes were checked at a live 1363×936 preview viewport with zero
+horizontal overflow. Mobile breakpoints, menu interactions and drawer uniqueness
+are covered by focused automated tests; final mobile visual acceptance remains
+the founder's review gate on the protected preview.

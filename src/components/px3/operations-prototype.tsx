@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpenCheck,
   BriefcaseBusiness,
@@ -36,10 +36,10 @@ import {
 } from "@/components/px3/operations-patterns";
 import {
   formatMoney,
+  getScopedRolePresentation,
   getScopeFixture,
   percentage,
   perspectiveOptions,
-  roleHomeCopy,
   scopeOptions,
   type PerspectiveId,
   type ScopeId,
@@ -66,7 +66,7 @@ function HomeView({
   perspective: PerspectiveId;
 }) {
   const scope = getScopeFixture(scopeId);
-  const role = roleHomeCopy[perspective];
+  const role = getScopedRolePresentation(scopeId, perspective);
   const outstanding = scope.billedCents - scope.collectedCents;
   const roleMetrics = {
     owner: [
@@ -212,9 +212,7 @@ function HomeView({
     <div className="space-y-6">
       <PageHeader
         eyebrow={role.eyebrow}
-        title={
-          scopeId === "all" ? role.title : `${scope.shortLabel}: ${role.title}`
-        }
+        title={role.title}
         description={role.description}
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -236,7 +234,7 @@ function HomeView({
                 key={task}
                 urgent={index === 0}
                 title={task}
-                detail={`${scope.shortLabel} · ${index === 0 ? "Priority today" : "Within your current responsibilities"}`}
+                detail={`${scope.shortLabel} · ${index === 0 ? "Priority today" : scopeId === "all" ? "Across authorized schools" : "School-scoped responsibility"}`}
                 action="Open reference workspace"
               />
             ))}
@@ -273,8 +271,17 @@ function MyDayView({
   scopeId: ScopeId;
 }) {
   const scope = getScopeFixture(scopeId);
-  const role = roleHomeCopy[perspective];
+  const role = getScopedRolePresentation(scopeId, perspective);
   const teacher = perspective === "teacher";
+  const taskCategory: Record<PerspectiveId, string> = {
+    owner: "Decision",
+    principal: "Leadership",
+    teacher: "Teaching",
+    admissions: "Admissions",
+    bursar: "Finance",
+    assessment: "Assessment",
+    registrar: "Student records",
+  };
   return (
     <div className="space-y-6">
       <PageHeader
@@ -293,7 +300,9 @@ function MyDayView({
           </p>
           <p className="text-muted-foreground mt-2 text-sm">
             {teacher
-              ? "09:30–10:10 · Room P5A"
+              ? scopeId === "academy"
+                ? "09:30–10:10 · Room J2G"
+                : "09:30–10:10 · Room P5A"
               : "Need attention across your responsibilities"}
           </p>
         </SurfaceCard>
@@ -314,38 +323,20 @@ function MyDayView({
       </div>
       <SurfaceCard eyebrow="Action Center" title="Prioritized work">
         <div className="space-y-3">
-          {[
-            [
-              "Urgent",
-              "Resolve attendance exception",
-              "Primary 3 Blue · due now",
-            ],
-            [
-              "Approval",
-              "Verify bank transfer",
-              "Receipt SF-2048 · ₦125,500.00",
-            ],
-            [
-              "Review",
-              "Confirm admission placement",
-              "Amina Bello · Primary 2",
-            ],
-            [
-              "Task",
-              "Complete score sheet",
-              "Primary 5 English · 28/31 scores",
-            ],
-          ].map(([tag, title, meta]) => (
+          {role.tasks.map((title, index) => (
             <div
               key={title}
               className="border-border flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center"
             >
-              <StatusBadge tone={tag === "Urgent" ? "warning" : "neutral"}>
-                {tag}
+              <StatusBadge tone={index === 0 ? "warning" : "neutral"}>
+                {index === 0 ? "Priority" : taskCategory[perspective]}
               </StatusBadge>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-slate-950">{title}</p>
-                <p className="text-muted-foreground text-sm">{meta}</p>
+                <p className="text-muted-foreground text-sm">
+                  {scope.shortLabel} ·{" "}
+                  {index === 0 ? "Due now" : "Combined responsibility view"}
+                </p>
               </div>
               <Button variant="secondary">Open</Button>
             </div>
@@ -358,6 +349,19 @@ function MyDayView({
 
 function AdministrationView({ scopeId }: { scopeId: ScopeId }) {
   const scope = getScopeFixture(scopeId);
+  const accessRows =
+    scopeId === "primary"
+      ? [["Ngozi Eze", "Principal · Admissions approver"]]
+      : scopeId === "academy"
+        ? [
+            ["David Cole", "Teacher · Class teacher · Assessment entry"],
+            ["Ife Adebayo", "Bursar · Payment verifier"],
+          ]
+        : [
+            ["Ngozi Eze", "Principal · Admissions approver"],
+            ["David Cole", "Teacher · Class teacher · Assessment entry"],
+            ["Ife Adebayo", "Bursar · Payment verifier"],
+          ];
   return (
     <div className="space-y-6">
       <PageHeader
@@ -390,11 +394,7 @@ function AdministrationView({ scopeId }: { scopeId: ScopeId }) {
       <div className="grid gap-5 xl:grid-cols-2">
         <SurfaceCard title="Effective access">
           <div className="space-y-3">
-            {[
-              ["Ngozi Eze", "Principal · Admissions approver"],
-              ["David Cole", "Teacher · Class teacher · Assessment entry"],
-              ["Ife Adebayo", "Bursar · Payment verifier"],
-            ].map(([name, access]) => (
+            {accessRows.map(([name, access]) => (
               <div key={name} className="border-border rounded-xl border p-4">
                 <p className="font-semibold">{name}</p>
                 <p className="text-muted-foreground mt-1 text-sm">{access}</p>
@@ -679,9 +679,21 @@ function TeachingView({ scopeId }: { scopeId: ScopeId }) {
           </p>
           <Button className="mt-4 w-full">Open class workspace</Button>
         </SurfaceCard>
-        <SurfaceCard title="11:00 · JSS 2 Literature">
+        <SurfaceCard
+          title={
+            scopeId === "primary"
+              ? "11:00 · Primary 4 Mathematics"
+              : scopeId === "academy"
+                ? "11:00 · SS 1 English"
+                : "11:00 · JSS 2 Literature"
+          }
+        >
           <p className="text-muted-foreground text-sm">
-            28 learners · Room J2G
+            {scopeId === "primary"
+              ? "30 learners · Room P4B"
+              : scopeId === "academy"
+                ? "26 learners · Room S1B"
+                : "28 learners · Room J2G"}
           </p>
           <Button variant="secondary" className="mt-4 w-full">
             View lesson plan
@@ -954,7 +966,30 @@ export function OperationsPrototype() {
   const [perspective, setPerspective] = useState<PerspectiveId>("owner");
   const [scopeId, setScopeId] = useState<ScopeId>("all");
   const [workspace, setWorkspace] = useState<Workspace>("home");
+  const workspaceButtons = useRef<
+    Partial<Record<Workspace, HTMLButtonElement | null>>
+  >({});
   const scope = getScopeFixture(scopeId);
+  useEffect(() => {
+    const activeButton = workspaceButtons.current[workspace];
+    if (!activeButton) return;
+    activeButton.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [workspace]);
+
+  function moveWorkspace(current: Workspace, direction: -1 | 1) {
+    const currentIndex = workspaces.findIndex(([id]) => id === current);
+    const nextIndex =
+      (currentIndex + direction + workspaces.length) % workspaces.length;
+    const next = workspaces[nextIndex][0];
+    setWorkspace(next);
+    workspaceButtons.current[next]?.focus();
+  }
   const content = useMemo(
     () =>
       ({
@@ -1085,24 +1120,52 @@ export function OperationsPrototype() {
           Multi-responsibility preview
         </div>
       </section>
-      <nav
-        aria-label="School operations prototypes"
-        className="border-border mb-6 flex gap-2 overflow-x-auto border-b pb-2"
-      >
-        {workspaces.map(([id, label, Icon]) => (
-          <button
-            key={id}
-            type="button"
-            aria-current={workspace === id ? "page" : undefined}
-            onClick={() => setWorkspace(id)}
-            className={`flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold ${workspace === id ? "bg-brand text-white" : "hover:bg-surface bg-white text-slate-700"}`}
-          >
-            <Icon aria-hidden="true" className="size-4" />
-            {label}
-          </button>
-        ))}
-      </nav>
-      {content}
+      <div className="relative mb-6 min-w-0">
+        <p className="mb-2 text-xs font-semibold text-slate-500 sm:hidden">
+          Swipe to explore all workspaces
+        </p>
+        <nav
+          aria-label="School operations prototypes"
+          role="tablist"
+          className="border-border flex max-w-full scrollbar-thin gap-2 overflow-x-auto overscroll-x-contain scroll-smooth border-b pr-8 pb-2"
+        >
+          {workspaces.map(([id, label, Icon]) => (
+            <button
+              key={id}
+              ref={(element) => {
+                workspaceButtons.current[id] = element;
+              }}
+              type="button"
+              role="tab"
+              aria-selected={workspace === id}
+              aria-controls="px3-workspace-panel"
+              tabIndex={workspace === id ? 0 : -1}
+              onClick={() => setWorkspace(id)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowRight") {
+                  event.preventDefault();
+                  moveWorkspace(id, 1);
+                }
+                if (event.key === "ArrowLeft") {
+                  event.preventDefault();
+                  moveWorkspace(id, -1);
+                }
+              }}
+              className={`focus-visible:outline-focus-ring flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 ${workspace === id ? "bg-brand text-white" : "hover:bg-surface bg-white text-slate-700"}`}
+            >
+              <Icon aria-hidden="true" className="size-4" />
+              {label}
+            </button>
+          ))}
+        </nav>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 bottom-0 h-12 w-10 bg-gradient-to-l from-white to-transparent sm:hidden"
+        />
+      </div>
+      <section id="px3-workspace-panel" role="tabpanel" aria-live="polite">
+        {content}
+      </section>
     </ApplicationShell>
   );
 }

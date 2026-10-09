@@ -72,6 +72,15 @@ synthetic Context Ribbon to the same state. Northgate remains inaccessible and
 Platform Console remains separately authorized. PR #95 remains draft pending
 founder visual acceptance; production and Supabase remain unchanged.
 
+Final polish makes organization-wide Owner language explicitly cross-school,
+uses named school-overview headings and school-level exceptions at individual
+scope, scopes My Day queues and staff/teaching examples, and improves mobile
+workspace discovery with a swipe cue, edge fade, accessible tabs, arrow-key
+movement and active-tab centering. Automated coverage now exercises all seven
+perspectives across three authorized scopes and all eight workspaces. Founder
+review confirmed substantial improvement before this polish; final visual
+acceptance of the updated protected preview remains pending.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

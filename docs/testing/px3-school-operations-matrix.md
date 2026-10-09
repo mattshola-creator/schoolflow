@@ -69,7 +69,7 @@ labelled synthetic and states that production context is unchanged.
 | Formatting                  | PASS    | Prettier check                    |
 | Zero-warning lint           | PASS    | Local lint                        |
 | Strict TypeScript           | PASS    | Local typecheck                   |
-| Full regression suite       | PASS    | 324 tests across 72 files         |
+| Full regression suite       | PASS    | 327 tests across 72 files         |
 | Production build            | PASS    | Next.js 16.3.8 optimized build    |
 | Responsive layout tests     | PASS    | Mobile-card/table and shell tests |
 | Live desktop visual check   | PASS    | Protected preview at 1363px       |
@@ -91,6 +91,41 @@ seven perspectives, exact additive fixture reconciliation, weighted attendance,
 scope-aware Student and Finance content, Context Ribbon agreement, persistence
 across workspace changes, disabled Northgate access and unchanged platform
 authorization wording.
+
+## Final role, scope and workspace coverage
+
+| Coverage dimension          | Automated evidence                                                                                                 | Result |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------ |
+| 7 perspectives × 3 scopes   | 21 scoped presentation contracts; each has distinct title, description and three prioritized tasks                 | PASS   |
+| 8 workspaces × 3 scopes     | Home, My Day, Administration, Students, Admissions, Teaching, Finance and Assessment exercised at all three scopes | PASS   |
+| Organization Owner heading  | `Your school group today` at organization scope                                                                    | PASS   |
+| Individual Owner headings   | Named Primary/Academy overview headings                                                                            | PASS   |
+| Multi-responsibility My Day | Scoped, categorized, deduplicated role task list; presentation-only control                                        | PASS   |
+| Student 360                 | Primary and Academy learner/guardian/balance examples switch with scope                                            | PASS   |
+| Applicant 360               | Primary and Academy applicant/placement examples switch with scope                                                 | PASS   |
+| Teaching/attendance         | School-matched classes, rooms, learners and register rows                                                          | PASS   |
+| Payment verification        | School-matched payer rows and exact-decimal scoped totals                                                          | PASS   |
+| Assessment blockers         | Scoped sheets, submissions, blockers, learners and subject example                                                 | PASS   |
+| Context integrity           | Ribbon and workspace read the same synthetic scope state                                                           | PASS   |
+| Denial boundaries           | Northgate disabled; Platform Console separately restricted                                                         | PASS   |
+
+## Responsive and accessibility coverage
+
+|  Width | Verification source                                                                   | Result                                 |
+| -----: | ------------------------------------------------------------------------------------- | -------------------------------------- |
+|  320px | Responsive CSS/component assertions; founder mobile review of prior corrected preview | PASS with final preview review pending |
+|  375px | Responsive CSS/component assertions; founder mobile review                            | PASS with final preview review pending |
+|  390px | Responsive CSS/component assertions; founder mobile review                            | PASS with final preview review pending |
+|  768px | Breakpoint/component review and responsive register behavior                          | PASS with final preview review pending |
+| 1024px | Breakpoint/component review and table/card balance                                    | PASS with final preview review pending |
+| 1440px | Desktop component and layout review                                                   | PASS with final preview review pending |
+
+The workspace selector has tab semantics, roving tab focus, Left/Right arrow
+navigation, automatic active-tab centering, a narrow-screen swipe hint, an edge
+fade and contained horizontal scrolling. Netlify team SSO prevents independent
+Work-browser capture without an invited browser session. No public-homepage
+image is used as PX3 evidence; final founder visual confirmation remains
+PENDING.
 
 ## Deferred by design
 

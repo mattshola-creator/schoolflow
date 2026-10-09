@@ -292,6 +292,46 @@ export const roleHomeCopy: Record<
   },
 };
 
+export function getScopedRolePresentation(
+  scopeId: ScopeId,
+  perspective: PerspectiveId,
+) {
+  const scope = getScopeFixture(scopeId);
+  const base = roleHomeCopy[perspective];
+  const organizationWide = scopeId === "all";
+
+  if (perspective === "owner") {
+    return {
+      ...base,
+      title: organizationWide
+        ? "Your school group today"
+        : `${scope.label} overview`,
+      description: organizationWide
+        ? "Cross-school performance, material exceptions and decisions requiring director oversight."
+        : `Operational health, material exceptions and decisions for ${scope.label}.`,
+      tasks: organizationWide
+        ? [
+            "Compare authorized school performance",
+            "Review cross-school finance exceptions",
+            "Resolve organization approval blockers",
+          ]
+        : [
+            `Review ${scope.shortLabel} operating health`,
+            "Resolve school finance exceptions",
+            "Complete school-level approvals",
+          ],
+    };
+  }
+
+  return {
+    ...base,
+    title: organizationWide ? base.title : `${scope.label}: ${base.title}`,
+    description: organizationWide
+      ? `${base.description} Figures include both authorized schools.`
+      : `${base.description} Figures and examples are limited to ${scope.label}.`,
+  };
+}
+
 export const inaccessibleScope = {
   label: "Northgate School",
   reason: "No membership in this school",

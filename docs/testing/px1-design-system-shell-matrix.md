@@ -26,6 +26,25 @@
 | Dependency audit                               | 4 high, 4 moderate, 1 low; M13 PR #92 prepared      | BLOCKED — M13 HARDENING |
 | Production rollout withheld                    | PR remains unmerged pending founder approval        | PASS                    |
 
+## Production acceptance closeout
+
+| Criterion                                      | Evidence                                                                                                                   | Status                                              |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Founder-authorized production merge            | PR #91; `bf9d1c873c7db7abfb9f30fb1f8035aa9c094a93`                                                                         | PASS                                                |
+| Exact production deployment                    | Netlify `6ac895f191b4a60008569588`, Ready                                                                                  | PASS                                                |
+| Production secret scan                         | 373 files; zero matches                                                                                                    | PASS                                                |
+| Login, persistence, logout and protected route | Read-only production browser smoke                                                                                         | PASS                                                |
+| Password-recovery entry                        | `/forgot-password`, no request submitted                                                                                   | PASS                                                |
+| Desktop shell and Context Ribbon               | Authenticated production dashboard                                                                                         | PASS                                                |
+| Permission and entitlement presentation        | Available links plus safe direct-route denials                                                                             | PASS                                                |
+| Available module read-only smoke               | Dashboard, Action Center, Students/360, Staff, Admissions, Academic Setup, Documents, Communication, Administration, Audit | PASS                                                |
+| Live production mobile recheck                 | Fixed cloud-browser desktop viewport                                                                                       | NOT REPEATED — prior founder/test evidence retained |
+| Multi-school context switching                 | Acceptance identity exposed one school                                                                                     | NOT EXERCISED                                       |
+| Permanent founder-owner identity               | Browser displayed `test@schoolflow.com`                                                                                    | NOT INDEPENDENTLY VERIFIED                          |
+| Netlify runtime logs                           | Connector exposed deploy/function state, not runtime log querying                                                          | PARTIAL                                             |
+| SchoolFlow-origin browser errors               | No application-origin warnings/errors observed                                                                             | PASS                                                |
+| Database, RLS, entitlement and data changes    | PX1 diff contains no migration; smoke was read-only                                                                        | PASS                                                |
+
 ## Founder gate
 
 Founder visual acceptance is complete at revision `6eac996`. PX1 must remain

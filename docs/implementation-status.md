@@ -53,7 +53,8 @@ Quality evidence: 316 tests across 71 files passed; formatting, zero-warning lin
 
 ## Product Experience 2.0 — PX3 prototype
 
-Prototype Pack B is in development on `feat/px3-school-operations`. The bounded
+Prototype Pack B is accepted with documented limitations on
+`feat/px3-school-operations`. The bounded
 `/px3-operations` route demonstrates Organization/School Home, My Day, Action
 Center, Administration, Students/Student 360, Admissions/Applicant 360,
 Teaching/Attendance, Finance and Assessment for seven representative staff
@@ -78,8 +79,18 @@ scope, scopes My Day queues and staff/teaching examples, and improves mobile
 workspace discovery with a swipe cue, edge fade, accessible tabs, arrow-key
 movement and active-tab centering. Automated coverage now exercises all seven
 perspectives across three authorized scopes and all eight workspaces. Founder
-review confirmed substantial improvement before this polish; final visual
-acceptance of the updated protected preview remains pending.
+review confirmed substantial improvement before this polish. On 9 October
+2026, the founder formally accepted revision
+`109ab881f6870856a45426b25c32bf047c5d7015` with the documented prototype
+limitations: synthetic/nonpersistent data, presentation-only perspective
+switching, disabled mutations, generic prototype links, and full operational
+migration/demo behavior deferred to PX6/PX7. This founder acceptance is distinct
+from automated verification and does not claim an independent Work-browser
+capture of the Netlify-SSO-protected final preview.
+
+**PX3 release state:** Founder acceptance — **ACCEPTED WITH DOCUMENTED
+LIMITATIONS**. PR #95 remains subject to the controlled merge, deployment and
+production-verification gates. M13 remains open.
 
 ## Current milestone
 

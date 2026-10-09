@@ -63,19 +63,19 @@ labelled synthetic and states that production context is unchanged.
 
 ## Quality gate
 
-| Check                       | Status  | Evidence                          |
-| --------------------------- | ------- | --------------------------------- |
-| Focused interaction tests   | PASS    | PX3 prototype test suite          |
-| Formatting                  | PASS    | Prettier check                    |
-| Zero-warning lint           | PASS    | Local lint                        |
-| Strict TypeScript           | PASS    | Local typecheck                   |
-| Full regression suite       | PASS    | 327 tests across 72 files         |
-| Production build            | PASS    | Next.js 16.3.8 optimized build    |
-| Responsive layout tests     | PASS    | Mobile-card/table and shell tests |
-| Live desktop visual check   | PASS    | Protected preview at 1363px       |
-| Founder responsive review   | PENDING | Protected preview                 |
-| Secret scan                 | PASS    | Local tracked secret-pattern scan |
-| Production dependency audit | PASS    | Zero production vulnerabilities   |
+| Check                       | Status | Evidence                          |
+| --------------------------- | ------ | --------------------------------- |
+| Focused interaction tests   | PASS   | PX3 prototype test suite          |
+| Formatting                  | PASS   | Prettier check                    |
+| Zero-warning lint           | PASS   | Local lint                        |
+| Strict TypeScript           | PASS   | Local typecheck                   |
+| Full regression suite       | PASS   | 327 tests across 72 files         |
+| Production build            | PASS   | Next.js 16.3.8 optimized build    |
+| Responsive layout tests     | PASS   | Mobile-card/table and shell tests |
+| Live desktop visual check   | PASS   | Protected preview at 1363px       |
+| Founder responsive review   | PASS   | Accepted with documented limits   |
+| Secret scan                 | PASS   | Local tracked secret-pattern scan |
+| Production dependency audit | PASS   | Zero production vulnerabilities   |
 
 The full development audit remains non-zero only for the accepted, unsuppressed
 `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`) through ESLint tooling. It has
@@ -124,8 +124,27 @@ The workspace selector has tab semantics, roving tab focus, Left/Right arrow
 navigation, automatic active-tab centering, a narrow-screen swipe hint, an edge
 fade and contained horizontal scrolling. Netlify team SSO prevents independent
 Work-browser capture without an invited browser session. No public-homepage
-image is used as PX3 evidence; final founder visual confirmation remains
-PENDING.
+image is used as PX3 evidence. The founder independently reviewed the protected
+preview and formally accepted revision
+`109ab881f6870856a45426b25c32bf047c5d7015` with documented limitations. This
+records founder evidence; it does not recast the blocked Work-browser capture as
+an independently performed visual test.
+
+## Founder acceptance fixture record
+
+| Measure               | Cedarbridge Primary | Cedarbridge Academy |   Organization |
+| --------------------- | ------------------: | ------------------: | -------------: |
+| Active learners       |                 684 |                 600 |          1,284 |
+| Present today         |                 651 |                 559 |          1,210 |
+| Attendance follow-ups |                  33 |                  41 |             74 |
+| Collections           |      ₦14,880,000.00 |       ₦9,800,450.00 | ₦24,680,450.00 |
+| Pending approvals     |                   7 |                   5 |             12 |
+
+Founder acceptance is **ACCEPTED WITH DOCUMENTED LIMITATIONS**. Synthetic data
+is nonpersistent; perspective switching does not grant permissions; mutations
+remain disabled; generic links remain illustrative; PX6 owns full operational
+migration and PX7 owns the interactive demo. Northgate remains inaccessible and
+Platform Super Admin remains separate from Organization Owner.
 
 ## Deferred by design
 
@@ -133,4 +152,5 @@ PENDING.
 - Live demo tenant, credentials, impersonation, perspective switching and reset
   belong to PX7.
 - Prototype actions do not write data.
-- Founder acceptance is required before merge or production deployment.
+- Production closeout still requires the protected merge, exact-revision
+  deployment and non-destructive production verification.

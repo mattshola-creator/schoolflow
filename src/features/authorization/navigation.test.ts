@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AuthorizationSnapshot } from "./evaluator";
 import { buildWorkspaceAccess, describeAccessReason } from "./navigation";
+import { moduleNavigation } from "./catalog";
 
 const authorization: AuthorizationSnapshot = {
   organizationId: "00000000-0000-4000-8000-000000000001",
@@ -57,5 +58,26 @@ describe("workspace access presentation", () => {
     expect(describeAccessReason("feature_disabled")).toBe(
       "Not activated for this organization",
     );
+  });
+
+  it("uses the approved work-oriented navigation groups", () => {
+    const approved = new Set([
+      "Home",
+      "People",
+      "Academics",
+      "Operations",
+      "Communication",
+      "Insights",
+      "Administration",
+    ]);
+    expect(moduleNavigation.every((item) => approved.has(item.group))).toBe(
+      true,
+    );
+    expect(
+      moduleNavigation.find((item) => item.href === "/students")?.group,
+    ).toBe("People");
+    expect(
+      moduleNavigation.find((item) => item.href === "/finance")?.group,
+    ).toBe("Operations");
   });
 });

@@ -2,6 +2,43 @@
 
 Last updated: 1 October 2026
 
+## Product Experience 2.0 — PX1 production closeout
+
+PX1 Design System & Application Shell is **Completed — Deployed — Accepted
+with Documented Limitations**. PR #91 merged at
+`bf9d1c873c7db7abfb9f30fb1f8035aa9c094a93`; Netlify production deploy
+`6ac895f191b4a60008569588` is Ready at that exact revision and its enhanced
+secret scan inspected 373 files with zero matches.
+
+The final read-only production smoke test verified secure login, session
+persistence, logout, protected-route redirection, password-recovery navigation,
+desktop workspace navigation, keyboard entry order, the Organization → School →
+Session → Term Context Ribbon, permission-aware navigation, entitlement-aware
+unavailable states, Student 360 and the available Admissions, Staff, Academic
+Setup, Documents, Communication, Administration, Action Center and Audit
+surfaces. Direct Attendance, Teaching, Finance and Assessment routes returned
+their intended safe unavailable states under the active organization's disabled
+features. `/api/health` returned `ok` with Supabase connected.
+
+The accepted mobile implementation retains founder visual acceptance and
+automated coverage at 320, 375 and 390 CSS pixels. The final production browser
+smoke test did not independently repeat live mobile resizing because its cloud
+browser exposed a fixed desktop viewport. Multi-school switching was also not
+exercised because the authenticated acceptance context exposed one school. The
+browser displayed `test@schoolflow.com`; the permanent founder-owner identity
+was not independently established by that test. Direct Netlify runtime-log
+querying was unavailable, although deployment/function state was healthy and no
+SchoolFlow-origin browser warning or error was observed.
+
+The approved residual-risk exception for development-only `braces@3.0.3`
+(`GHSA-vfj7-8cjw-p6xm`) remains documented and visible. The package is absent
+from the production dependency graph and the dependency audit is not
+suppressed.
+
+M13 Hardening & Pilot remains open for credentialed backup/storage evidence,
+off-site retention, non-production restoration, representative human UAT and
+multi-school context verification. PX1 closeout does not satisfy those gates.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

@@ -64,13 +64,20 @@ authorization system or assuming one identity has only one responsibility.
 | Strict TypeScript           | PASS    | Local typecheck                   |
 | Full regression suite       | PASS    | 320 tests across 72 files         |
 | Production build            | PASS    | Next.js 16.3.8 optimized build    |
-| Responsive visual matrix    | PENDING | Protected preview                 |
+| Responsive layout tests     | PASS    | Mobile-card/table and shell tests |
+| Live desktop visual check   | PASS    | Protected preview at 1363px       |
+| Founder responsive review   | PENDING | Protected preview                 |
 | Secret scan                 | PASS    | Local tracked secret-pattern scan |
 | Production dependency audit | PASS    | Zero production vulnerabilities   |
 
 The full development audit remains non-zero only for the accepted, unsuppressed
 `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`) through ESLint tooling. It has
 no production dependency path and PX3 does not change dependencies.
+
+The live preview inspection also verified every workspace without page-level
+horizontal overflow. A duplicated shell-level Home entry found during visual
+QA was removed before founder review; the dedicated prototype workspace Home
+control remains unchanged.
 
 ## Deferred by design
 

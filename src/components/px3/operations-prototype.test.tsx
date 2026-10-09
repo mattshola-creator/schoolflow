@@ -29,6 +29,22 @@ describe("PX3 school operations prototype", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders each workspace switcher exactly once", () => {
+    render(<OperationsPrototype />);
+    for (const name of [
+      "Home",
+      "My Day",
+      "Administration",
+      "Students",
+      "Admissions",
+      "Teaching & attendance",
+      "Finance",
+      "Assessment",
+    ]) {
+      expect(screen.getAllByRole("button", { name })).toHaveLength(1);
+    }
+  });
+
   it("uses mobile cards and disables authoritative prototype mutations", () => {
     render(<OperationsPrototype />);
     fireEvent.click(screen.getByRole("button", { name: "Finance" }));

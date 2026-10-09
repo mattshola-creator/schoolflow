@@ -4,7 +4,6 @@ import { OperationsPrototype } from "@/components/px3/operations-prototype";
 import { SkipLink } from "@/components/ui/skip-link";
 
 const items = [
-  { href: "/px3-operations", label: "Home", group: "Home" },
   { href: "/px3-operations#students", label: "Students", group: "People" },
   {
     href: "/px3-operations#assessment",

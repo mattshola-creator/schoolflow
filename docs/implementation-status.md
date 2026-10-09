@@ -1,6 +1,6 @@
 # SchoolFlow Implementation Status
 
-Last updated: 1 October 2026
+Last updated: 9 October 2026
 
 ## Product Experience 2.0 — PX1 production closeout
 
@@ -39,46 +39,17 @@ M13 Hardening & Pilot remains open for credentialed backup/storage evidence,
 off-site retention, non-production restoration, representative human UAT and
 multi-school context verification. PX1 closeout does not satisfy those gates.
 
-## Product Experience 2.0 — PX2 prototype
+## Product Experience 2.0 — PX2 production closeout
 
-Prototype Pack A is implemented on `feat/px2-public-saas-hub` in draft PR #93
-and remains isolated from production pending founder visual review. The public
-prototype covers the homepage, product, solutions, modules, non-binding plan
-comparison, synthetic tour entry, security/trust, support placeholders and a
-non-persistent onboarding walkthrough.
+**PX2 — Public SaaS Hub / Prototype Pack A: Completed — Deployed — Production-Verified (9 October 2026).** Founder visual acceptance, functional acceptance and controlled release authorization were explicitly granted. PR #93 was squash-merged into main at `7438194fc5ce471c3d4441393a9cad985ab800af`. Netlify production deployment `6ac90a1fd2e77d000825ea36` is Ready, published, and matches that exact commit. The Next.js plugin succeeded; enhanced secret scanning inspected 389 files with zero matches. The production health endpoint reported `ok` and Supabase connected.
 
-Platform Super Admin remains separate from Organization Owner. No platform
-console, credentials, impersonation, live demo tenant, Supabase change,
-entitlement change or operational-module migration is included. The local gate
-passed formatting, zero-warning lint, strict TypeScript, 316 tests across 71
-files and the optimized production build.
+The founder-supplied final production smoke-test report records PASS for public homepage, Product, Solutions, Modules, Plans, synthetic Tour, Security, Support and non-persistent Get Started onboarding. Protected-route redirects, secure synthetic-account login, session persistence, logout, password-recovery navigation, authenticated dashboard and representative available modules passed. Direct access to disabled Attendance, Teaching, Finance, Assessments and Management routes preserved entitlement denials. No production records or configuration were changed. The synthetic `test@schoolflow.com` account was used; permanent owner identity was not independently exercised.
 
-Netlify reports the PR preview Ready at the exact PR revision and protects all
-non-production deploys with team SSO. GitHub CI retains one expected non-zero
-audit result for the founder-approved, unsuppressed development-only `braces`
-advisory (GHSA-vfj7-8cjw-p6xm). PX2 introduces no dependency change and does
-not broaden that exception. PX2 must not merge, and PX3/Prototype Packs B–E
-must not begin, before explicit founder approval.
+PX2 refinement included accessible independently scrollable public mobile navigation, reduced header/hero density, customer-facing language, module and plan explanations, seven synthetic tour perspectives, and clearer four-step non-persistent onboarding. The suspected repeated authenticated drawer items were not reproduced; focused tests verified unique entries. Mobile acceptance relied on founder captures and automated 320–430px responsive coverage because the final cloud browser had a fixed desktop viewport. The accepted PX1 shell was preserved.
 
-Founder refinement is implemented on the same draft PR. The confirmed public
-mobile-menu gap is replaced with an accessible viewport-height drawer with
-independent scrolling, body scroll locking, focus containment/restoration,
-Escape and backdrop dismissal, active-route indication and 44px controls.
-Public copy, hero density, module explanations, guided-tour roles, plan cards
-and the non-persistent onboarding walkthrough are refined for customer clarity
-and small screens. The reported repeated authenticated navigation entries were
-not reproduced: PX2 does not change the accepted PX1 drawer, its source renders
-one navigation tree, and regression coverage asserts each authorized and
-unavailable entry appears exactly once at a short mobile viewport. PR #93
-remains draft and unmerged pending founder acceptance.
+Quality evidence: 316 tests across 71 files passed; formatting, zero-warning lint, strict TypeScript and production build passed; production dependency audit reported zero known vulnerabilities. The previously approved development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`) remains visible and unsuppressed in the full audit; it is absent from the production dependency tree. Commercial plans remain non-binding, legal copy requires founder approval, and live interactive demo/persona switching remains deferred to PX7.
 
-Founder-supplied post-refinement mobile captures verify the public homepage,
-Product page, Modules page, public navigation drawer and authenticated
-organization dashboard on a real phone presentation. The authenticated drawer
-shows a single ordered module sequence; the earlier apparent repetition is
-therefore classified as a scrolling/long-capture artifact rather than a PX1 or
-PX2 rendering defect. Netlify collaboration controls visible at the bottom of
-the captures remain external preview infrastructure.
+**Next:** PX3 — Prototype Pack B (School Operations), according to `docs/px-migration-plan.md` and `docs/px-prototype-plan.md`. Build representative synthetic, feature-isolated operational UX prototypes and obtain founder review; do not undertake PX6 broad operational migration. **M13 Hardening & Pilot remains open** for backup/restore, off-site evidence, representative human UAT and multi-school verification.
 
 ## Current milestone
 

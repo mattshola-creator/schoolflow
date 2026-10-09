@@ -88,9 +88,27 @@ migration/demo behavior deferred to PX6/PX7. This founder acceptance is distinct
 from automated verification and does not claim an independent Work-browser
 capture of the Netlify-SSO-protected final preview.
 
-**PX3 release state:** Founder acceptance — **ACCEPTED WITH DOCUMENTED
-LIMITATIONS**. PR #95 remains subject to the controlled merge, deployment and
-production-verification gates. M13 remains open.
+**PX3 — COMPLETED — DEPLOYED — PRODUCTION-VERIFIED (9 October 2026).** Founder
+acceptance — **ACCEPTED WITH DOCUMENTED LIMITATIONS**. PR #95 was squash-merged
+from `feat/px3-school-operations`; the final feature revision was
+`8d5d41055fe94d2b6c220becf2a0e79722d8c680` and the resulting main revision is
+`b036ad61e7f27b5acbef3d4a123ebcdec6e50a6f`. GitHub Actions run #230 passed
+frozen installation, formatting, zero-warning lint, strict TypeScript, 327 tests
+across 72 files and the production build; its overall status remains non-green
+only for the accepted, unsuppressed development-only `braces@3.0.3` advisory
+(`GHSA-vfj7-8cjw-p6xm`, no patched npm release). Production dependencies have
+zero known vulnerabilities and the local tracked-secret scan passed.
+
+Netlify production deployment `6ac963025ecf220008c33728` is Ready, uses the
+exact main revision, reports Next.js plugin success and scanned 397 files with
+zero secret matches. Public PX1/PX2 pages, `/px3-operations`, protected-route
+redirection and `/api/health` passed non-destructive production smoke checks;
+health reported `ok` with Supabase connected. PX3 displayed coherent Academy
+scope, Teacher perspective and exact-decimal Finance data, while Northgate and
+Platform Console remained unavailable. Authenticated production module and
+tenant-isolation regression was not independently rerun because no founder
+session was supplied; unchanged architecture and automated coverage provide the
+available evidence. M13 remains open.
 
 ## Current milestone
 

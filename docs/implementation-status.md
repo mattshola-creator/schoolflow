@@ -51,6 +51,16 @@ Quality evidence: 316 tests across 71 files passed; formatting, zero-warning lin
 
 **Next:** PX3 — Prototype Pack B (School Operations), according to `docs/px-migration-plan.md` and `docs/px-prototype-plan.md`. Build representative synthetic, feature-isolated operational UX prototypes and obtain founder review; do not undertake PX6 broad operational migration. **M13 Hardening & Pilot remains open** for backup/restore, off-site evidence, representative human UAT and multi-school verification.
 
+## Product Experience 2.0 — PX3 prototype
+
+Prototype Pack B is in development on `feat/px3-school-operations`. The bounded
+`/px3-operations` route demonstrates Organization/School Home, My Day, Action
+Center, Administration, Students/Student 360, Admissions/Applicant 360,
+Teaching/Attendance, Finance and Assessment for seven representative staff
+perspectives. It uses deterministic synthetic data for two authorized schools
+and one inaccessible school. No production service, schema, entitlement or
+operational route is changed; full operational migration remains PX6.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

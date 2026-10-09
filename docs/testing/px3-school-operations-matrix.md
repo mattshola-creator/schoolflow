@@ -154,3 +154,24 @@ Platform Super Admin remains separate from Organization Owner.
 - Prototype actions do not write data.
 - Production closeout still requires the protected merge, exact-revision
   deployment and non-destructive production verification.
+
+## Production closeout
+
+| Check                      | Evidence                                                                 | Status     |
+| -------------------------- | ------------------------------------------------------------------------ | ---------- |
+| Founder acceptance         | Accepted feature revision with documented prototype limitations          | PASS       |
+| Controlled merge           | PR #95 squash merge `b036ad61e7f27b5acbef3d4a123ebcdec6e50a6f`           | PASS       |
+| Production deployment      | Netlify `6ac963025ecf220008c33728`, Ready, exact merge revision          | PASS       |
+| Next.js deployment plugin  | Netlify plugin state `success`                                           | PASS       |
+| Enhanced secret scan       | 397 files, zero matches                                                  | PASS       |
+| Public/PX2 regression      | Home, Product, Solutions, Modules, Plans, Tour, Security, Support, setup | PASS       |
+| PX3 route                  | `/px3-operations` returned 200 and rendered the accepted prototype       | PASS       |
+| Scoped PX3 interaction     | Academy + Teacher + Finance showed scoped context and exact values       | PASS       |
+| Protected-route behavior   | Anonymous `/dashboard` redirected to sign-in                             | PASS       |
+| Health                     | `status: ok`; Supabase `connected`                                       | PASS       |
+| Authenticated module smoke | Founder-authenticated session was not available                          | NOT TESTED |
+
+The production prototype remains synthetic and read-only. Production services,
+schema, RLS, authentication, permissions, entitlements and school data were not
+changed. Perspective selection remains presentation-only; Northgate remains
+disabled and Platform Console remains separately authorized.

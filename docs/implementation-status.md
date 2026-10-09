@@ -50,7 +50,7 @@ non-persistent onboarding walkthrough.
 Platform Super Admin remains separate from Organization Owner. No platform
 console, credentials, impersonation, live demo tenant, Supabase change,
 entitlement change or operational-module migration is included. The local gate
-passed formatting, zero-warning lint, strict TypeScript, 307 tests across 70
+passed formatting, zero-warning lint, strict TypeScript, 316 tests across 71
 files and the optimized production build.
 
 Netlify reports the PR preview Ready at the exact PR revision and protects all
@@ -59,6 +59,18 @@ audit result for the founder-approved, unsuppressed development-only `braces`
 advisory (GHSA-vfj7-8cjw-p6xm). PX2 introduces no dependency change and does
 not broaden that exception. PX2 must not merge, and PX3/Prototype Packs B–E
 must not begin, before explicit founder approval.
+
+Founder refinement is implemented on the same draft PR. The confirmed public
+mobile-menu gap is replaced with an accessible viewport-height drawer with
+independent scrolling, body scroll locking, focus containment/restoration,
+Escape and backdrop dismissal, active-route indication and 44px controls.
+Public copy, hero density, module explanations, guided-tour roles, plan cards
+and the non-persistent onboarding walkthrough are refined for customer clarity
+and small screens. The reported repeated authenticated navigation entries were
+not reproduced: PX2 does not change the accepted PX1 drawer, its source renders
+one navigation tree, and regression coverage asserts each authorized and
+unavailable entry appears exactly once at a short mobile viewport. PR #93
+remains draft and unmerged pending founder acceptance.
 
 ## Current milestone
 

@@ -7,23 +7,23 @@ import {
 const trust = [
   [
     ShieldCheck,
-    "Tenant isolation",
-    "Organization and school boundaries are enforced by application authorization and database row-level security.",
+    "School and organization separation",
+    "SchoolFlow checks both the signed-in person and the school context before showing protected information.",
   ],
   [
     KeyRound,
-    "Permission and entitlement checks",
-    "A visible menu never replaces server authorization. Permissions, plans and feature availability remain authoritative.",
+    "Permission-based access",
+    "Roles, approved responsibilities and enabled modules determine what each person can see and do.",
   ],
   [
     DatabaseZap,
-    "Integrity-first workflows",
-    "Finance, results and high-impact transitions use server-side validation, constraints, audit evidence and controlled state changes.",
+    "Accurate, accountable processes",
+    "Finance, results and other important actions use validation, controlled approvals and audit history.",
   ],
   [
     Eye,
-    "Data minimization",
-    "Parents, students, staff and management see only the resources appropriate to their identity, relationship and scope.",
+    "Responsible information access",
+    "Parents, students, staff and leaders see only the information appropriate to their relationship and responsibilities.",
   ],
 ] as const;
 export default function SecurityPage() {

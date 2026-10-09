@@ -19,6 +19,9 @@ const modules = [
 
 export function OnboardingPrototype() {
   const [step, setStep] = useState(0);
+  const [organizationName, setOrganizationName] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+  const [error, setError] = useState("");
   const [selected, setSelected] = useState<string[]>([
     "Students & staff",
     "Academic setup",
@@ -27,6 +30,18 @@ export function OnboardingPrototype() {
     setSelected((value) =>
       value.includes(item) ? value.filter((x) => x !== item) : [...value, item],
     );
+  function continueToNextStep() {
+    if (step === 0 && !organizationName.trim()) {
+      setError("Enter a fictional organization name to continue.");
+      return;
+    }
+    if (step === 1 && !schoolName.trim()) {
+      setError("Enter a fictional school name to continue.");
+      return;
+    }
+    setError("");
+    setStep((current) => Math.min(steps.length - 1, current + 1));
+  }
   return (
     <section className="bg-background min-h-[calc(100vh-4.5rem)]">
       <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16">
@@ -43,7 +58,7 @@ export function OnboardingPrototype() {
           </p>
         </div>
         <ol
-          className="mt-10 grid grid-cols-4 gap-2"
+          className="mt-8 grid grid-cols-4 gap-2 sm:mt-10"
           aria-label="Onboarding progress"
         >
           {steps.map((label, index) => (
@@ -52,7 +67,7 @@ export function OnboardingPrototype() {
                 className={`block h-1.5 rounded-full ${index <= step ? "bg-brand" : "bg-border"}`}
               />
               <span
-                className={`mt-2 hidden text-xs font-bold sm:block ${index === step ? "text-brand" : "text-muted-foreground"}`}
+                className={`mt-2 block text-[0.65rem] leading-4 font-bold sm:text-xs ${index === step ? "text-brand" : "text-muted-foreground"}`}
               >
                 {index + 1}. {label}
               </span>
@@ -70,9 +85,18 @@ export function OnboardingPrototype() {
                   label="Organization name"
                   htmlFor="prototype-org"
                   description="Use fictional information for this review."
+                  required
+                  error={step === 0 ? error : undefined}
                 >
                   <TextInput
                     id="prototype-org"
+                    value={organizationName}
+                    onChange={(event) => {
+                      setOrganizationName(event.target.value);
+                      if (error) setError("");
+                    }}
+                    required
+                    aria-describedby={error ? "prototype-org-error" : undefined}
                     placeholder="Unity Learning Group"
                   />
                 </FormField>
@@ -90,9 +114,23 @@ export function OnboardingPrototype() {
             <div>
               <h2 className="text-2xl font-bold">Describe the first school</h2>
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                <FormField label="School name" htmlFor="prototype-school">
+                <FormField
+                  label="School name"
+                  htmlFor="prototype-school"
+                  required
+                  error={step === 1 ? error : undefined}
+                >
                   <TextInput
                     id="prototype-school"
+                    value={schoolName}
+                    onChange={(event) => {
+                      setSchoolName(event.target.value);
+                      if (error) setError("");
+                    }}
+                    required
+                    aria-describedby={
+                      error ? "prototype-school-error" : undefined
+                    }
                     placeholder="Unity Primary School"
                   />
                 </FormField>
@@ -173,16 +211,21 @@ export function OnboardingPrototype() {
               Back
             </Button>
             {step < steps.length - 1 ? (
-              <Button
-                onClick={() =>
-                  setStep((x) => Math.min(steps.length - 1, x + 1))
-                }
-              >
+              <Button onClick={continueToNextStep}>
                 Continue
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Button>
             ) : (
-              <Button onClick={() => setStep(0)}>Start over</Button>
+              <Button
+                onClick={() => {
+                  setStep(0);
+                  setOrganizationName("");
+                  setSchoolName("");
+                  setError("");
+                }}
+              >
+                Start over
+              </Button>
             )}
           </div>
         </div>

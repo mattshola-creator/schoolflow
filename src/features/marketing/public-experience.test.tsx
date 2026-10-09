@@ -10,7 +10,10 @@ import {
 
 describe("PX2 public SaaS hub", () => {
   it("publishes the approved public navigation without privileged routes", () => {
-    const shell = readFileSync("src/components/marketing-shell.tsx", "utf8");
+    const shell = [
+      readFileSync("src/components/marketing-shell.tsx", "utf8"),
+      readFileSync("src/components/public-navigation.tsx", "utf8"),
+    ].join("\n");
 
     for (const route of [
       "/product",
@@ -44,8 +47,12 @@ describe("PX2 public SaaS hub", () => {
     expect(home).toContain("Synthetic preview");
     expect(demo).toContain("fictional");
     expect(demo).toMatch(/does not create demo\s+credentials/);
-    expect(demoPersonas).toContain("Director / Organization Owner");
-    expect(demoPersonas).not.toContain("Platform Super Admin");
+    expect(demoPersonas.map((persona) => persona.title)).toContain(
+      "Director / Organization Owner",
+    );
+    expect(demoPersonas.map((persona) => persona.title)).not.toContain(
+      "Platform Super Admin",
+    );
   });
 
   it("represents the implemented module surface without changing entitlements", () => {
@@ -74,8 +81,18 @@ describe("PX2 public SaaS hub", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(
+      screen.getByText(/enter a fictional organization name/i),
+    ).toBeVisible();
+    fireEvent.change(screen.getByLabelText(/organization name/i), {
+      target: { value: "Unity Learning Group" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(
       screen.getByRole("heading", { name: /describe the first school/i }),
     ).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/school name/i), {
+      target: { value: "Unity Primary School" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
 

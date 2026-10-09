@@ -1,87 +1,43 @@
 import Link from "next/link";
-import { Building2, ChevronDown, Menu } from "lucide-react";
+import { Building2, ChevronDown } from "lucide-react";
+import {
+  DesktopPublicNavigation,
+  MobilePublicNavigation,
+} from "@/components/public-navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { SkipLink } from "@/components/ui/skip-link";
-
-const navigation = [
-  ["Product", "/product"],
-  ["Solutions", "/solutions"],
-  ["Modules", "/modules"],
-  ["Plans", "/plans"],
-  ["Tour", "/demo"],
-  ["Security", "/security"],
-] as const;
 
 export function MarketingShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-white text-slate-950">
       <SkipLink />
       <header className="border-border/80 sticky top-0 z-40 border-b bg-white/92 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
+        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:min-h-18 sm:px-8">
           <Link
             href="/"
             className="flex min-w-0 items-center gap-3"
             aria-label="SchoolFlow public home"
           >
-            <span className="bg-brand grid size-10 shrink-0 place-items-center rounded-xl text-white shadow-sm">
+            <span className="bg-brand grid size-9 shrink-0 place-items-center rounded-xl text-white shadow-sm sm:size-10">
               <Building2 aria-hidden="true" className="size-5" />
             </span>
-            <span>
-              <span className="block text-lg font-bold tracking-tight">
+            <span className="min-w-0">
+              <span className="block text-base font-bold tracking-tight sm:text-lg">
                 SchoolFlow
               </span>
-              <span className="text-muted-foreground block text-[0.67rem] font-bold tracking-[0.12em] uppercase">
+              <span className="text-muted-foreground hidden text-[0.67rem] font-bold tracking-[0.12em] uppercase min-[380px]:block">
                 One platform · every school
               </span>
             </span>
           </Link>
-          <nav
-            className="hidden items-center gap-1 lg:flex"
-            aria-label="Public navigation"
-          >
-            {navigation.map(([label, href]) => (
-              <Link
-                key={href}
-                href={href}
-                className="hover:bg-surface-subtle rounded-lg px-3 py-2 text-sm font-semibold text-slate-700"
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
+          <DesktopPublicNavigation />
           <div className="hidden items-center gap-2 sm:flex">
             <ButtonLink href="/login" variant="quiet">
               Sign in
             </ButtonLink>
             <ButtonLink href="/get-started">Explore onboarding</ButtonLink>
           </div>
-          <details className="group relative lg:hidden">
-            <summary
-              className="border-border hover:bg-surface-subtle flex size-11 cursor-pointer list-none items-center justify-center rounded-xl border"
-              aria-label="Open public navigation"
-            >
-              <Menu aria-hidden="true" className="size-5" />
-            </summary>
-            <div className="border-border absolute right-0 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border bg-white p-3 shadow-xl">
-              <div className="grid gap-1">
-                {navigation.map(([label, href]) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="hover:bg-brand-soft rounded-xl px-3 py-3 font-semibold"
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-              <div className="border-border mt-3 grid gap-2 border-t pt-3">
-                <ButtonLink href="/login" variant="secondary">
-                  Sign in
-                </ButtonLink>
-                <ButtonLink href="/get-started">Explore onboarding</ButtonLink>
-              </div>
-            </div>
-          </details>
+          <MobilePublicNavigation />
         </div>
       </header>
       <main id="main-content">{children}</main>
@@ -90,7 +46,7 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
           <div>
             <p className="text-lg font-bold text-white">SchoolFlow</p>
             <p className="mt-3 max-w-md text-sm leading-6">
-              A modular, tenant-safe operating platform for single schools and
+              One connected operating platform for single schools and
               multi-school organizations.
             </p>
           </div>
@@ -138,12 +94,12 @@ export function MarketingPageHeader({
 }) {
   return (
     <section className="bg-background border-border border-b">
-      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16 lg:py-18">
         <MarketingEyebrow>{eyebrow}</MarketingEyebrow>
-        <h1 className="max-w-4xl text-4xl font-bold tracking-[-0.04em] text-balance sm:text-6xl">
+        <h1 className="max-w-4xl text-[2.5rem] leading-[1.05] font-bold tracking-[-0.04em] text-balance sm:text-5xl lg:text-6xl">
           {title}
         </h1>
-        <p className="text-muted-foreground mt-6 max-w-3xl text-lg leading-8">
+        <p className="text-muted-foreground mt-5 max-w-3xl text-base leading-7 sm:text-lg sm:leading-8">
           {description}
         </p>
       </div>

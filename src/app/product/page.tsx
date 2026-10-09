@@ -11,7 +11,7 @@ export default function ProductPage() {
       <MarketingPageHeader
         eyebrow="The product"
         title="One source of truth, shaped around how schools actually work."
-        description="SchoolFlow connects operational workflows without flattening different schools, responsibilities or academic structures into a generic template."
+        description="SchoolFlow connects the work your teams already do while respecting each school's structure, calendar and responsibilities."
       />
       <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
         <div className="grid gap-5 md:grid-cols-3">
@@ -23,13 +23,13 @@ export default function ProductPage() {
             ],
             [
               Workflow,
-              "Server-authoritative workflows",
-              "Critical transitions remain validated, transactional, auditable and protected by the established domain services.",
+              "Reliable school processes",
+              "Important actions use secure approvals, clear status changes and accurate records your teams can trust.",
             ],
             [
               ShieldCheck,
-              "Visibility with boundaries",
-              "Identity, relationship, school scope, permissions and entitlements determine what each person may see and do.",
+              "The right information for the right people",
+              "Owners, staff, families and learners see only the work and records appropriate to their role and school.",
             ],
           ].map(([Icon, title, text]) => (
             <article
@@ -52,10 +52,9 @@ export default function ProductPage() {
             From first enquiry to long-term school history.
           </h2>
           <p className="text-muted-foreground mt-4 max-w-3xl leading-7">
-            SchoolFlow preserves the relationships between applicants, students,
-            guardians, enrollment, attendance, finance, assessment,
-            communication and reporting—while keeping every action within the
-            correct school context.
+            SchoolFlow keeps applicants, learners, guardians, enrollment,
+            attendance, finance, results and communication connected, so teams
+            spend less time reconciling separate records.
           </p>
           <ButtonLink href="/modules" className="mt-7">
             Explore modules <ArrowRight aria-hidden="true" className="size-4" />

@@ -109,7 +109,7 @@ describe("WorkspaceNavigation", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it.each([320, 375, 390])(
+  it.each([320, 375, 390, 430])(
     "keeps a long account identity bounded at %ipx",
     (width) => {
       Object.defineProperty(window, "innerWidth", {
@@ -139,6 +139,52 @@ describe("WorkspaceNavigation", () => {
       expect(identity).not.toHaveClass("break-all");
     },
   );
+
+  it("renders each authorized and unavailable entry once in a short mobile drawer", () => {
+    Object.defineProperty(window, "innerWidth", {
+      configurable: true,
+      value: 390,
+    });
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 568,
+    });
+    const comprehensiveItems = [
+      { href: "/attendance", label: "Attendance", group: "Operations" },
+      { href: "/teaching", label: "Teaching", group: "Academics" },
+      { href: "/assessment", label: "Assessment", group: "Academics" },
+      { href: "/finance", label: "Finance", group: "Operations" },
+      { href: "/audit", label: "Audit", group: "Administration" },
+      {
+        href: "/administration",
+        label: "Administration",
+        group: "Administration",
+      },
+    ];
+
+    render(
+      <WorkspaceNavigation
+        variant="mobile"
+        items={comprehensiveItems}
+        unavailableItems={[
+          { label: "Advanced analytics", reason: "Not activated" },
+        ]}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open workspace navigation" }),
+    );
+
+    for (const item of comprehensiveItems) {
+      expect(screen.getAllByRole("link", { name: item.label })).toHaveLength(1);
+    }
+    expect(screen.getAllByText("Unavailable")).toHaveLength(1);
+    expect(screen.getAllByText("Advanced analytics")).toHaveLength(1);
+    expect(screen.getByTestId("mobile-navigation-scroll")).toHaveClass(
+      "overflow-y-auto",
+      "overscroll-contain",
+    );
+  });
 
   it("keeps keyboard focus inside the open mobile dialog", () => {
     render(<WorkspaceNavigation variant="mobile" items={items} />);

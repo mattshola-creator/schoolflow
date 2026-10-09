@@ -26,7 +26,7 @@ export default function PlansPage() {
           {prototypePlans.map((plan) => (
             <article
               key={plan.name}
-              className={`rounded-3xl border p-7 ${"featured" in plan && plan.featured ? "border-brand bg-brand-soft shadow-[var(--shadow-md)]" : "border-border bg-white"}`}
+              className={`flex h-full flex-col rounded-3xl border p-7 ${"featured" in plan && plan.featured ? "border-brand bg-brand-soft shadow-[var(--shadow-md)]" : "border-border bg-white"}`}
             >
               <p className="text-brand text-xs font-bold tracking-wider uppercase">
                 Prototype plan
@@ -55,7 +55,7 @@ export default function PlansPage() {
                 variant={
                   "featured" in plan && plan.featured ? "primary" : "secondary"
                 }
-                className="mt-6 w-full"
+                className="mt-auto w-full"
               >
                 Explore this structure
               </ButtonLink>

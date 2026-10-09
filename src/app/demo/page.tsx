@@ -12,7 +12,7 @@ export default function DemoPage() {
       <MarketingPageHeader
         eyebrow="Guided product tour"
         title="See SchoolFlow through the people who use it."
-        description="PX2 provides a safe tour entry and synthetic persona framing. Live perspective switching and the resettable Demo & Training Organization remain scheduled for PX7."
+        description="Explore what SchoolFlow helps each person accomplish. Every example on this page is illustrative and uses no real school data."
       />
       <section className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div>
@@ -20,13 +20,18 @@ export default function DemoPage() {
           <div className="mt-5 grid gap-3">
             {demoPersonas.map((persona, index) => (
               <div
-                key={persona}
+                key={persona.title}
                 className="border-border flex items-center gap-4 rounded-2xl border bg-white p-4"
               >
                 <span className="bg-brand-soft text-brand grid size-9 place-items-center rounded-xl text-sm font-bold">
                   {index + 1}
                 </span>
-                <span className="font-semibold">{persona}</span>
+                <span className="min-w-0">
+                  <span className="block font-semibold">{persona.title}</span>
+                  <span className="mt-1 block text-sm leading-6 text-slate-500">
+                    {persona.description}
+                  </span>
+                </span>
               </div>
             ))}
           </div>
@@ -39,10 +44,10 @@ export default function DemoPage() {
             A coherent synthetic school group
           </h2>
           <p className="mt-4 leading-8 text-slate-300">
-            The approved Demo & Training Organization will contain fictional
+            A future Demo & Training Organization will contain fictional
             Nursery/Primary and Secondary schools with connected, resettable
             data. It will never copy a real tenant or make persona switching
-            available to production users.
+            available to ordinary production users.
           </p>
           <div className="mt-7 rounded-2xl bg-white/8 p-5 text-sm text-slate-200">
             <strong>Prototype boundary:</strong> this page does not create demo

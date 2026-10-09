@@ -15,18 +15,18 @@ export default function Home() {
   return (
     <MarketingShell>
       <section className="relative overflow-hidden bg-[radial-gradient(circle_at_85%_15%,var(--brand-soft),transparent_34%),linear-gradient(180deg,#fff_0%,#f5f7f7_100%)]">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-11 sm:px-8 sm:py-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-14 lg:py-20">
           <div>
             <MarketingEyebrow>Clarity for every school</MarketingEyebrow>
-            <h1 className="max-w-3xl text-5xl leading-[1.02] font-bold tracking-[-0.05em] text-balance sm:text-7xl">
+            <h1 className="max-w-3xl text-[2.65rem] leading-[1.02] font-bold tracking-[-0.05em] text-balance sm:text-6xl lg:text-[4.2rem]">
               One calm operating system for your whole school group.
             </h1>
-            <p className="text-muted-foreground mt-7 max-w-2xl text-lg leading-8 sm:text-xl">
+            <p className="text-muted-foreground mt-5 max-w-2xl text-base leading-7 sm:mt-7 sm:text-xl sm:leading-8">
               Bring people, academics, operations and insight into one secure
               platform—without forcing every school into the same way of
               working.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <ButtonLink href="/get-started" size="large">
                 Explore SchoolFlow{" "}
                 <ArrowRight aria-hidden="true" className="size-4" />
@@ -40,7 +40,7 @@ export default function Home() {
               Prototype experience · no pricing commitment · no production data
             </p>
           </div>
-          <div className="border-border rounded-[2rem] border bg-white p-3 shadow-[var(--shadow-lg)]">
+          <div className="border-border mx-auto w-full max-w-xl rounded-[1.75rem] border bg-white p-2.5 shadow-[var(--shadow-lg)] sm:p-3">
             <div className="rounded-[1.45rem] bg-slate-950 p-5 text-white">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -96,8 +96,8 @@ export default function Home() {
           {[
             [
               ShieldCheck,
-              "Tenant-safe by design",
-              "School and organization boundaries stay authoritative.",
+              "Safe separation by design",
+              "Each school keeps the right records, people and responsibilities in view.",
             ],
             [
               Layers3,
@@ -166,10 +166,10 @@ export default function Home() {
             </h2>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {[
-                "School-level context and permissions",
-                "Organization-wide insight only when authorized",
+                "The right information for the right people",
+                "Organization-wide insight for authorized leaders",
                 "Different academic structures per school",
-                "One identity across legitimate responsibilities",
+                "One account across approved responsibilities",
               ].map((x) => (
                 <li className="flex gap-2 text-sm" key={x}>
                   <CheckCircle2

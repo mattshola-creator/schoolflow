@@ -31,6 +31,42 @@ Restricted, Suspended and Reactivated lifecycle language; Platform defaults →
 Organization → School branding inheritance; and three separately reviewable
 routes with shared navigation.
 
+## Founder correction pass
+
+- **Pack C:** Ada is explicitly identified as guardian of both linked learners.
+  Learner switching continues to replace school, class, attendance, Finance,
+  results, notices, messages and documents as one coherent record set.
+- **Pack C Finance:** the guardian retains the full learner-specific ledger.
+  The student presentation is summary-only, omits receipt/payment history and
+  states that visibility does not transfer payment responsibility.
+- **Pack D:** Support Viewer now receives a distinct support dashboard and
+  limited Tenant support view. Lifecycle, plan, entitlement, rollout and
+  privileged-audit navigation and controls are absent rather than merely
+  accompanied by warning text.
+- **Pack E:** notifications are explicitly classified as school-specific,
+  organization-wide or platform. The school notification matches the active
+  Cedarbridge Academy context; organization notifications identify their
+  originating school when relevant.
+- **Shared:** mobile workspace tabs include a swipe cue and edge treatment;
+  active tabs scroll into view, arrow-key focus works, and reduced-motion is
+  honored.
+
+### Student Finance policy decision (deferred)
+
+The production policy still requires founder approval. The three documented
+options are:
+
+1. **No student Finance access** — all fee information remains guardian/staff
+   only.
+2. **Student summary-only access** — show a balance/status summary without
+   receipts, allocation details or payment actions. **PX4 demonstrates this
+   conservative option only.**
+3. **Authorized student detailed access** — permit detailed ledger visibility
+   only under an explicit future policy and the established server-side
+   authorization architecture.
+
+PX4 does not create a setting, permission or persisted policy for any option.
+
 ## Synthetic fixtures
 
 Pack C contains guardian Ada with linked learners Amara Okafor and Musa Ibrahim,
@@ -53,7 +89,28 @@ without database rollback or changes to existing operational routes.
 ## Deferred by design
 
 - Founder acceptance remains pending.
+- The final production policy for student Finance visibility remains pending.
 - PX5 cross-pack visual acceptance is not started.
 - PX6 operational migration and PX7 interactive demo remain separate.
 - Production Platform Console roles, services and branding persistence are not
   implemented by PX4.
+
+## Verification checkpoint
+
+- Draft PR: #97
+- Feature revision: `a03c5625463a6e5ea0fffbd171e83a3007ae2e6a`
+- Netlify preview: `6ac971cfa2618e0007c0096d`, Ready, exact revision
+- Next.js plugin: success
+- Netlify enhanced secret scan: 410 files, zero matches
+- Automated tests: 336 passing across 73 files
+- Formatting, zero-warning lint, strict TypeScript and production build: pass
+- Production dependency audit: zero vulnerabilities
+- Full dependency audit: non-green only for the accepted, unsuppressed
+  development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`)
+- Local tracked-secret scan: pass
+
+The final protected preview is subject to Netlify team SSO. Work-browser
+inspection stalled at that access boundary and was aborted, so desktop, tablet,
+mobile, high-zoom and screen-reader visual acceptance remain **NOT TESTED by
+Work / PENDING FOUNDER ACCEPTANCE**. No unrelated screenshot is substituted as
+evidence.

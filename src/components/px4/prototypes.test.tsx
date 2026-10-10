@@ -54,6 +54,32 @@ describe("PX4 Prototype Packs C–E", () => {
     expect(
       screen.getByText(/Unpublished assessment hidden/i),
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Fees & payments" }));
+    expect(
+      screen.getByText(/Viewing it does not make you responsible/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Payment responsibility stays with your guardian/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Payment history")).not.toBeInTheDocument();
+    expect(screen.queryByText(children.amara.receipt)).not.toBeInTheDocument();
+  });
+
+  it("makes Ada's relationship to both linked learners explicit", () => {
+    render(<FamiliesPrototype />);
+    expect(
+      screen.getByText(
+        /Ada is the authorized guardian of Amara Okafor and Musa Ibrahim/i,
+      ),
+    ).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("combobox", { name: "Linked learner" }), {
+      target: { value: "musa" },
+    });
+    expect(screen.getByText("Ada’s linked learner")).toBeInTheDocument();
+    expect(screen.getAllByText("Musa Ibrahim").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByText("Primary sports day consent"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders explicit unrelated and cross-tenant denial language", () => {
@@ -86,6 +112,17 @@ describe("PX4 Prototype Packs C–E", () => {
       screen.queryByRole("button", { name: "Feature rollout" }),
     ).not.toBeInTheDocument();
     expect(screen.getByText(/Organization Owner denied/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Tenant 360" }));
+    expect(screen.getByText("Approved support view")).toBeInTheDocument();
+    expect(screen.getByText("Approved support history")).toBeInTheDocument();
+    expect(screen.queryByText("Entitlements")).not.toBeInTheDocument();
+    expect(screen.queryByText("Audit timeline")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Restrict tenant" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/cannot activate lifecycle changes/i),
+    ).toBeInTheDocument();
   });
 
   it("keeps all high-impact platform mutations disabled", () => {
@@ -140,6 +177,31 @@ describe("PX4 Prototype Packs C–E", () => {
     ).toBeInTheDocument();
   });
 
+  it("keeps notification scope explicit and aligned with Academy context", () => {
+    render(<ExperiencePrototype />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Notifications & help" }),
+    );
+    expect(screen.getByText(/Scope: Cedarbridge Academy/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Cedarbridge Primary · Teacher/i),
+    ).not.toBeInTheDocument();
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Notification scope preview" }),
+      { target: { value: "organization" } },
+    );
+    expect(
+      screen.getByText(
+        /Scope: Cedarbridge Learning Group · Origin: Cedarbridge Primary School/i,
+      ),
+    ).toBeInTheDocument();
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Notification scope preview" }),
+      { target: { value: "platform" } },
+    );
+    expect(screen.getByText(/Scope: SchoolFlow Platform/i)).toBeInTheDocument();
+  });
+
   it("provides shared pack navigation and accessible workspace controls", () => {
     render(<FamiliesPrototype />);
     expect(
@@ -148,10 +210,21 @@ describe("PX4 Prototype Packs C–E", () => {
     expect(
       screen.getByRole("navigation", { name: "Family workspace" }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/Swipe for more workspaces/i)).toBeInTheDocument();
     expect(
       screen.getAllByRole("button", {
         name: /Home|For You|Attendance|Fees & payments|Published results|Messages & documents/,
       }),
     ).toHaveLength(6);
+  });
+
+  it("supports keyboard movement across workspace navigation", () => {
+    render(<FamiliesPrototype />);
+    const home = screen.getByRole("button", { name: "Home" });
+    const forYou = screen.getByRole("button", { name: "For You" });
+    home.focus();
+    fireEvent.keyDown(home, { key: "ArrowRight" });
+    expect(forYou).toHaveFocus();
+    expect(home).toHaveAttribute("aria-pressed", "true");
   });
 });

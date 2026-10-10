@@ -14,6 +14,7 @@ import {
   PrototypeRibbon,
   Px4Shell,
   SectionHeading,
+  WorkspaceNavigation,
 } from "./shared";
 
 type PlatformView =
@@ -98,22 +99,12 @@ export function PlatformPrototype() {
           </select>
         </label>
       </div>
-      <nav
-        aria-label="Platform workspace"
-        className="my-6 flex max-w-full gap-2 overflow-x-auto pb-2"
-      >
-        {availableViews.map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setView(id)}
-            aria-pressed={view === id}
-            className={`focus-visible:outline-focus-ring min-h-11 shrink-0 rounded-xl px-4 text-sm font-semibold focus-visible:outline-2 ${view === id ? "bg-brand text-white" : "border-border border bg-white text-slate-700"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <WorkspaceNavigation
+        label="Platform workspace"
+        items={availableViews}
+        active={view}
+        onChange={(next) => setView(next as PlatformView)}
+      />
       {view === "dashboard" ? (
         <div className="space-y-6">
           <SectionHeading
@@ -247,9 +238,13 @@ export function PlatformPrototype() {
       {view === "tenant" ? (
         <div className="space-y-5">
           <SectionHeading
-            eyebrow="Tenant 360"
+            eyebrow={supportOnly ? "Approved support view" : "Tenant 360"}
             title={tenant.name}
-            description="Subscription, modules, lifecycle, support, audit and safe diagnostics in one fictional reference view."
+            description={
+              supportOnly
+                ? "Credential-free service health, case history and escalation context only. Lifecycle, subscriptions, entitlements, rollout and privileged audit are excluded."
+                : "Subscription, modules, lifecycle, support, audit and safe diagnostics in one fictional reference view."
+            }
           />
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
@@ -257,26 +252,46 @@ export function PlatformPrototype() {
               value={`${tenant.schools}`}
               detail="Fictional directory"
             />
+            {supportOnly ? (
+              <MetricCard
+                label="Open support cases"
+                value="2"
+                detail="Approved cases assigned to Support"
+              />
+            ) : (
+              <MetricCard
+                label="Enabled modules"
+                value={`${tenant.modules}`}
+                detail={tenant.plan}
+              />
+            )}
             <MetricCard
-              label="Enabled modules"
-              value={`${tenant.modules}`}
-              detail={tenant.plan}
-            />
-            <MetricCard
-              label="Lifecycle"
-              value={tenant.status}
-              detail={lifecycleHelp[tenant.status]}
+              label={supportOnly ? "Service health" : "Lifecycle"}
+              value={supportOnly ? "Operational" : tenant.status}
+              detail={
+                supportOnly
+                  ? "Credential-free availability summary"
+                  : lifecycleHelp[tenant.status]
+              }
               warning={
-                tenant.status === "Restricted" || tenant.status === "Suspended"
+                !supportOnly &&
+                (tenant.status === "Restricted" ||
+                  tenant.status === "Suspended")
               }
             />
             <MetricCard
-              label="Rollout"
-              value={tenant.rollout}
-              detail="Impact preview only"
+              label={supportOnly ? "Escalation" : "Rollout"}
+              value={supportOnly ? "Normal" : tenant.rollout}
+              detail={
+                supportOnly
+                  ? "No privileged logs or secrets available"
+                  : "Impact preview only"
+              }
             />
           </div>
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div
+            className={`grid gap-4 ${supportOnly ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}
+          >
             <SurfaceCard title="Safe diagnostics">
               <Activity aria-hidden="true" className="text-brand size-5" />
               <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -284,33 +299,58 @@ export function PlatformPrototype() {
                 tokens or privileged logs.
               </p>
             </SurfaceCard>
-            <SurfaceCard title="Entitlements">
-              <KeyRound aria-hidden="true" className="text-brand size-5" />
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                Read-only catalog summary. Save and apply remain disabled.
-              </p>
-            </SurfaceCard>
-            <SurfaceCard title="Audit timeline">
-              <RadioTower aria-hidden="true" className="text-brand size-5" />
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                Actor, target, reason, timestamp and resulting state are
-                required.
-              </p>
-            </SurfaceCard>
+            {supportOnly ? (
+              <SurfaceCard title="Approved support history">
+                <ShieldCheck aria-hidden="true" className="text-brand size-5" />
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  Case references, service symptoms and safe escalation notes;
+                  no credentials, secrets, private records or privileged logs.
+                </p>
+              </SurfaceCard>
+            ) : (
+              <>
+                <SurfaceCard title="Entitlements">
+                  <KeyRound aria-hidden="true" className="text-brand size-5" />
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Read-only catalog summary. Save and apply remain disabled.
+                  </p>
+                </SurfaceCard>
+                <SurfaceCard title="Audit timeline">
+                  <RadioTower
+                    aria-hidden="true"
+                    className="text-brand size-5"
+                  />
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Actor, target, reason, timestamp and resulting state are
+                    required.
+                  </p>
+                </SurfaceCard>
+              </>
+            )}
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button disabled>Restrict tenant</Button>
-            <Button disabled variant="secondary">
-              Reactivate tenant
-            </Button>
-            <Button disabled variant="secondary">
-              Apply entitlement changes
-            </Button>
-          </div>
+          {!supportOnly ? (
+            <div className="flex flex-wrap gap-2">
+              <Button disabled>Restrict tenant</Button>
+              <Button disabled variant="secondary">
+                Reactivate tenant
+              </Button>
+              <Button disabled variant="secondary">
+                Apply entitlement changes
+              </Button>
+            </div>
+          ) : null}
           <StatePanel
-            kind="disabled"
-            title="Prototype only — action disabled"
-            description="No production tenant status, subscription, entitlement or data will change."
+            kind={supportOnly ? "unauthorized" : "disabled"}
+            title={
+              supportOnly
+                ? "Privileged platform controls unavailable"
+                : "Prototype only — action disabled"
+            }
+            description={
+              supportOnly
+                ? "Support Viewer cannot activate lifecycle changes, modify plans or entitlements, start rollouts, or open privileged audit details. Selecting another synthetic persona does not grant production authority."
+                : "No production tenant status, subscription, entitlement or data will change."
+            }
           />
         </div>
       ) : null}

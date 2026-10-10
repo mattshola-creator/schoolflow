@@ -25,6 +25,7 @@ import {
   PrototypeRibbon,
   Px4Shell,
   SectionHeading,
+  WorkspaceNavigation,
 } from "./shared";
 
 type View =
@@ -128,22 +129,12 @@ export function FamiliesPrototype() {
           </select>
         </label>
       </div>
-      <nav
-        aria-label="Family workspace"
-        className="my-6 flex max-w-full gap-2 overflow-x-auto pb-2"
-      >
-        {views.map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setView(id)}
-            aria-pressed={view === id}
-            className={`focus-visible:outline-focus-ring min-h-11 shrink-0 rounded-xl px-4 text-sm font-semibold focus-visible:outline-2 ${view === id ? "bg-brand text-white" : "border-border border bg-white text-slate-700"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <WorkspaceNavigation
+        label="Family workspace"
+        items={views}
+        active={view}
+        onChange={(next) => setView(next as View)}
+      />
       {view === "home" || view === "for-you" ? (
         <div className="space-y-6">
           <SectionHeading
@@ -151,7 +142,7 @@ export function FamiliesPrototype() {
             title={view === "for-you" ? "For you right now" : title}
             description={
               persona === "guardian"
-                ? `Everything relevant to ${child.name}, without mixing sibling records.`
+                ? `Ada is the authorized guardian of Amara Okafor and Musa Ibrahim. This view contains only ${child.name}'s records.`
                 : "Your attendance, published results and school updates in clear learner-friendly language."
             }
           />
@@ -162,9 +153,13 @@ export function FamiliesPrototype() {
               detail={`${child.present} of ${child.sessions} sessions`}
             />
             <MetricCard
-              label="Outstanding"
+              label={persona === "guardian" ? "Outstanding" : "Fee status"}
               value={money(balance)}
-              detail="This learner only"
+              detail={
+                persona === "guardian"
+                  ? "Guardian view · this learner only"
+                  : "Summary for your information; payment remains a guardian responsibility"
+              }
               warning={balance > 0}
             />
             <MetricCard
@@ -205,7 +200,12 @@ export function FamiliesPrototype() {
                 )}
               </div>
             </SurfaceCard>
-            <SurfaceCard eyebrow="Linked learners" title={child.name}>
+            <SurfaceCard
+              eyebrow={
+                persona === "guardian" ? "Ada’s linked learner" : "My school"
+              }
+              title={child.name}
+            >
               <p className="font-semibold">{child.school}</p>
               <p className="mt-1 text-sm text-slate-500">{child.className}</p>
               <p className="mt-4 text-sm leading-6 text-slate-600">
@@ -252,38 +252,70 @@ export function FamiliesPrototype() {
         <div className="space-y-5">
           <SectionHeading
             eyebrow="Learner Finance"
-            title={`${child.name}'s fees and payments`}
-            description="Sibling balances remain separate; this is not a family-wide or school-wide ledger."
+            title={
+              persona === "guardian"
+                ? `${child.name}'s fees and payments`
+                : "My school-fee summary"
+            }
+            description={
+              persona === "guardian"
+                ? "Sibling balances remain separate; this is not a family-wide or school-wide ledger."
+                : "This summary helps you understand your school account. Viewing it does not make you responsible for payment."
+            }
           />
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MetricCard
-              label="Billed"
-              value={money(child.billedCents)}
-              detail="Current learner bill"
-            />
-            <MetricCard
-              label="Paid"
-              value={money(child.paidCents)}
-              detail={`Receipt ${child.receipt}`}
-            />
+          <div
+            className={`grid gap-3 ${persona === "guardian" ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+          >
+            {persona === "guardian" ? (
+              <>
+                <MetricCard
+                  label="Billed"
+                  value={money(child.billedCents)}
+                  detail="Current learner bill"
+                />
+                <MetricCard
+                  label="Paid"
+                  value={money(child.paidCents)}
+                  detail={`Receipt ${child.receipt}`}
+                />
+              </>
+            ) : (
+              <MetricCard
+                label="Account visibility"
+                value="Summary only"
+                detail="Detailed transactions remain with authorized guardians and Finance staff"
+              />
+            )}
             <MetricCard
               label="Outstanding"
               value={money(balance)}
-              detail="Current learner balance"
+              detail={
+                persona === "guardian"
+                  ? "Current learner balance"
+                  : "Information only · ask your guardian or school Finance office"
+              }
               warning
             />
           </div>
-          <SurfaceCard title="Payment history">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-semibold">Bank transfer received</p>
-                <p className="text-sm text-slate-500">
-                  {child.receipt} · verified
-                </p>
+          {persona === "guardian" ? (
+            <SurfaceCard title="Payment history">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-semibold">Bank transfer received</p>
+                  <p className="text-sm text-slate-500">
+                    {child.receipt} · verified
+                  </p>
+                </div>
+                <StatusBadge tone="success">Allocated</StatusBadge>
               </div>
-              <StatusBadge tone="success">Allocated</StatusBadge>
-            </div>
-          </SurfaceCard>
+            </SurfaceCard>
+          ) : (
+            <StatePanel
+              kind="setup"
+              title="Payment responsibility stays with your guardian"
+              description="Students can see this conservative summary only. Receipts, allocations and detailed payment history are not shown in this prototype policy."
+            />
+          )}
         </div>
       ) : null}
       {view === "results" ? (

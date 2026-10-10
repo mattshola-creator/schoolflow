@@ -120,6 +120,14 @@ authentication, permissions, entitlements, production data or operational
 routes. Founder acceptance remains pending; PX4 must not merge or deploy to
 production before explicit approval.
 
+The targeted founder-correction pass clarifies Ada's two linked learner
+relationships, demonstrates conservative student summary-only Finance without
+payment responsibility, restricts Platform Support Viewer through conditional
+navigation/content, aligns notifications with explicit school/group/platform
+scope, and improves mobile workspace-tab discoverability. All changes remain
+fictional, local and nonpersistent. The final production student-Finance policy
+is a recorded founder decision; no permission or entitlement was introduced.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

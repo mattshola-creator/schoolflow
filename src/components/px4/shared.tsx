@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { Layers3, ShieldCheck } from "lucide-react";
+import type { KeyboardEvent, ReactNode } from "react";
+import { ChevronRight, Layers3, ShieldCheck } from "lucide-react";
 import { ApplicationShell } from "@/components/application-shell";
 import { StatusBadge } from "@/components/ui/status-badge";
 
@@ -124,6 +124,78 @@ export function PackNavigation({
         );
       })}
     </nav>
+  );
+}
+
+export function WorkspaceNavigation({
+  label,
+  items,
+  active,
+  onChange,
+}: {
+  label: string;
+  items: ReadonlyArray<readonly [string, string]>;
+  active: string;
+  onChange: (value: string) => void;
+}) {
+  const moveFocus = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const direction = event.key === "ArrowRight" ? 1 : -1;
+    const nextIndex = (index + direction + items.length) % items.length;
+    const next =
+      event.currentTarget.parentElement?.querySelectorAll("button")[nextIndex];
+    next?.focus();
+    next?.scrollIntoView?.({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  };
+
+  return (
+    <div className="relative my-6 max-w-full">
+      <p className="mb-1 flex items-center justify-end gap-1 text-xs font-semibold text-slate-500 sm:hidden">
+        Swipe for more workspaces
+        <ChevronRight aria-hidden="true" className="size-4" />
+      </p>
+      <nav
+        aria-label={label}
+        className="flex max-w-full snap-x scrollbar-thin gap-2 overflow-x-auto pr-8 pb-2"
+      >
+        {items.map(([id, itemLabel], index) => (
+          <button
+            key={id}
+            type="button"
+            onClick={(event) => {
+              onChange(id);
+              event.currentTarget.scrollIntoView?.({
+                behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+                  .matches
+                  ? "auto"
+                  : "smooth",
+                block: "nearest",
+                inline: "center",
+              });
+            }}
+            onKeyDown={(event) => moveFocus(event, index)}
+            aria-pressed={active === id}
+            className={`focus-visible:outline-focus-ring min-h-11 shrink-0 snap-start rounded-xl px-4 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 ${active === id ? "bg-brand text-white" : "border-border border bg-white text-slate-700"}`}
+          >
+            {itemLabel}
+          </button>
+        ))}
+      </nav>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 bottom-2 h-11 w-8 bg-gradient-to-l from-slate-50 to-transparent sm:hidden"
+      />
+    </div>
   );
 }
 

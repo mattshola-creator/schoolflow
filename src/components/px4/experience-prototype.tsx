@@ -18,6 +18,7 @@ import {
   PrototypeRibbon,
   Px4Shell,
   SectionHeading,
+  WorkspaceNavigation,
 } from "./shared";
 
 type ExperienceView =
@@ -28,6 +29,9 @@ export function ExperiencePrototype() {
   const [layer, setLayer] = useState<BrandLayer>("school");
   const [query, setQuery] = useState("");
   const [unread, setUnread] = useState(true);
+  const [notificationScope, setNotificationScope] = useState<
+    "school" | "organization" | "platform"
+  >("school");
   const brand = effectiveBrand(layer);
   const results = useMemo(
     () =>
@@ -75,22 +79,12 @@ export function ExperiencePrototype() {
           One coherent interaction language across SchoolFlow.
         </p>
       </div>
-      <nav
-        aria-label="Experience system workspace"
-        className="my-6 flex max-w-full gap-2 overflow-x-auto pb-2"
-      >
-        {views.map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setView(id)}
-            aria-pressed={view === id}
-            className={`focus-visible:outline-focus-ring min-h-11 shrink-0 rounded-xl px-4 text-sm font-semibold focus-visible:outline-2 ${view === id ? "bg-brand text-white" : "border-border border bg-white text-slate-700"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <WorkspaceNavigation
+        label="Experience system workspace"
+        items={views}
+        active={view}
+        onChange={(next) => setView(next as ExperienceView)}
+      />
       {view === "system" ? (
         <div className="space-y-6">
           <SectionHeading
@@ -303,6 +297,24 @@ export function ExperiencePrototype() {
             title="Relevant, scoped and actionable"
             description="Priorities reflect responsibility and school context without exposing message bodies unnecessarily."
           />
+          <label className="block max-w-lg text-sm font-semibold">
+            Notification scope preview
+            <select
+              aria-label="Notification scope preview"
+              value={notificationScope}
+              onChange={(event) => {
+                setNotificationScope(
+                  event.target.value as "school" | "organization" | "platform",
+                );
+                setUnread(true);
+              }}
+              className="border-border mt-1 min-h-11 w-full rounded-lg border bg-white px-3"
+            >
+              <option value="school">School-specific</option>
+              <option value="organization">Organization-wide</option>
+              <option value="platform">Platform</option>
+            </select>
+          </label>
           <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
             <SurfaceCard title="Notification drawer reference">
               <article className="border-border rounded-xl border p-4">
@@ -310,7 +322,13 @@ export function ExperiencePrototype() {
                   <Bell aria-hidden="true" className="text-brand size-5" />
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold">Attendance follow-up</p>
+                      <p className="font-semibold">
+                        {notificationScope === "school"
+                          ? "Attendance follow-up"
+                          : notificationScope === "organization"
+                            ? "Group policy review"
+                            : "Planned service maintenance"}
+                      </p>
                       {unread ? (
                         <StatusBadge tone="warning">Unread</StatusBadge>
                       ) : (
@@ -318,7 +336,11 @@ export function ExperiencePrototype() {
                       )}
                     </div>
                     <p className="mt-1 text-sm text-slate-500">
-                      Cedarbridge Primary · Teacher responsibility
+                      {notificationScope === "school"
+                        ? "Scope: Cedarbridge Academy · Teacher responsibility"
+                        : notificationScope === "organization"
+                          ? "Scope: Cedarbridge Learning Group · Origin: Cedarbridge Primary School"
+                          : "Scope: SchoolFlow Platform · Service information"}
                     </p>
                   </div>
                 </div>

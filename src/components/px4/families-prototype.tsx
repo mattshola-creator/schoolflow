@@ -58,8 +58,14 @@ export function FamiliesPrototype() {
         icon: Bell,
       },
       {
-        title: `${money(balance)} outstanding`,
-        detail: `${child.name}'s learner ledger only`,
+        title:
+          persona === "guardian"
+            ? `${money(balance)} outstanding`
+            : "School-fee information available",
+        detail:
+          persona === "guardian"
+            ? `${child.name}'s learner ledger only`
+            : "Your guardian handles school-fee payments.",
         icon: WalletCards,
       },
       {
@@ -68,7 +74,7 @@ export function FamiliesPrototype() {
         icon: BookOpenCheck,
       },
     ],
-    [balance, child],
+    [balance, child, persona],
   );
 
   return (

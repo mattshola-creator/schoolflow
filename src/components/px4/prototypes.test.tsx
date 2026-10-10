@@ -90,6 +90,32 @@ describe("PX4 Prototype Packs C–E", () => {
     expect(screen.queryByText(children.amara.receipt)).not.toBeInTheDocument();
   });
 
+  it("uses responsibility-safe student Finance notification wording", () => {
+    render(<FamiliesPrototype />);
+    expect(
+      screen.getByText(`${money(12500000)} outstanding`),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("School-fee information available"),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Family persona preview" }),
+      { target: { value: "student" } },
+    );
+
+    expect(
+      screen.getByText("School-fee information available"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Your guardian handles school-fee payments."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(`${money(12500000)} outstanding`),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Payment history")).not.toBeInTheDocument();
+  });
+
   it("makes Ada's relationship to both linked learners explicit", () => {
     render(<FamiliesPrototype />);
     expect(

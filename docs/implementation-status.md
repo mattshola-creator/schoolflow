@@ -136,6 +136,14 @@ diagnostics and activity, and adds measured-overflow guidance to the Pack E
 register. The student Finance production policy remains undecided and no
 production authorization rule was created.
 
+The final closeout-preparation pass makes the student For You Finance notice
+responsibility-neutral while preserving the permitted summary amount and the
+guardian's detailed ledger. Support Viewer and responsive-register component
+contracts remain verified, but independent desktop/mobile preview inspection is
+still NOT TESTED because Netlify Team Protection requires an invited account.
+This limitation is not represented as founder acceptance or production
+verification.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

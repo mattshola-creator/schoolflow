@@ -66,6 +66,10 @@ routes with shared navigation.
   before showing “Swipe to view more columns,” supports left/right keyboard
   scrolling and respects reduced motion. The cue is omitted when all columns
   fit.
+- **Final Finance wording:** the student For You notification reads
+  “School-fee information available” with “Your guardian handles school-fee
+  payments.” The guardian's amount-led notification and detailed ledger remain
+  unchanged.
 
 ### Student Finance policy decision (deferred)
 
@@ -137,3 +141,15 @@ inspection stalled at that access boundary and was aborted, so desktop, tablet,
 mobile, high-zoom and screen-reader visual acceptance remain **NOT TESTED by
 Work / PENDING FOUNDER ACCEPTANCE**. No unrelated screenshot is substituted as
 evidence.
+
+### Final browser-verification matrix
+
+| Surface                  | Viewport       | Expected                                                         | Actual                                                  | Evidence                                                 |
+| ------------------------ | -------------- | ---------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| Support Viewer dashboard | Desktop/mobile | Support cases, escalations, safe health and pending actions only | Protected preview redirected to Netlify Team Protection | NOT TESTED — component assertions pass                   |
+| Support-safe Tenant 360  | Desktop/mobile | Safe module status, diagnostics, cases and activity only         | Protected preview redirected to Netlify Team Protection | NOT TESTED — component assertions pass                   |
+| Responsive register      | 320px          | Overflow cue visible; contained touch/keyboard scrolling         | Protected preview redirected to Netlify Team Protection | NOT TESTED — overflow/keyboard component assertions pass |
+| Responsive register      | 375px          | Overflow cue visible; no page overflow                           | Protected preview redirected to Netlify Team Protection | NOT TESTED — component contract only                     |
+| Responsive register      | 390px          | Overflow cue visible; no obscured controls                       | Protected preview redirected to Netlify Team Protection | NOT TESTED — component contract only                     |
+| Responsive register      | Tablet         | Cue only if measured overflow exists                             | Protected preview redirected to Netlify Team Protection | NOT TESTED — measured-overflow assertion passes          |
+| Responsive register      | Desktop        | Cue absent when columns fit                                      | Protected preview redirected to Netlify Team Protection | NOT TESTED — no-overflow assertion passes                |

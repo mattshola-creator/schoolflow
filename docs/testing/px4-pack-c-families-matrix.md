@@ -9,6 +9,7 @@
 | Learner-specific Finance  | Separate bills, payments, balances and receipts                                      | PASS                           |
 | Guardian relationship     | Ada explicitly identified as guardian of both cross-school linked learners           | PASS — component tests         |
 | Student Finance boundary  | Summary-only balance; no receipt/history; payment responsibility stays with guardian | PASS — component tests         |
+| Student Finance notice    | Neutral availability wording states that the guardian handles school-fee payments    | PASS — component test          |
 | Distinct sibling balances | Amara NGN 125,000.00; Musa NGN 152,500.00; each equals billed minus paid             | PASS — fixture/component tests |
 | Published-only results    | Published snapshot shown; unpublished assessment explicitly denied                   | PASS                           |
 | Student self-only         | Learner selector disabled and guardian boundary explained                            | PASS                           |

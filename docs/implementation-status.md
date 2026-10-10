@@ -173,6 +173,24 @@ deferred register, and proposed PX6 migration backlog are recorded in the PX5
 documents. PX6 is **not authorized** by this record. M13 remains open for its
 outstanding recovery and representative human-UAT gates.
 
+### PX5 closeout and PX6 planning gate
+
+**PX5 — COMPLETED — FOUNDER ACCEPTED WITH DOCUMENTED LIMITATIONS (10 October
+2026).** The founder accepted review revision
+`8b257542bf6f118ffc4a65677d4823147f7474e5`. PR #98 retained its exact
+11-file documentation-only scope and was squash-merged as
+`43db01684ca000c0f7702a9a53b71a21255f1547`. Netlify correctly did not issue
+an unnecessary production deployment for the documentation-only merge; the
+live application remains Ready on PX4 application revision
+`18d864ad4978637d989d59c5ce288f8ae121f51e`, deploy
+`6aca81e44509ac00081d1eea`.
+
+The proposed PX6 Release Unit 1 plan covers Shell, Home, Context Ribbon and My
+Day, preserving existing server authorization, tenancy and operational
+services. The plan is awaiting founder approval. No PX6 application
+implementation has started. Student Finance, commercial and Platform Operator
+decisions remain deferred, and M13 remains open.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

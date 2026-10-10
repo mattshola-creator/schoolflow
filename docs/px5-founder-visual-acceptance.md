@@ -2,8 +2,8 @@
 
 ## Status
 
-**FOUNDER ACCEPTED — documentation closeout in review. PX6 is not authorized by
-this record.**
+**COMPLETED — FOUNDER ACCEPTED WITH DOCUMENTED LIMITATIONS.** PR #98 was
+squash-merged as `43db01684ca000c0f7702a9a53b71a21255f1547` on 10 October 2026. PX6 application implementation is not authorized by this record.
 
 PX5 reconciles the accepted Product Experience 2.0 direction across the PX1
 foundation and Prototype Packs A–E. It changes documentation only. The
@@ -54,3 +54,17 @@ be independently exercised by Work because its cloud browser returned
 This PX5 branch is documentation-only and can be reverted without an
 application or database rollback. Accepted production prototypes remain
 route-isolated and do not replace operational routes.
+
+## Closeout verification
+
+PR #98 retained the accepted head
+`8b257542bf6f118ffc4a65677d4823147f7474e5` and its 11-file
+documentation-only scope through merge. No application, dependency, schema,
+RLS, authentication, permission, entitlement, tenant-data or deploy
+configuration file changed.
+
+Netlify did not issue a new production deploy for the documentation-only merge.
+The live application therefore remains on verified PX4 application revision
+`18d864ad4978637d989d59c5ce288f8ae121f51e`, production deployment
+`6aca81e44509ac00081d1eea`, Ready. This is expected and avoids an unnecessary
+application redeploy for documentation alone.

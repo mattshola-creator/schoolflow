@@ -110,6 +110,40 @@ tenant-isolation regression was not independently rerun because no founder
 session was supplied; unchanged architecture and automated coverage provide the
 available evidence. M13 remains open.
 
+## Product Experience 2.0 — PX4 prototypes
+
+PX4 Prototype Packs C–E are in development on
+`feat/px4-prototype-packs-cde`. Three isolated synthetic routes implement the
+approved Families, SaaS Platform and Experience System reference experiences.
+They reuse PX1/PX3 patterns and do not change Supabase, schema, RLS,
+authentication, permissions, entitlements, production data or operational
+routes. Founder acceptance remains pending; PX4 must not merge or deploy to
+production before explicit approval.
+
+The targeted founder-correction pass clarifies Ada's two linked learner
+relationships, demonstrates conservative student summary-only Finance without
+payment responsibility, restricts Platform Support Viewer through conditional
+navigation/content, aligns notifications with explicit school/group/platform
+scope, and improves mobile workspace-tab discoverability. All changes remain
+fictional, local and nonpersistent. The final production student-Finance policy
+is a recorded founder decision; no permission or entitlement was introduced.
+
+The final targeted founder pass further differentiates Amara's NGN 125,000.00
+and Musa's NGN 152,500.00 reconciled fictional balances, replaces Support
+Viewer administrative dashboard metrics with support-case and safe-health
+information, limits its Tenant 360 presentation to support-safe module status,
+diagnostics and activity, and adds measured-overflow guidance to the Pack E
+register. The student Finance production policy remains undecided and no
+production authorization rule was created.
+
+The final closeout-preparation pass makes the student For You Finance notice
+responsibility-neutral while preserving the permitted summary amount and the
+guardian's detailed ledger. Support Viewer and responsive-register component
+contracts remain verified, but independent desktop/mobile preview inspection is
+still NOT TESTED because Netlify Team Protection requires an invited account.
+This limitation is not represented as founder acceptance or production
+verification.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

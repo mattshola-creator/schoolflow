@@ -114,16 +114,23 @@ without database rollback or changes to existing operational routes.
 ## Verification checkpoint
 
 - Draft PR: #97
-- Feature revision: `a03c5625463a6e5ea0fffbd171e83a3007ae2e6a`
-- Netlify preview: `6ac971cfa2618e0007c0096d`, Ready, exact revision
+- Targeted-correction implementation revision:
+  `9f36c57c980f41bf77217ba2a22b38e6180c870b`
+- Netlify preview: `6ac9f807e46b8000086f6503`, Ready, exact correction
+  implementation revision
 - Next.js plugin: success
 - Netlify enhanced secret scan: 410 files, zero matches
-- Automated tests: 336 passing across 73 files
+- Automated tests: 342 passing across 73 files
 - Formatting, zero-warning lint, strict TypeScript and production build: pass
 - Production dependency audit: zero vulnerabilities
 - Full dependency audit: non-green only for the accepted, unsuppressed
   development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`)
 - Local tracked-secret scan: pass
+- GitHub Actions run #236 passed frozen installation, formatting, zero-warning
+  lint, strict TypeScript, all 342 tests and the production build. Its overall
+  result is non-green solely because the unsuppressed full-audit step detects
+  the accepted development-only `braces` advisory. The subsequent CI secret
+  scan was skipped after that failure and is not represented as passing.
 
 The final protected preview is subject to Netlify team SSO. Work-browser
 inspection stalled at that access boundary and was aborted, so desktop, tablet,

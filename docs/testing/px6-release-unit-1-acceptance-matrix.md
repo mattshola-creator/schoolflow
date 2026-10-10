@@ -2,7 +2,7 @@
 
 **Release unit:** Shell, Home, Context Ribbon and My Day  
 **Branch:** `feat/px6-ru1-shell-home-my-day`  
-**State:** implementation verification in progress; founder acceptance pending
+**State:** draft PR #100; founder acceptance pending
 
 | Area                   | Required evidence                                                                            | Current result                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -39,6 +39,12 @@
   unsuppressed development-only `braces@3.0.3` advisory
   (`GHSA-vfj7-8cjw-p6xm`); no patched npm version is available.
 - Tracked privileged-secret scan: PASS, zero matches.
+- GitHub Actions run #245: functional steps through production build PASS;
+  overall workflow FAILS at the unsuppressed full dependency audit. The CI
+  secret-scan step was consequently skipped; the identical local scan passed.
+- Netlify protected preview: deployment status check PASS for exact PR head;
+  independent Work-browser rendering NOT TESTED because Team Protection
+  requires an invited Netlify account.
 
 ## Route migration inventory
 

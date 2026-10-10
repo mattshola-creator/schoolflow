@@ -192,6 +192,20 @@ The founder authorized implementation on 10 October 2026. Work is isolated on
 release gate. Student Finance, commercial and Platform Operator decisions
 remain deferred, and M13 remains open.
 
+PX5 closeout was reconciled through documentation-only PR #99, squash merge
+`5a09a82425c1ac9e3cca2a0f9261810484053c58`. Netlify deploy
+`6acab2eb2dbba300081d848e` is Ready at that exact revision, with 417 files
+scanned and zero secret matches. Production health reports `ok` and Supabase
+connected. No application source changed in the PX5 closeout/plan PR.
+
+PX6 Release Unit 1 is implemented for review in draft PR #100. It preserves the
+PX1 shell and server-derived Context Ribbon, migrates `/dashboard` to a real
+authorized operational Home, and adds `/my-day` as a read-only view over
+existing Action Center records. No schema, migration, RLS, authentication,
+permission, entitlement, feature, dependency or production-data change is in
+scope. The protected preview is Ready, while independent Work-browser visual
+inspection is blocked by Netlify Team Protection and is not claimed as passed.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

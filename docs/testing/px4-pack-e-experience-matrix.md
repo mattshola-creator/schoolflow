@@ -18,7 +18,7 @@
 | Register viewport matrix  | 320/375/390px, tablet and desktop interaction inspection                 | NOT TESTED — Team Protection |
 | Production isolation      | Local fixtures and disabled nonpersistent branding concepts              | PASS                         |
 | Work-browser inspection   | Netlify team SSO blocked independent capture                             | NOT TESTED                   |
-| Founder visual inspection | Protected preview                                                        | PENDING FOUNDER ACCEPTANCE   |
+| Founder visual inspection | Founder accepted revision `399b9a442a67d3493518d1deb4a0d30ae86ec5be`     | PASS WITH DOCUMENTED LIMITS  |
 
 Known limitations: no production branding persistence, command execution,
 notification delivery or support integration; high-zoom and screen-reader visual

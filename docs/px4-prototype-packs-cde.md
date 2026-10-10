@@ -108,7 +108,8 @@ without database rollback or changes to existing operational routes.
 
 ## Deferred by design
 
-- Founder acceptance remains pending.
+- Founder acceptance completed at revision
+  `399b9a442a67d3493518d1deb4a0d30ae86ec5be` with documented limitations.
 - The final production policy for student Finance visibility remains pending.
 - PX5 cross-pack visual acceptance is not started.
 - PX6 operational migration and PX7 interactive demo remain separate.
@@ -141,6 +142,21 @@ inspection stalled at that access boundary and was aborted, so desktop, tablet,
 mobile, high-zoom and screen-reader visual acceptance remain **NOT TESTED by
 Work / PENDING FOUNDER ACCEPTANCE**. No unrelated screenshot is substituted as
 evidence.
+
+## Production closeout
+
+PR #97 was squash-merged as
+`18d864ad4978637d989d59c5ce288f8ae121f51e`. Netlify production deployment
+`6aca81e44509ac00081d1eea` is Ready and matches that exact revision. The
+Next.js plugin succeeded and the enhanced secret scan inspected 410 files with
+zero matches. No migration, schema, RLS, authentication, permission,
+entitlement, production-data or operational-route change accompanied PX4.
+
+Independent Work-browser production rendering was blocked with
+`ERR_BLOCKED_BY_CLIENT`; this is retained as an explicit evidence limitation,
+not represented as a passed browser smoke test. The accepted founder visual
+evidence, exact deployment metadata, automated regression evidence and secret
+scan comprise the available closeout record.
 
 ### Final browser-verification matrix
 

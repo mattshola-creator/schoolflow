@@ -12,6 +12,13 @@ export type HomeTask = {
   href: string;
 };
 
+export type OperationalCounts = {
+  tasks: number;
+  approvals: number;
+  notifications: number;
+  urgent: number;
+};
+
 const responsibilityRules = [
   ["finance.view", "Finance"],
   ["admissions.view", "Admissions"],
@@ -52,4 +59,24 @@ export function safeOperationalHref(href: string | null) {
   return href?.startsWith("/") && !href.startsWith("//")
     ? href
     : "/communication";
+}
+
+export function composeOperationalCounts({
+  taskCount,
+  approvalCount,
+  notificationCount,
+  urgentTaskCount,
+}: {
+  taskCount: number | null;
+  approvalCount: number | null;
+  notificationCount: number | null;
+  urgentTaskCount: number | null;
+}): OperationalCounts {
+  const approvals = approvalCount ?? 0;
+  return {
+    tasks: taskCount ?? 0,
+    approvals,
+    notifications: notificationCount ?? 0,
+    urgent: (urgentTaskCount ?? 0) + approvals,
+  };
 }

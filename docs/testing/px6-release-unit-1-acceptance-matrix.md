@@ -7,12 +7,12 @@
 | Area                   | Required evidence                                                                            | Current result                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | Authenticated shell    | Existing responsive shell, drawer, account controls, keyboard and focus tests remain green   | PASS — reused unchanged                                    |
-| Context authority      | Organization/school options originate from active memberships and RLS-visible schools        | PASS — focused option tests                                |
+| Context authority      | Organization/school options originate from active memberships and RLS-visible schools        | PASS automated — selection, cookie and forgery regressions |
 | Organization scope     | Offered only when the existing membership has `all_schools = true`                           | PASS — regression test                                     |
 | School scope           | Restricted membership cannot receive organization-wide scope                                 | PASS — regression test                                     |
 | Academic context       | Existing server-derived session/term ribbon and explicit fallbacks remain unchanged          | PASS — existing ribbon tests                               |
 | Home scope             | School heading and organization-wide heading are explicit and agree with the ribbon context  | PASS — implementation and component tests                  |
-| Home data              | Counts use real RLS-filtered `action_tasks`, `approval_requests` and recipient notifications | PASS — implementation review; preview verification pending |
+| Home data              | Exact totals use real RLS-filtered records while displayed lists remain bounded to 20/type   | PASS automated — empty and >20-record regressions          |
 | Authorization          | Home and My Day require the existing Action Center capability before any operational query   | PASS — evaluator and no-query denial regression            |
 | Entitlements/features  | Module shortcuts and unavailable explanations use `buildWorkspaceAccess`                     | PASS — navigation regression tests                         |
 | Multi-responsibility   | Established permissions produce a combined work-area presentation without changing authority | PASS — focused model test                                  |
@@ -20,8 +20,8 @@
 | Safe links             | Notification links are restricted to application-relative paths                              | PASS — focused security test                               |
 | Empty/error/loading    | Honest route-level loading, empty, denied and retry states exist                             | PASS — component coverage; visual review pending           |
 | Action Center          | Existing create/update/decision services and routes remain unchanged                         | PASS — full regression                                     |
-| Responsive layout      | Cards and work rows use contained responsive layouts at 320–1440px                           | PENDING — protected preview browser matrix                 |
-| Accessibility          | Semantic regions, labelled summaries, minimum-height work rows and visible focus patterns    | PASS automated; manual preview pending                     |
+| Responsive layout      | Cards and work rows use contained responsive layouts at 320–1440px                           | PASS automated; manual browser NOT TESTED                  |
+| Accessibility          | Semantic regions, labelled summaries, minimum-height work rows and visible focus patterns    | PASS automated; manual browser NOT TESTED                  |
 | Cross-tenant isolation | No service-role access or client-side filtering; Supabase RLS remains authoritative          | PASS — architecture and full regression                    |
 | Production isolation   | No schema, policy, dependency, entitlement, flag or production-data mutation                 | PASS changed-file review                                   |
 | Founder review         | Protected preview and screenshots accepted                                                   | PENDING                                                    |
@@ -32,19 +32,36 @@
 - Formatting: PASS.
 - Zero-warning lint: PASS.
 - Strict TypeScript: PASS.
-- Automated suite: 350 tests across 76 files PASS.
+- Automated suite: 357 tests across 76 files PASS.
 - Production build: PASS; `/dashboard` and `/my-day` compile as dynamic routes.
 - Production dependency audit: PASS, zero known vulnerabilities.
 - Full dependency audit: expected non-green result for the documented,
   unsuppressed development-only `braces@3.0.3` advisory
   (`GHSA-vfj7-8cjw-p6xm`); no patched npm version is available.
 - Tracked privileged-secret scan: PASS, zero matches.
-- GitHub Actions run #245: functional steps through production build PASS;
-  overall workflow FAILS at the unsuppressed full dependency audit. The CI
-  secret-scan step was consequently skipped; the identical local scan passed.
+- GitHub Actions: final correction run recorded after publication. The workflow
+  is expected to remain non-green only at the unsuppressed full dependency
+  audit; its separate functional-step results must be reported accurately.
 - Netlify protected preview: deployment status check PASS for exact PR head;
   independent Work-browser rendering NOT TESTED because Team Protection
   requires an invited Netlify account.
+
+## Founder correction evidence
+
+- Summary totals use PostgREST exact counts on the same authorized filters as
+  each bounded list; they no longer derive totals from returned array length.
+- Urgent work is the exact high/urgent task count plus exact pending approval
+  count, matching the presentation model.
+- An active tenant option with `schoolId: null` is created only when the
+  membership explicitly has `all_schools = true`.
+- A restricted membership with zero RLS-visible schools produces no context;
+  it no longer receives organization-wide access as a fallback.
+- Empty school cookies restore an existing authorized organization-wide option
+  exactly. Stale, cross-organization and manufactured selections fall back to
+  the safe default or are rejected by the context-switch action.
+- Home/My Day rejects any mismatch between active tenant context and effective
+  authorization snapshot before calling Supabase. All reads use the caller's
+  authenticated client; no service-role path exists.
 
 ## Route migration inventory
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AuthorizationSnapshot } from "@/features/authorization/evaluator";
 import {
+  composeOperationalCounts,
   deriveResponsibilities,
   safeOperationalHref,
   sortDailyWork,
@@ -64,5 +65,27 @@ describe("operational Home model", () => {
     expect(safeOperationalHref("/students")).toBe("/students");
     expect(safeOperationalHref("https://example.com")).toBe("/communication");
     expect(safeOperationalHref("//example.com")).toBe("/communication");
+  });
+
+  it("keeps exact totals independent of the bounded 20-item lists", () => {
+    expect(
+      composeOperationalCounts({
+        taskCount: 47,
+        approvalCount: 26,
+        notificationCount: 81,
+        urgentTaskCount: 23,
+      }),
+    ).toEqual({ tasks: 47, approvals: 26, notifications: 81, urgent: 49 });
+  });
+
+  it("returns zero totals for empty count results", () => {
+    expect(
+      composeOperationalCounts({
+        taskCount: 0,
+        approvalCount: 0,
+        notificationCount: 0,
+        urgentTaskCount: 0,
+      }),
+    ).toEqual({ tasks: 0, approvals: 0, notifications: 0, urgent: 0 });
   });
 });

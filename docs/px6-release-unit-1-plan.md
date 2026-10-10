@@ -188,8 +188,14 @@ Finance/commercial/platform decision.
 - Existing `all_schools` membership state now exposes an explicit
   organization-wide option. Restricted memberships receive only their
   RLS-visible school options, and the existing school remains the safe default.
+- Restricted zero-school memberships receive no fallback context. Stored
+  organization-wide, school, stale and cross-organization selections are
+  resolved against exact server-built options before context cookies are set.
 - Home presents scope-aware headings, real authorized task/approval/notice
   counts, permission-derived work areas, and capability-evaluated shortcuts.
+- Operational totals use exact RLS-filtered counts independently of bounded
+  20-item/type work lists. Home/My Day also require the active tenant option and
+  authorization snapshot to identify the same organization and school.
 - `/my-day` is a read-only prioritized view over existing Action Center records;
   mutations remain at `/action-center` and use its established services.
 - No dependency, schema, migration, RLS, permission, entitlement, feature,

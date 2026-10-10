@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import type { TenantOption } from "@/features/tenancy/context";
 import {
   deriveResponsibilities,
+  composeOperationalCounts,
   safeOperationalHref,
   sortDailyWork,
   type HomeTask,
@@ -14,6 +15,12 @@ export async function loadOperationalHome(
   active: TenantOption,
   authorization: AuthorizationSnapshot,
 ) {
+  if (
+    active.organizationId !== authorization.organizationId ||
+    active.schoolId !== authorization.schoolId
+  )
+    throw new Error("The active operational context is invalid");
+
   const access = evaluateAccess(authorization, {
     module: "foundation",
     permission: "shared.tasks.view",
@@ -32,41 +39,56 @@ export async function loadOperationalHome(
   const { supabase, user } = await requireUser();
   let tasksQuery = supabase
     .from("action_tasks")
-    .select("id,title,status,priority,due_at")
+    .select("id,title,status,priority,due_at", { count: "exact" })
     .eq("organization_id", active.organizationId)
     .in("status", ["open", "in_progress"])
     .order("due_at", { ascending: true, nullsFirst: false })
     .limit(20);
   let approvalsQuery = supabase
     .from("approval_requests")
-    .select("id,title,status,created_at")
+    .select("id,title,status,created_at", { count: "exact" })
     .eq("organization_id", active.organizationId)
     .eq("status", "pending")
     .order("created_at", { ascending: false })
     .limit(20);
   let notificationsQuery = supabase
     .from("notifications")
-    .select("id,title,href,created_at")
+    .select("id,title,href,created_at", { count: "exact" })
     .eq("organization_id", active.organizationId)
     .eq("recipient_user_id", user.id)
     .is("read_at", null)
     .order("created_at", { ascending: false })
     .limit(20);
-
+  let urgentTaskCountQuery = supabase
+    .from("action_tasks")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", active.organizationId)
+    .in("status", ["open", "in_progress"])
+    .in("priority", ["urgent", "high"]);
   if (active.schoolId) {
     tasksQuery = tasksQuery.eq("school_id", active.schoolId);
     approvalsQuery = approvalsQuery.eq("school_id", active.schoolId);
     notificationsQuery = notificationsQuery.or(
       `school_id.eq.${active.schoolId},school_id.is.null`,
     );
+    urgentTaskCountQuery = urgentTaskCountQuery.eq(
+      "school_id",
+      active.schoolId,
+    );
   }
 
-  const [tasks, approvals, notifications] = await Promise.all([
+  const [tasks, approvals, notifications, urgentTaskCount] = await Promise.all([
     tasksQuery,
     approvalsQuery,
     notificationsQuery,
+    urgentTaskCountQuery,
   ]);
-  if (tasks.error || approvals.error || notifications.error)
+  if (
+    tasks.error ||
+    approvals.error ||
+    notifications.error ||
+    urgentTaskCount.error
+  )
     throw new Error("Your operational overview could not be loaded");
 
   const taskItems: HomeTask[] = (tasks.data ?? []).map((task) => ({
@@ -108,13 +130,11 @@ export async function loadOperationalHome(
     responsibilities,
     canViewWork: true,
     tasks: dailyWork,
-    counts: {
-      tasks: taskItems.length,
-      approvals: approvalItems.length,
-      notifications: notificationItems.length,
-      urgent: dailyWork.filter(
-        (item) => item.priority === "urgent" || item.priority === "high",
-      ).length,
-    },
+    counts: composeOperationalCounts({
+      taskCount: tasks.count,
+      approvalCount: approvals.count,
+      notificationCount: notifications.count,
+      urgentTaskCount: urgentTaskCount.count,
+    }),
   };
 }

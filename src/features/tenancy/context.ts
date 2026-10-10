@@ -39,7 +39,8 @@ export function buildTenantOptions(
       schoolName: school.name,
     }));
 
-    if (!permittedSchools.length) return [organizationOption];
+    if (!permittedSchools.length)
+      return membership.all_schools ? [organizationOption] : [];
     return membership.all_schools
       ? [...schoolOptions, organizationOption]
       : schoolOptions;
@@ -51,11 +52,27 @@ export function resolveActiveContext(
   requestedSchoolId?: string,
 ) {
   if (options.length === 0) return null;
+  const requestedSchoolWasStored = requestedSchoolId !== undefined;
   return (
     options.find(
       (option) =>
         option.organizationId === requestedOrganizationId &&
-        (!requestedSchoolId || option.schoolId === requestedSchoolId),
+        (!requestedSchoolWasStored ||
+          option.schoolId === (requestedSchoolId || null)),
     ) ?? options[0]
+  );
+}
+
+export function findAllowedContext(options: TenantOption[], selected: string) {
+  const separator = selected.indexOf(":");
+  if (separator < 1) return null;
+  const organizationId = selected.slice(0, separator);
+  const schoolId = selected.slice(separator + 1);
+  return (
+    options.find(
+      (option) =>
+        option.organizationId === organizationId &&
+        option.schoolId === (schoolId || null),
+    ) ?? null
   );
 }

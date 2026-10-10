@@ -128,6 +128,14 @@ scope, and improves mobile workspace-tab discoverability. All changes remain
 fictional, local and nonpersistent. The final production student-Finance policy
 is a recorded founder decision; no permission or entitlement was introduced.
 
+The final targeted founder pass further differentiates Amara's NGN 125,000.00
+and Musa's NGN 152,500.00 reconciled fictional balances, replaces Support
+Viewer administrative dashboard metrics with support-case and safe-health
+information, limits its Tenant 360 presentation to support-safe module status,
+diagnostics and activity, and adds measured-overflow guidance to the Pack E
+register. The student Finance production policy remains undecided and no
+production authorization rule was created.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

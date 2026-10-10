@@ -113,32 +113,57 @@ export function PlatformPrototype() {
             description={role.summary}
           />
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard
-              label="Organizations"
-              value="4"
-              detail="10 fictional schools"
-            />
-            <MetricCard
-              label="Lifecycle attention"
-              value="2"
-              detail="One restricted · one suspended"
-              warning
-            />
-            <MetricCard
-              label="Module adoption"
-              value="8.5"
-              detail="Average enabled modules"
-            />
-            <MetricCard
-              label="Support attention"
-              value={supportOnly ? "6" : "3"}
-              detail={
-                supportOnly
-                  ? "Authorized read-only cases"
-                  : "Escalated platform cases"
-              }
-              warning
-            />
+            {supportOnly ? (
+              <>
+                <MetricCard
+                  label="Authorized support cases"
+                  value="6"
+                  detail="Cases assigned within support scope"
+                />
+                <MetricCard
+                  label="Cases requiring escalation"
+                  value="2"
+                  detail="Handoff to an authorized platform administrator"
+                  warning
+                />
+                <MetricCard
+                  label="Safe service health"
+                  value="Operational"
+                  detail="Credential-free status summary"
+                />
+                <MetricCard
+                  label="Pending support actions"
+                  value="3"
+                  detail="Customer updates and safe diagnostic follow-up"
+                  warning
+                />
+              </>
+            ) : (
+              <>
+                <MetricCard
+                  label="Organizations"
+                  value="4"
+                  detail="10 fictional schools"
+                />
+                <MetricCard
+                  label="Lifecycle attention"
+                  value="2"
+                  detail="One restricted · one suspended"
+                  warning
+                />
+                <MetricCard
+                  label="Module adoption"
+                  value="8.5"
+                  detail="Average enabled modules"
+                />
+                <MetricCard
+                  label="Support attention"
+                  value="3"
+                  detail="Escalated platform cases"
+                  warning
+                />
+              </>
+            )}
           </div>
           <div className="grid gap-5 xl:grid-cols-[1.2fr_1fr]">
             <SurfaceCard eyebrow="Role priorities" title={role.label}>
@@ -254,9 +279,9 @@ export function PlatformPrototype() {
             />
             {supportOnly ? (
               <MetricCard
-                label="Open support cases"
-                value="2"
-                detail="Approved cases assigned to Support"
+                label="Support-safe module status"
+                value="Available"
+                detail="Availability only · no plan or entitlement details"
               />
             ) : (
               <MetricCard
@@ -292,7 +317,7 @@ export function PlatformPrototype() {
           <div
             className={`grid gap-4 ${supportOnly ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}
           >
-            <SurfaceCard title="Safe diagnostics">
+            <SurfaceCard title="Safe service diagnostics">
               <Activity aria-hidden="true" className="text-brand size-5" />
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 Health indicators and support history contain no credentials,
@@ -300,7 +325,7 @@ export function PlatformPrototype() {
               </p>
             </SurfaceCard>
             {supportOnly ? (
-              <SurfaceCard title="Approved support history">
+              <SurfaceCard title="Support activity history">
                 <ShieldCheck aria-hidden="true" className="text-brand size-5" />
                 <p className="mt-3 text-sm leading-6 text-slate-600">
                   Case references, service symptoms and safe escalation notes;

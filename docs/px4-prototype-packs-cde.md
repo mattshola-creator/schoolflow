@@ -50,6 +50,22 @@ routes with shared navigation.
 - **Shared:** mobile workspace tabs include a swipe cue and edge treatment;
   active tabs scroll into view, arrow-key focus works, and reduced-motion is
   honored.
+- **C3 Finance fixture clarity:** Amara's fictional bill of NGN 485,000.00 and
+  payment of NGN 360,000.00 reconcile to NGN 125,000.00 outstanding. Musa's
+  fictional bill of NGN 625,000.00 and payment of NGN 472,500.00 reconcile to
+  NGN 152,500.00 outstanding. Switching learners replaces the entire ledger,
+  receipt and related learner context together.
+- **D2 Support dashboard:** Support Viewer receives authorized-case,
+  escalation, safe-service-health and pending-support-action metrics instead
+  of organization, lifecycle and module-adoption administration metrics.
+- **D3 Support-safe Tenant 360:** Support Viewer sees support-safe module
+  availability, safe service diagnostics, authorized cases and support activity
+  history. Plan/entitlement detail, privileged audit, lifecycle and rollout
+  controls remain absent. Platform administrator presentations are unchanged.
+- **E2 responsive register:** the register detects actual contained overflow
+  before showing “Swipe to view more columns,” supports left/right keyboard
+  scrolling and respects reduced motion. The cue is omitted when all columns
+  fit.
 
 ### Student Finance policy decision (deferred)
 

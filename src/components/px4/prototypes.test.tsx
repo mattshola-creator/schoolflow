@@ -15,6 +15,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/px4-families" }));
 
 beforeAll(() => {
   window.matchMedia = vi.fn().mockReturnValue({ matches: false });
+  HTMLElement.prototype.scrollBy = vi.fn();
 });
 afterEach(cleanup);
 
@@ -36,6 +37,30 @@ describe("PX4 Prototype Packs C–E", () => {
     expect(
       screen.getByText(/Sibling balances remain separate/i),
     ).toBeInTheDocument();
+  });
+
+  it("uses distinct and internally reconciled sibling Finance fixtures", () => {
+    const amaraBalance = children.amara.billedCents - children.amara.paidCents;
+    const musaBalance = children.musa.billedCents - children.musa.paidCents;
+    expect(amaraBalance).toBe(12500000);
+    expect(musaBalance).toBe(15250000);
+    expect(amaraBalance).not.toBe(musaBalance);
+
+    render(<FamiliesPrototype />);
+    fireEvent.click(screen.getByRole("button", { name: "Fees & payments" }));
+    expect(screen.getByText(money(amaraBalance))).toBeInTheDocument();
+    expect(screen.queryByText(money(musaBalance))).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole("combobox", { name: "Linked learner" }), {
+      target: { value: "musa" },
+    });
+    expect(screen.getByText(money(musaBalance))).toBeInTheDocument();
+    expect(screen.queryByText(money(amaraBalance))).not.toBeInTheDocument();
+    expect(
+      screen.getAllByText(new RegExp(children.musa.receipt)).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.queryByText(new RegExp(children.amara.receipt)),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps student access self-only and guardian controls unavailable", () => {
@@ -107,6 +132,12 @@ describe("PX4 Prototype Packs C–E", () => {
       name: "Platform operator persona",
     });
     fireEvent.change(selector, { target: { value: "support" } });
+    expect(screen.getByText("Authorized support cases")).toBeInTheDocument();
+    expect(screen.getByText("Cases requiring escalation")).toBeInTheDocument();
+    expect(screen.getByText("Safe service health")).toBeInTheDocument();
+    expect(screen.getByText("Pending support actions")).toBeInTheDocument();
+    expect(screen.queryByText("Lifecycle attention")).not.toBeInTheDocument();
+    expect(screen.queryByText("Module adoption")).not.toBeInTheDocument();
     expect(screen.getByText(/Read-only: no lifecycle/i)).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Feature rollout" }),
@@ -114,7 +145,9 @@ describe("PX4 Prototype Packs C–E", () => {
     expect(screen.getByText(/Organization Owner denied/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Tenant 360" }));
     expect(screen.getByText("Approved support view")).toBeInTheDocument();
-    expect(screen.getByText("Approved support history")).toBeInTheDocument();
+    expect(screen.getByText("Support-safe module status")).toBeInTheDocument();
+    expect(screen.getByText("Safe service diagnostics")).toBeInTheDocument();
+    expect(screen.getByText("Support activity history")).toBeInTheDocument();
     expect(screen.queryByText("Entitlements")).not.toBeInTheDocument();
     expect(screen.queryByText("Audit timeline")).not.toBeInTheDocument();
     expect(
@@ -138,6 +171,18 @@ describe("PX4 Prototype Packs C–E", () => {
     expect(
       screen.getByText(/No production tenant status/i),
     ).toBeInTheDocument();
+  });
+
+  it("preserves administrator dashboard metrics outside Support Viewer", () => {
+    render(<PlatformPrototype />);
+    expect(screen.getByText("Lifecycle attention")).toBeInTheDocument();
+    expect(screen.getByText("Module adoption")).toBeInTheDocument();
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Platform operator persona" }),
+      { target: { value: "operations" } },
+    );
+    expect(screen.getByText("Lifecycle attention")).toBeInTheDocument();
+    expect(screen.getByText("Module adoption")).toBeInTheDocument();
   });
 
   it("uses the approved tenant lifecycle model without deletion", () => {
@@ -226,5 +271,38 @@ describe("PX4 Prototype Packs C–E", () => {
     fireEvent.keyDown(home, { key: "ArrowRight" });
     expect(forYou).toHaveFocus();
     expect(home).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("shows the register scroll cue only when columns overflow", () => {
+    render(<ExperiencePrototype />);
+    const register = screen.getByRole("region", {
+      name: /scroll horizontally for all columns/i,
+    });
+    expect(
+      screen.queryByText(/Swipe to view more columns/i),
+    ).not.toBeInTheDocument();
+    Object.defineProperty(register, "scrollWidth", {
+      configurable: true,
+      value: 640,
+    });
+    Object.defineProperty(register, "clientWidth", {
+      configurable: true,
+      value: 320,
+    });
+    fireEvent(window, new Event("resize"));
+    expect(screen.getByText(/Swipe to view more columns/i)).toBeInTheDocument();
+    fireEvent.keyDown(register, { key: "ArrowRight" });
+    expect(register.scrollBy).toHaveBeenCalledWith({
+      left: 180,
+      behavior: "smooth",
+    });
+    Object.defineProperty(register, "scrollLeft", {
+      configurable: true,
+      value: 120,
+    });
+    fireEvent.scroll(register);
+    expect(
+      screen.getByText(/available in both directions/i),
+    ).toBeInTheDocument();
   });
 });

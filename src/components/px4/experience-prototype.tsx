@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { Bell, HelpCircle, LoaderCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatePanel } from "@/components/ui/state-panel";
@@ -116,28 +122,7 @@ export function ExperiencePrototype() {
               </div>
             </SurfaceCard>
           </div>
-          <SurfaceCard title="Responsive register pattern">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[36rem] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="p-3">Record</th>
-                    <th className="p-3">Context</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Next action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="p-3 font-semibold">SFA-2048</td>
-                    <td className="p-3">Cedarbridge Academy</td>
-                    <td className="p-3">Verified</td>
-                    <td className="p-3">View receipt</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </SurfaceCard>
+          <ResponsiveRegister />
         </div>
       ) : null}
       {view === "branding" ? (
@@ -433,5 +418,83 @@ export function ExperiencePrototype() {
         />
       </section>
     </Px4Shell>
+  );
+}
+
+function ResponsiveRegister() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [overflow, setOverflow] = useState(false);
+  const [atStart, setAtStart] = useState(true);
+
+  useEffect(() => {
+    const update = () => {
+      const element = scrollerRef.current;
+      if (!element) return;
+      setOverflow(element.scrollWidth > element.clientWidth + 1);
+      setAtStart(element.scrollLeft <= 1);
+    };
+    update();
+    window.addEventListener("resize", update);
+    const observer =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
+    if (scrollerRef.current) observer?.observe(scrollerRef.current);
+    return () => {
+      window.removeEventListener("resize", update);
+      observer?.disconnect();
+    };
+  }, []);
+
+  const scrollWithKeyboard = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    event.currentTarget.scrollBy({
+      left: event.key === "ArrowRight" ? 180 : -180,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  };
+
+  return (
+    <SurfaceCard title="Responsive register pattern">
+      {overflow ? (
+        <p
+          role="status"
+          className="text-brand-strong mb-2 text-sm font-semibold"
+        >
+          {atStart
+            ? "Swipe to view more columns →"
+            : "More columns are available in both directions ↔"}
+        </p>
+      ) : null}
+      <div
+        ref={scrollerRef}
+        role="region"
+        aria-label="Responsive register; scroll horizontally for all columns"
+        tabIndex={0}
+        onKeyDown={scrollWithKeyboard}
+        onScroll={(event) => setAtStart(event.currentTarget.scrollLeft <= 1)}
+        className="focus-visible:outline-focus-ring max-w-full overflow-x-auto rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
+      >
+        <table className="w-full min-w-[36rem] text-left text-sm">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="p-3">Record</th>
+              <th className="p-3">Context</th>
+              <th className="p-3">Status</th>
+              <th className="p-3">Next action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="p-3 font-semibold">SFA-2048</td>
+              <td className="p-3">Cedarbridge Academy</td>
+              <td className="p-3">Verified</td>
+              <td className="p-3">View receipt</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </SurfaceCard>
   );
 }

@@ -28,7 +28,7 @@ export const children = {
     present: 58,
     sessions: 63,
     billedCents: 62500000,
-    paidCents: 50000000,
+    paidCents: 47250000,
     result: "Published · First Term",
     average: 78.2,
     receipt: "SFA-2048",

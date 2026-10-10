@@ -118,20 +118,20 @@ without database rollback or changes to existing operational routes.
 ## Verification checkpoint
 
 - Draft PR: #97
-- Targeted-correction implementation revision:
-  `9f36c57c980f41bf77217ba2a22b38e6180c870b`
-- Netlify preview: `6ac9f807e46b8000086f6503`, Ready, exact correction
+- Final closeout implementation revision:
+  `b9099cbeb2e4bff04d3834cebd702fbaeb2abb4a`
+- Netlify preview: `6aca5fd93a0a2c0008ac29c0`, Ready, exact closeout
   implementation revision
 - Next.js plugin: success
 - Netlify enhanced secret scan: 410 files, zero matches
-- Automated tests: 342 passing across 73 files
+- Automated tests: 343 passing across 73 files
 - Formatting, zero-warning lint, strict TypeScript and production build: pass
 - Production dependency audit: zero vulnerabilities
 - Full dependency audit: non-green only for the accepted, unsuppressed
   development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`)
 - Local tracked-secret scan: pass
-- GitHub Actions run #236 passed frozen installation, formatting, zero-warning
-  lint, strict TypeScript, all 342 tests and the production build. Its overall
+- GitHub Actions run #238 passed frozen installation, formatting, zero-warning
+  lint, strict TypeScript, all 343 tests and the production build. Its overall
   result is non-green solely because the unsuppressed full-audit step detects
   the accepted development-only `braces` advisory. The subsequent CI secret
   scan was skipped after that failure and is not represented as passing.

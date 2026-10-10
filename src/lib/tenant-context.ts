@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import {
+  buildTenantOptions,
   resolveActiveContext,
   type TenantOption,
 } from "@/features/tenancy/context";
@@ -9,7 +10,7 @@ export async function loadTenantContext() {
   const [{ data: memberships }, { data: schools }, store] = await Promise.all([
     supabase
       .from("organization_memberships")
-      .select("organization_id, organizations(name)")
+      .select("organization_id, organizations(name), all_schools")
       .eq("user_id", user.id)
       .eq("status", "active"),
     supabase
@@ -18,27 +19,9 @@ export async function loadTenantContext() {
       .eq("status", "active"),
     cookies(),
   ]);
-  const options: TenantOption[] = (memberships ?? []).flatMap(
-    (membership): TenantOption[] => {
-      const permittedSchools = (schools ?? []).filter(
-        (school) => school.organization_id === membership.organization_id,
-      );
-      if (!permittedSchools.length)
-        return [
-          {
-            organizationId: membership.organization_id,
-            organizationName: membership.organizations?.name ?? "Organization",
-            schoolId: null,
-            schoolName: null,
-          },
-        ];
-      return permittedSchools.map((school) => ({
-        organizationId: membership.organization_id,
-        organizationName: membership.organizations?.name ?? "Organization",
-        schoolId: school.id,
-        schoolName: school.name,
-      }));
-    },
+  const options: TenantOption[] = buildTenantOptions(
+    memberships ?? [],
+    schools ?? [],
   );
   const active = resolveActiveContext(
     options,

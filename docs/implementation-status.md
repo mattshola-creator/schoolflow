@@ -185,11 +185,12 @@ live application remains Ready on PX4 application revision
 `18d864ad4978637d989d59c5ce288f8ae121f51e`, deploy
 `6aca81e44509ac00081d1eea`.
 
-The proposed PX6 Release Unit 1 plan covers Shell, Home, Context Ribbon and My
-Day, preserving existing server authorization, tenancy and operational
-services. The plan is awaiting founder approval. No PX6 application
-implementation has started. Student Finance, commercial and Platform Operator
-decisions remain deferred, and M13 remains open.
+The PX6 Release Unit 1 plan covers Shell, Home, Context Ribbon and My Day while
+preserving existing server authorization, tenancy and operational services.
+The founder authorized implementation on 10 October 2026. Work is isolated on
+`feat/px6-ru1-shell-home-my-day` and must stop at the protected preview/founder
+release gate. Student Finance, commercial and Platform Operator decisions
+remain deferred, and M13 remains open.
 
 ## Current milestone
 

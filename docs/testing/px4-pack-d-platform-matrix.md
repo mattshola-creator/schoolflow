@@ -19,7 +19,7 @@
 | Production isolation        | No real tenant, service operation, credential or account                                    | PASS                         |
 | Work-browser inspection     | Netlify team SSO blocked independent capture                                                | NOT TESTED                   |
 | Final Support visual check  | Dashboard and Tenant 360 at desktop/mobile widths                                           | NOT TESTED — Team Protection |
-| Founder visual inspection   | Protected preview                                                                           | PENDING FOUNDER ACCEPTANCE   |
+| Founder visual inspection   | Founder accepted revision `399b9a442a67d3493518d1deb4a0d30ae86ec5be`                        | PASS WITH DOCUMENTED LIMITS  |
 
 Known limitations: personas are presentation-only; no Platform Operator account,
 production policy, entitlement service, lifecycle mutation or rollout service is

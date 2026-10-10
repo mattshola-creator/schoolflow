@@ -144,6 +144,35 @@ still NOT TESTED because Netlify Team Protection requires an invited account.
 This limitation is not represented as founder acceptance or production
 verification.
 
+### PX4 production closeout
+
+**PX4 — COMPLETED — DEPLOYED — PRODUCTION-VERIFIED, WITH DOCUMENTED
+LIMITATIONS (10 October 2026).** The founder formally accepted Packs C–E at
+feature revision `399b9a442a67d3493518d1deb4a0d30ae86ec5be`. PR #97 was
+squash-merged as `18d864ad4978637d989d59c5ce288f8ae121f51e` without bypassing
+repository protections. Netlify production deployment
+`6aca81e44509ac00081d1eea` is Ready, matches the exact merge revision, reports
+Next.js plugin success and scanned 410 files with zero enhanced-secret matches.
+
+PX4 remains three fictional, local, nonpersistent reference routes. The merge
+contains no schema, migration, RLS, authentication, permission, entitlement,
+production-data or operational-route change. The production dependency audit
+has zero vulnerabilities. The accepted, unsuppressed development-only
+`braces@3.0.3` advisory remains visible. A new CI run was not emitted for the
+squash merge; accepted-head PR evidence is retained. Independent Work-browser
+production rendering was blocked with `ERR_BLOCKED_BY_CLIENT`, so it is not
+claimed as browser-tested. Exact deployment metadata and secret-scan evidence
+passed; founder visual evidence remains the human acceptance source.
+
+## Product Experience 2.0 — PX5 founder acceptance baseline
+
+PX5 is a documentation-only reconciliation of the founder-accepted PX1
+foundation and Prototype Packs A–E. The accepted revision register, cross-pack
+matrix, cross-persona journeys, responsive/accessibility evidence, decision and
+deferred register, and proposed PX6 migration backlog are recorded in the PX5
+documents. PX6 is **not authorized** by this record. M13 remains open for its
+outstanding recovery and representative human-UAT gates.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

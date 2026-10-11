@@ -254,6 +254,31 @@ deferred because the repository does not yet contain a complete reviewed
 server contract; RU2 does not substitute direct browser table writes. The
 release remains unmerged pending protected-preview founder acceptance.
 
+### PX6 Release Unit 2 production closeout
+
+**PX6 RU2 — COMPLETED — DEPLOYED — PRODUCTION-VERIFIED, WITH DOCUMENTED
+LIMITATIONS (11 October 2026).** The founder reviewed mobile and desktop
+evidence and accepted PR #102 at revision
+`751cf8f4a13617fd5192c453f24248457e8f7baa`. It was squash-merged through the
+normal GitHub workflow as `6d11a62d1b06e538242e5043879a987c8496478e`.
+
+Netlify production deployment `6acb50c142301d000874b1eb` is Ready at the
+exact merge revision with successful Next.js plugin state and zero secret
+matches across 439 files. `/api/health` reports `status: ok` and Supabase
+connected; unauthenticated `/administration` requests redirect to sign-in.
+Independent authenticated production browser testing is **NOT TESTED** and is
+not inferred from founder screenshots or automated coverage.
+
+The functional gate passed frozen installation, formatting, zero-warning
+lint, strict TypeScript, 364 tests across 79 files, production build, a clean
+production dependency audit, tracked-secret scan and Netlify enhanced scan.
+The full dependency audit remains non-green only for the documented,
+unsuppressed development-only `braces@3.0.3` advisory
+(`GHSA-vfj7-8cjw-p6xm`), for which no patched npm release exists. No schema,
+RLS, authentication, permission, entitlement, feature or production-data
+change accompanied RU2. Invitation delivery and general membership/role
+mutation remain documented future server-contract work. RU3 has not started.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

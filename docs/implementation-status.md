@@ -277,7 +277,54 @@ unsuppressed development-only `braces@3.0.3` advisory
 (`GHSA-vfj7-8cjw-p6xm`), for which no patched npm release exists. No schema,
 RLS, authentication, permission, entitlement, feature or production-data
 change accompanied RU2. Invitation delivery and general membership/role
-mutation remain documented future server-contract work. RU3 has not started.
+mutation remain documented future server-contract work. RU3 had not started at
+the RU2 closeout checkpoint.
+
+### PX6 Release Unit 3 implementation checkpoint
+
+RU3 Students and Staff is authorized on `feat/px6-ru3-students-staff` from the
+documented RU2 closeout revision. The bounded migration reuses M4/M5 services,
+RPCs, RLS, permissions and feature gates while applying the accepted responsive
+register and 360-view patterns to real authorized records.
+
+The implementation adds school-scoped exact counts, name/number search,
+filters, sorting, pagination, mobile record cards, semantic desktop tables and
+shared loading/empty/error states. Direct profile routes require a matching
+active-school enrollment or primary staff assignment before loading identity
+details. No schema, RLS, permission, entitlement, feature or production-data
+change is included. General student/staff profile editing remains deferred
+because M4/M5 do not yet provide an audited general edit contract; RU3 does not
+substitute unsafe direct browser writes.
+
+Draft PR #104 at application revision `4bf7309055defbd2d28b591222fe3b14f2727bb6`
+has Ready protected preview `6acb6d0316099a000814de50`; the deployed commit
+matches, the Next.js plugin succeeded and regular/enhanced scanning found zero
+secrets across 449 files. CI run #255 passed frozen install, formatting,
+zero-warning lint, strict TypeScript, 376 tests across 83 files and production
+build, then remained non-green at the documented unsuppressed development-only
+`braces@3.0.3` audit step; its following CI source scan was skipped, while the
+independent local tracked-source scan passed. Netlify Team Protection prevented
+independent authenticated browser inspection, so responsive visual evidence is
+**NOT TESTED** pending founder access. The release remains draft and unmerged
+pending founder visual acceptance.
+
+Final RU3 verification at corrected application revision
+`ec801aa80545e83fe1c7e1b841df97d9f0fbb590` resolved the import-policy
+ambiguity without changing its contract: CSV import remains preview-only,
+while both the application schema and existing `create_student_record` RPC
+continue to require a complete primary guardian. Focused tests also prove that
+direct Student 360 and Staff 360 requests fail closed before identity details
+load when no active-school enrollment or assignment exists. Local verification
+passed formatting, zero-warning lint, strict TypeScript, 379 tests across 83
+files, production build, production dependency audit and tracked-secret scan.
+CI run #257 passed every functional step through build, then failed only at the
+documented unsuppressed development-only `braces@3.0.3` advisory; the following
+CI secret step was skipped. Corrected preview deployment
+`6acb8fae42301d00087d781d` is Ready at the exact application revision, with
+regular/enhanced scanning reporting zero matches across 449 files. Independent
+authenticated browser evidence remains **NOT TESTED** because Netlify Team
+Protection requires an invited account. PR #104 remains draft and unmerged;
+production is unchanged and RU4 has not started.
 
 ## Current milestone
 

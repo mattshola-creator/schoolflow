@@ -32,6 +32,17 @@ export const studentSchema = z.object({
 export const studentSearchSchema = z.object({
   query: z.string().trim().max(100).catch(""),
   page: z.coerce.number().int().min(1).catch(1),
+  status: z
+    .enum(["all", "pending", "active", "completed", "transferred", "withdrawn"])
+    .catch("active"),
+  classLevelId: z
+    .preprocess(
+      (value) =>
+        typeof value === "string" && value.trim() === "" ? null : value,
+      z.string().uuid().nullable(),
+    )
+    .catch(null),
+  sort: z.enum(["newest", "oldest"]).catch("newest"),
 });
 
 export const importPreviewSchema = z.object({

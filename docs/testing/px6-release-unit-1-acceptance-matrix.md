@@ -2,7 +2,7 @@
 
 **Release unit:** Shell, Home, Context Ribbon and My Day  
 **Branch:** `feat/px6-ru1-shell-home-my-day`  
-**State:** draft PR #100; founder acceptance pending
+**State:** completed, deployed and production-verified with documented limitations
 
 | Area                   | Required evidence                                                                            | Current result                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -24,7 +24,11 @@
 | Accessibility          | Semantic regions, labelled summaries, minimum-height work rows and visible focus patterns    | PASS automated; manual browser NOT TESTED                  |
 | Cross-tenant isolation | No service-role access or client-side filtering; Supabase RLS remains authoritative          | PASS — architecture and full regression                    |
 | Production isolation   | No schema, policy, dependency, entitlement, flag or production-data mutation                 | PASS changed-file review                                   |
-| Founder review         | Protected preview and screenshots accepted                                                   | PENDING                                                    |
+| Founder review         | Protected preview and screenshots accepted                                                   | PASS — founder accepted revision `b03bcf9`                 |
+| Controlled merge       | Protected merge without bypassing repository controls                                        | PASS — PR #100, merge `b586be3`                            |
+| Production deployment  | Ready deploy at exact merge revision with clean enhanced secret scan                          | PASS — `6acad83131a9180009331d6b`, 429 files, zero matches |
+| Production health      | Health endpoint and Supabase connectivity                                                     | PASS — `status: ok`, Supabase connected                    |
+| Authenticated browser  | Home/My Day continuity in an authenticated production session                                 | NOT TESTED — no reusable secure owner session              |
 
 ## Quality checkpoint
 
@@ -45,6 +49,12 @@
 - Netlify protected preview: deployment status check PASS for exact PR head;
   independent Work-browser rendering NOT TESTED because Team Protection
   requires an invited Netlify account.
+- Production merge: PASS, `b586be320a6954e4710b23e2af44e5faa550158f`.
+- Production deploy: PASS, `6acad83131a9180009331d6b`, Ready at the exact
+  merge SHA, plugin success, 429 files and zero enhanced-secret matches.
+- Production health: PASS, application `ok` and Supabase connected.
+- Authenticated production browser verification: NOT TESTED; automated and
+  founder evidence are not represented as an independent browser session.
 
 ## Founder correction evidence
 

@@ -35,10 +35,62 @@ export async function requireAdmissionsContext(
   return { supabase, user, active, authorization };
 }
 
-export async function loadAdmissions(query = "", status?: string, page = 1) {
+export type AdmissionDirectoryQuery = {
+  page: number;
+  query: string;
+  sort: "newest" | "oldest";
+  source: "all" | "enquiry" | "staff" | "parent_online" | "import";
+  status?: string;
+};
+
+async function findApplicantIds(
+  context: Awaited<ReturnType<typeof requireAdmissionsContext>>,
+  query: string,
+) {
+  if (!query) return null;
+  const pattern = `%${query}%`;
+  const [applicationMatches, firstNameMatches, lastNameMatches] =
+    await Promise.all([
+      context.supabase
+        .from("admission_applications")
+        .select("applicant_person_id")
+        .eq("organization_id", context.active.organizationId)
+        .eq("school_id", context.active.schoolId!)
+        .ilike("application_number", pattern),
+      context.supabase.from("people").select("id").ilike("first_name", pattern),
+      context.supabase.from("people").select("id").ilike("last_name", pattern),
+    ]);
+  if (
+    applicationMatches.error ||
+    firstNameMatches.error ||
+    lastNameMatches.error
+  )
+    throw new Error("Admissions could not be loaded");
+  return Array.from(
+    new Set([
+      ...(applicationMatches.data ?? []).map(
+        (item) => item.applicant_person_id,
+      ),
+      ...(firstNameMatches.data ?? []).map((person) => person.id),
+      ...(lastNameMatches.data ?? []).map((person) => person.id),
+    ]),
+  );
+}
+
+export async function loadAdmissions(filters: AdmissionDirectoryQuery) {
   const context = await requireAdmissionsContext();
   const pageSize = 20;
-  const from = (page - 1) * pageSize;
+  const from = (filters.page - 1) * pageSize;
+  const applicantIds = await findApplicantIds(context, filters.query);
+  if (applicantIds && !applicantIds.length)
+    return {
+      ...context,
+      applications: [],
+      count: 0,
+      page: filters.page,
+      pageSize,
+      filters,
+    };
   let request = context.supabase
     .from("admission_applications")
     .select(
@@ -47,20 +99,21 @@ export async function loadAdmissions(query = "", status?: string, page = 1) {
     )
     .eq("organization_id", context.active.organizationId)
     .eq("school_id", context.active.schoolId!)
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: filters.sort === "oldest" })
+    .order("id", { ascending: filters.sort === "oldest" })
     .range(from, from + pageSize - 1);
-  if (query) request = request.ilike("application_number", `%${query}%`);
-  if (status) request = request.eq("status", status as never);
+  if (applicantIds) request = request.in("applicant_person_id", applicantIds);
+  if (filters.status) request = request.eq("status", filters.status as never);
+  if (filters.source !== "all") request = request.eq("source", filters.source);
   const { data, error, count } = await request;
   if (error) throw new Error("Admissions could not be loaded");
   return {
     ...context,
     applications: data ?? [],
     count: count ?? 0,
-    page,
+    page: filters.page,
     pageSize,
-    query,
-    status,
+    filters,
   };
 }
 

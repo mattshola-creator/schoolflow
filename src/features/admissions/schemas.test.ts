@@ -3,6 +3,7 @@ import {
   admissionApplicationSchema,
   allowedAdmissionTransitions,
   assessmentSchema,
+  admissionSearchSchema,
   offerResponseSchema,
 } from "./schemas";
 
@@ -98,5 +99,23 @@ describe("admissions schemas", () => {
       offerResponseSchema.safeParse({ applicationId, response: "accepted" })
         .success,
     ).toBe(false);
+  });
+
+  it("normalizes operational register filters", () => {
+    expect(
+      admissionSearchSchema.parse({
+        query: " Amara ",
+        status: "under_review",
+        source: "parent_online",
+        sort: "oldest",
+        page: "2",
+      }),
+    ).toEqual({
+      query: "Amara",
+      status: "under_review",
+      source: "parent_online",
+      sort: "oldest",
+      page: 2,
+    });
   });
 });

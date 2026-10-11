@@ -355,6 +355,27 @@ The full production record is in
 `docs/px6-release-unit-3-production-closeout.md` and the updated acceptance
 matrix.
 
+### PX6 Release Unit 4 implementation checkpoint
+
+RU4 Admissions starts from the verified RU3 closeout revision
+`d12655525dded8ad3ede411b45fe376c04be2c92` on
+`feat/px6-ru4-admissions`. The bounded migration applies the accepted
+responsive register and Applicant 360 patterns to real, authorized M7 records.
+It preserves the existing Admissions state machine, evidence policy, atomic
+conversion, idempotency, centralized authorization and Supabase RLS.
+
+The implementation introduces exact-count pipeline presentation, applicant
+name/application-number search, stage/source filters, deterministic sorting,
+filter-preserving pagination, mobile cards, a semantic desktop table, shared
+application states and an accessible Applicant 360 stage rail. It includes no
+schema, RLS, permission, entitlement, authentication, dependency or
+production-data change. Release verification and founder acceptance remain
+pending; RU4 is not authorized for production merge. Local verification passes
+formatting, zero-warning lint, strict TypeScript, 386 tests across 85 files,
+production build, production dependency audit and tracked-secret scan. The
+full audit remains non-green only for the unsuppressed development-only
+`braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`).
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

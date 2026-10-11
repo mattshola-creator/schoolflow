@@ -17,6 +17,29 @@ import {
 const label = (value: string) =>
   value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
+const workflowStages = [
+  {
+    label: "Application",
+    statuses: ["enquiry", "application_started", "submitted", "incomplete"],
+  },
+  {
+    label: "Review",
+    statuses: [
+      "under_review",
+      "exam_scheduled",
+      "exam_taken",
+      "under_assessment",
+      "retake",
+    ],
+  },
+  { label: "Decision", statuses: ["approved", "rejected"] },
+  {
+    label: "Offer",
+    statuses: ["admission_offered", "accepted", "withdrawn", "expired"],
+  },
+  { label: "Enrollment", statuses: ["enrollment_pending", "enrolled"] },
+] as const;
+
 export default async function AdmissionPage({
   params,
   searchParams,
@@ -82,6 +105,49 @@ export default async function AdmissionPage({
           {notice.message}
         </p>
       )}
+      <section
+        aria-labelledby="applicant-journey-title"
+        className="border-border bg-surface mt-7 rounded-2xl border p-5"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="text-brand text-xs font-bold tracking-[0.12em] uppercase">
+              Applicant 360
+            </p>
+            <h2
+              id="applicant-journey-title"
+              className="mt-1 text-lg font-semibold"
+            >
+              Admissions journey
+            </h2>
+          </div>
+          <span className="text-muted-foreground text-sm">
+            Current stage:{" "}
+            <strong className="text-slate-900">
+              {label(result.application.status)}
+            </strong>
+          </span>
+        </div>
+        <ol
+          className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5"
+          aria-label="Admissions workflow stages"
+        >
+          {workflowStages.map((stage) => {
+            const current = stage.statuses.some(
+              (status) => status === result.application.status,
+            );
+            return (
+              <li
+                key={stage.label}
+                aria-current={current ? "step" : undefined}
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold ${current ? "border-brand bg-brand-soft text-brand-strong" : "border-border text-muted-foreground"}`}
+              >
+                {stage.label}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
         <section className="border-border bg-surface rounded-xl border p-5">
           <h2 className="font-semibold">Application details</h2>

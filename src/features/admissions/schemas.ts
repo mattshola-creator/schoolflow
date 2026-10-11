@@ -59,6 +59,10 @@ export const admissionApplicationSchema = z.object({
 export const admissionSearchSchema = z.object({
   query: z.string().trim().max(80).catch(""),
   status: z.enum(applicationStatuses).optional().catch(undefined),
+  source: z
+    .enum(["all", "enquiry", "staff", "parent_online", "import"])
+    .catch("all"),
+  sort: z.enum(["newest", "oldest"]).catch("newest"),
   page: z.coerce.number().int().positive().catch(1),
 });
 

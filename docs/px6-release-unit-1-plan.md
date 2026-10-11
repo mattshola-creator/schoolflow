@@ -1,6 +1,6 @@
 # PX6 Release Unit 1 plan — Shell, Home, Context Ribbon and My Day
 
-**Status:** founder review required; implementation is not authorized.
+**Status:** implementation authorized 10 October 2026; founder release acceptance required before merge.
 
 ## Objective
 
@@ -172,6 +172,33 @@ discovered, stop and request separate authorization before implementation.
 
 ## Founder implementation gate
 
-Approval of this document authorizes only the described RU1 application work.
-It does not authorize later PX6 release units, PX7, PX8, M13 closeout or any
-deferred Finance/commercial/platform decision.
+The founder authorized this release unit on 10 October 2026. Implementation is
+isolated on `feat/px6-ru1-shell-home-my-day`; its pull request and protected
+preview remain subject to founder acceptance before merge. The authorization
+does not cover later PX6 release units, PX7, PX8, M13 closeout or any deferred
+Finance/commercial/platform decision.
+
+## Implementation checkpoint
+
+- The accepted PX1 shell, mobile drawer, account controls and Context Ribbon
+  remain the production foundation; no parallel shell or authorization model
+  was introduced.
+- The duplicated dashboard context selector was removed. The authoritative
+  ribbon remains the only context switcher.
+- Existing `all_schools` membership state now exposes an explicit
+  organization-wide option. Restricted memberships receive only their
+  RLS-visible school options, and the existing school remains the safe default.
+- Restricted zero-school memberships receive no fallback context. Stored
+  organization-wide, school, stale and cross-organization selections are
+  resolved against exact server-built options before context cookies are set.
+- Home presents scope-aware headings, real authorized task/approval/notice
+  counts, permission-derived work areas, and capability-evaluated shortcuts.
+- Operational totals use exact RLS-filtered counts independently of bounded
+  20-item/type work lists. Home/My Day also require the active tenant option and
+  authorization snapshot to identify the same organization and school.
+- `/my-day` is a read-only prioritized view over existing Action Center records;
+  mutations remain at `/action-center` and use its established services.
+- No dependency, schema, migration, RLS, permission, entitlement, feature,
+  authentication or production-data change is included.
+- Rollback remains a single Git revert and Netlify redeploy; there is no
+  database rollback step.

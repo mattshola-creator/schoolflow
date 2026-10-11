@@ -79,5 +79,8 @@ describe("workspace access presentation", () => {
     expect(
       moduleNavigation.find((item) => item.href === "/finance")?.group,
     ).toBe("Operations");
+    expect(
+      moduleNavigation.find((item) => item.href === "/my-day")?.group,
+    ).toBe("Home");
   });
 });

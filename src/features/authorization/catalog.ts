@@ -26,6 +26,15 @@ export const moduleNavigation: ModuleNavigationItem[] = [
   },
   {
     module: "foundation",
+    permission: "shared.tasks.view",
+    feature: "foundation.action_center",
+    label: "My Day",
+    description: "Your priorities and follow-up",
+    href: "/my-day",
+    group: "Home",
+  },
+  {
+    module: "foundation",
     permission: "shared.documents.view",
     feature: "foundation.document_storage",
     label: "Documents",

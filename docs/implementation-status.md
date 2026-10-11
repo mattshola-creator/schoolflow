@@ -308,6 +308,24 @@ independent authenticated browser inspection, so responsive visual evidence is
 **NOT TESTED** pending founder access. The release remains draft and unmerged
 pending founder visual acceptance.
 
+Final RU3 verification at corrected application revision
+`ec801aa80545e83fe1c7e1b841df97d9f0fbb590` resolved the import-policy
+ambiguity without changing its contract: CSV import remains preview-only,
+while both the application schema and existing `create_student_record` RPC
+continue to require a complete primary guardian. Focused tests also prove that
+direct Student 360 and Staff 360 requests fail closed before identity details
+load when no active-school enrollment or assignment exists. Local verification
+passed formatting, zero-warning lint, strict TypeScript, 379 tests across 83
+files, production build, production dependency audit and tracked-secret scan.
+CI run #257 passed every functional step through build, then failed only at the
+documented unsuppressed development-only `braces@3.0.3` advisory; the following
+CI secret step was skipped. Corrected preview deployment
+`6acb8fae42301d00087d781d` is Ready at the exact application revision, with
+regular/enhanced scanning reporting zero matches across 449 files. Independent
+authenticated browser evidence remains **NOT TESTED** because Netlify Team
+Protection requires an invited account. PR #104 remains draft and unmerged;
+production is unchanged and RU4 has not started.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

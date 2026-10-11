@@ -15,6 +15,10 @@ and M5 domain contracts. No synthetic prototype fixture is used.
   snapshot; organization-wide or mismatched contexts fail closed.
 - Student creation continues through `create_student_record`, including the
   mandatory supported gender and complete primary-guardian tuple.
+- CSV import remains validation-preview only. A row may omit guardian columns
+  for data-quality review, but no import commit path exists; any subsequent
+  operational creation still passes the mandatory application schema and
+  `create_student_record` guardian checks.
 - Staff creation continues through `create_staff_record`; transfer and
   employment termination retain their existing audited RPCs.
 - Student enrollment, guardian, staff employment and assignment history retain
@@ -44,6 +48,10 @@ staff assignment transfer and employment termination, but no general audited
 student-identity or staff-profile edit contract. RU3 does not add direct
 browser table updates to imitate editing. A future edit workflow requires a
 separately reviewed domain contract with authorization and audit semantics.
+
+The CSV workflow stores validation previews only. RU3 does not add bulk import
+commit or conversion; preview acceptance must not be interpreted as permission
+to create a student without a primary guardian.
 
 ## Risks and controls
 

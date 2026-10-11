@@ -60,6 +60,7 @@ describe("RU3 student register", () => {
 
   it("passes normalized search, scope filters and sorting to the service", async () => {
     const classLevelId = "11111111-1111-4111-8111-111111111111";
+    loadStudents.mockResolvedValueOnce({ ...result, count: 41, page: 2 });
     render(
       await StudentsPage({
         searchParams: Promise.resolve({
@@ -78,6 +79,14 @@ describe("RU3 student register", () => {
       classLevelId,
       sort: "oldest",
     });
+    expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("q=Amara"),
+    );
+    expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("page=1"),
+    );
   });
 
   it("keeps management actions hidden from view-only users", async () => {

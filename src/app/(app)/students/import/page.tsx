@@ -74,8 +74,11 @@ export default async function StudentImportPage({
           />
         </label>
         <p className="text-xs text-slate-500">
-          Required: first_name, last_name, date_of_birth, student_number.
-          Guardian fields are optional but must be complete together.
+          Required: first_name, last_name, date_of_birth, student_number. This
+          validation preview does not create students. Guardian fields may be
+          omitted from the preview, but when supplied they must be complete
+          together. Any later authorized student creation still requires a
+          complete primary guardian.
         </p>
         <Button className="w-full sm:w-auto" type="submit">
           Validate and save preview

@@ -55,6 +55,7 @@ describe("RU3 staff register", () => {
 
   it("passes normalized filters, pagination and sorting to the service", async () => {
     const departmentId = "22222222-2222-4222-8222-222222222222";
+    loadStaff.mockResolvedValueOnce({ ...result, count: 41, page: 2 });
     render(
       await StaffPage({
         searchParams: Promise.resolve({
@@ -73,6 +74,14 @@ describe("RU3 staff register", () => {
       departmentId,
       sort: "oldest",
     });
+    expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("q=Chidi"),
+    );
+    expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("page=1"),
+    );
   });
 
   it("does not present management controls to view-only staff", async () => {

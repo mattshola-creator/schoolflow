@@ -39,6 +39,14 @@ export const employmentTypes = [
   "volunteer",
 ] as const;
 
+export const staffSearchSchema = z.object({
+  query: z.string().trim().max(100).catch(""),
+  page: z.coerce.number().int().min(1).catch(1),
+  status: z.enum(["all", "active", "planned"]).catch("active"),
+  departmentId: optionalUuid.catch(null),
+  sort: z.enum(["newest", "oldest"]).catch("newest"),
+});
+
 export const staffSchema = z
   .object({
     firstName: z.string().trim().min(1).max(100),
@@ -70,11 +78,6 @@ export const staffSchema = z
       (value.linkedUserId !== null && value.linkedRoleId !== null),
     { message: "A linked user and role must be selected together" },
   );
-
-export const staffSearchSchema = z.object({
-  query: z.string().trim().max(100).catch(""),
-  page: z.coerce.number().int().min(1).catch(1),
-});
 
 export const endEmploymentSchema = z.object({
   employmentId: z.string().uuid(),

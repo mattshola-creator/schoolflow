@@ -26,21 +26,71 @@ export async function requireStaffContext(
   return { supabase, active, authorization };
 }
 
-export async function loadStaff(query = "", page = 1) {
+export type StaffDirectoryQuery = {
+  departmentId: string | null;
+  page: number;
+  query: string;
+  sort: "newest" | "oldest";
+  status: "all" | "active" | "planned";
+};
+
+export async function loadStaff(filters: StaffDirectoryQuery) {
   const context = await requireStaffContext();
   const pageSize = 20;
-  const from = (page - 1) * pageSize;
+  const from = (filters.page - 1) * pageSize;
   let matchingProfileIds: string[] | null = null;
-  if (query) {
-    const matches = await context.supabase
-      .from("staff_profiles")
-      .select("id")
-      .eq("organization_id", context.active.organizationId)
-      .ilike("staff_number", `%${query}%`);
-    if (matches.error) throw new Error("Staff records could not be loaded");
-    matchingProfileIds = (matches.data ?? []).map((profile) => profile.id);
+  if (filters.query) {
+    const pattern = `%${filters.query}%`;
+    const [numberMatches, firstNameMatches, lastNameMatches] =
+      await Promise.all([
+        context.supabase
+          .from("staff_profiles")
+          .select("id")
+          .eq("organization_id", context.active.organizationId)
+          .ilike("staff_number", pattern),
+        context.supabase
+          .from("people")
+          .select("id")
+          .ilike("first_name", pattern),
+        context.supabase
+          .from("people")
+          .select("id")
+          .ilike("last_name", pattern),
+      ]);
+    if (numberMatches.error || firstNameMatches.error || lastNameMatches.error)
+      throw new Error("Staff records could not be loaded");
+    const personIds = Array.from(
+      new Set(
+        [...(firstNameMatches.data ?? []), ...(lastNameMatches.data ?? [])].map(
+          (person) => person.id,
+        ),
+      ),
+    );
+    const namedProfiles = personIds.length
+      ? await context.supabase
+          .from("staff_profiles")
+          .select("id")
+          .eq("organization_id", context.active.organizationId)
+          .in("person_id", personIds)
+      : { data: [], error: null };
+    if (namedProfiles.error)
+      throw new Error("Staff records could not be loaded");
+    matchingProfileIds = Array.from(
+      new Set([
+        ...(numberMatches.data ?? []).map((profile) => profile.id),
+        ...(namedProfiles.data ?? []).map((profile) => profile.id),
+      ]),
+    );
     if (!matchingProfileIds.length)
-      return { ...context, staff: [], count: 0, page, pageSize };
+      return {
+        ...context,
+        staff: [],
+        count: 0,
+        page: filters.page,
+        pageSize,
+        filters,
+        departments: [],
+      };
   }
   let assignmentRequest = context.supabase
     .from("staff_assignments")
@@ -52,16 +102,34 @@ export async function loadStaff(query = "", page = 1) {
     )
     .eq("organization_id", context.active.organizationId)
     .eq("school_id", context.active.schoolId!)
-    .in("status", ["planned", "active"])
-    .order("started_on", { ascending: false })
+    .eq("is_primary", true)
+    .order("started_on", { ascending: filters.sort === "oldest" })
     .range(from, from + pageSize - 1);
+  if (filters.status === "all")
+    assignmentRequest = assignmentRequest.in("status", ["planned", "active"]);
+  else assignmentRequest = assignmentRequest.eq("status", filters.status);
+  if (filters.departmentId)
+    assignmentRequest = assignmentRequest.eq(
+      "department_id",
+      filters.departmentId,
+    );
   if (matchingProfileIds)
     assignmentRequest = assignmentRequest.in(
       "staff_profile_id",
       matchingProfileIds,
     );
-  const assignments = await assignmentRequest;
-  if (assignments.error) throw new Error("Staff records could not be loaded");
+  const [assignments, departments] = await Promise.all([
+    assignmentRequest,
+    context.supabase
+      .from("departments")
+      .select("id,name")
+      .eq("organization_id", context.active.organizationId)
+      .eq("school_id", context.active.schoolId!)
+      .eq("status", "active")
+      .order("name"),
+  ]);
+  if (assignments.error || departments.error)
+    throw new Error("Staff records could not be loaded");
   const pageProfileIds = (assignments.data ?? []).map(
     (assignment) => assignment.staff_profile_id,
   );
@@ -82,8 +150,10 @@ export async function loadStaff(query = "", page = 1) {
       return profile ? [{ ...assignment, staff_profiles: profile }] : [];
     }),
     count: assignments.count ?? 0,
-    page,
+    page: filters.page,
     pageSize,
+    filters,
+    departments: departments.data ?? [],
   };
 }
 
@@ -148,6 +218,17 @@ export async function loadStaffFormOptions() {
 
 export async function loadStaffMember(staffId: string) {
   const context = await requireStaffContext();
+  const scopedAssignment = await context.supabase
+    .from("staff_assignments")
+    .select("id")
+    .eq("staff_profile_id", staffId)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .in("status", ["planned", "active"])
+    .limit(1)
+    .maybeSingle();
+  if (scopedAssignment.error || !scopedAssignment.data)
+    throw new Error("Staff record is unavailable in this school context");
   const [profile, employments, assignments, schools, positions, departments] =
     await Promise.all([
       context.supabase
@@ -173,11 +254,13 @@ export async function loadStaffMember(staffId: string) {
         )
         .eq("staff_profile_id", staffId)
         .eq("organization_id", context.active.organizationId)
+        .eq("school_id", context.active.schoolId!)
         .order("started_on", { ascending: false }),
       context.supabase
         .from("schools")
         .select("id, name")
         .eq("organization_id", context.active.organizationId)
+        .eq("id", context.active.schoolId!)
         .eq("status", "active")
         .order("name"),
       context.supabase

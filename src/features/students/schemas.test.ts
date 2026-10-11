@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { studentSchema } from "./schemas";
+import { studentSchema, studentSearchSchema } from "./schemas";
 
 const valid = {
   firstName: "Ada",
@@ -49,5 +49,29 @@ describe("student schema", () => {
     expect(
       studentSchema.safeParse({ ...valid, dateOfBirth: "not-a-date" }).success,
     ).toBe(false);
+  });
+
+  it("normalizes directory filters and safely defaults invalid values", () => {
+    expect(
+      studentSearchSchema.parse({
+        query: " Ada ",
+        page: "2",
+        status: "transferred",
+        classLevelId: "11111111-1111-4111-8111-111111111111",
+        sort: "oldest",
+      }),
+    ).toEqual({
+      query: "Ada",
+      page: 2,
+      status: "transferred",
+      classLevelId: "11111111-1111-4111-8111-111111111111",
+      sort: "oldest",
+    });
+    expect(studentSearchSchema.parse({ status: "forged" })).toMatchObject({
+      page: 1,
+      status: "active",
+      classLevelId: null,
+      sort: "newest",
+    });
   });
 });

@@ -4,6 +4,7 @@ import {
   endEmploymentSchema,
   positionSchema,
   staffSchema,
+  staffSearchSchema,
   transferAssignmentSchema,
   staffTimeRequestSchema,
 } from "./schemas";
@@ -115,5 +116,29 @@ describe("staff validation", () => {
         leaveTypeId: ids.userId,
       }).success,
     ).toBe(false);
+  });
+
+  it("normalizes staff directory filters and rejects manufactured values", () => {
+    expect(
+      staffSearchSchema.parse({
+        query: " Chidi ",
+        page: "3",
+        status: "planned",
+        departmentId: ids.positionId,
+        sort: "oldest",
+      }),
+    ).toEqual({
+      query: "Chidi",
+      page: 3,
+      status: "planned",
+      departmentId: ids.positionId,
+      sort: "oldest",
+    });
+    expect(staffSearchSchema.parse({ status: "ended" })).toMatchObject({
+      page: 1,
+      status: "active",
+      departmentId: null,
+      sort: "newest",
+    });
   });
 });

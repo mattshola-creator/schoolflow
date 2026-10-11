@@ -277,7 +277,25 @@ unsuppressed development-only `braces@3.0.3` advisory
 (`GHSA-vfj7-8cjw-p6xm`), for which no patched npm release exists. No schema,
 RLS, authentication, permission, entitlement, feature or production-data
 change accompanied RU2. Invitation delivery and general membership/role
-mutation remain documented future server-contract work. RU3 has not started.
+mutation remain documented future server-contract work. RU3 had not started at
+the RU2 closeout checkpoint.
+
+### PX6 Release Unit 3 implementation checkpoint
+
+RU3 Students and Staff is authorized on `feat/px6-ru3-students-staff` from the
+documented RU2 closeout revision. The bounded migration reuses M4/M5 services,
+RPCs, RLS, permissions and feature gates while applying the accepted responsive
+register and 360-view patterns to real authorized records.
+
+The implementation adds school-scoped exact counts, name/number search,
+filters, sorting, pagination, mobile record cards, semantic desktop tables and
+shared loading/empty/error states. Direct profile routes require a matching
+active-school enrollment or primary staff assignment before loading identity
+details. No schema, RLS, permission, entitlement, feature or production-data
+change is included. General student/staff profile editing remains deferred
+because M4/M5 do not yet provide an audited general edit contract; RU3 does not
+substitute unsafe direct browser writes. The release is unmerged pending its
+protected preview and founder visual acceptance.
 
 ## Current milestone
 

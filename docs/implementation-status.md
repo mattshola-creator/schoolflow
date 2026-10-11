@@ -206,6 +206,37 @@ permission, entitlement, feature, dependency or production-data change is in
 scope. The protected preview is Ready, while independent Work-browser visual
 inspection is blocked by Netlify Team Protection and is not claimed as passed.
 
+### PX6 Release Unit 1 production closeout
+
+**PX6 RU1 — COMPLETED — DEPLOYED — PRODUCTION-VERIFIED, WITH DOCUMENTED
+LIMITATIONS (11 October 2026).** The founder visually accepted PR #100 at
+revision `b03bcf95add3f9c0542ce75d60374b92cc1f4caa`. Final context verification
+covered school and organization-wide Home → My Day → Home continuity,
+authorized school switching, exact cookie restoration, safe stale-cookie
+fallback, and rejection of restricted, zero-school, cross-organization and
+manufactured contexts. The active Context Ribbon, effective authorization
+snapshot and operational query scope are required to match before any Home or
+My Day query executes.
+
+PR #100 was squash-merged through the protected GitHub workflow as
+`b586be320a6954e4710b23e2af44e5faa550158f`. Netlify production deploy
+`6acad83131a9180009331d6b` is Ready at that exact revision with Next.js plugin
+success and 429 files scanned with zero secret matches. `/api/health` reports
+`status: ok` and Supabase connected. Unauthenticated `/dashboard` and
+`/my-day` requests redirect to sign-in as expected. Independent authenticated
+production browser verification is **NOT TESTED** because no reusable secure
+owner session was available; founder review and automated authorization
+evidence are retained without being relabelled as independent browser proof.
+
+The final gate passed frozen installation, formatting, zero-warning lint,
+strict TypeScript, 357 tests across 76 files, production build, zero-vulnerability
+production dependency audit and tracked/Netlify secret scans. The full audit
+remains transparently non-green only for the accepted development-only
+`braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`), for which npm publishes no
+patched version. No schema, RLS, authentication, entitlement, feature or
+production-data change accompanied RU1. RU2 Administration proceeds as a
+separate controlled release and cannot merge before founder acceptance.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

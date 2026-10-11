@@ -326,6 +326,35 @@ authenticated browser evidence remains **NOT TESTED** because Netlify Team
 Protection requires an invited account. PR #104 remains draft and unmerged;
 production is unchanged and RU4 has not started.
 
+### PX6 Release Unit 3 production closeout
+
+**PX6 RU3 — COMPLETED — DEPLOYED — PRODUCTION-VERIFIED, WITH DOCUMENTED LIMITATIONS.**
+
+The founder accepted Students and Staff at application revision
+`44548f3d67d21cd527042efd3c81e6637ddbe096`. PR #104 was merged to `main`
+as `137edf5b46f641774ffed0587478bcbbcea96c30`. Netlify production deployment
+`6acbbd979008ec0008a6dd4d` is Ready at that exact merge revision; the Next.js
+plugin succeeded and regular/enhanced scanning inspected 449 files with zero
+secret matches. The live `/api/health` endpoint returned HTTP 200 with service
+status `ok` and Supabase `connected`. Unauthenticated `/students`, `/staff`
+and direct Student 360 requests returned protected redirects to sign-in.
+
+Independent verification on the merge revision passed frozen installation,
+formatting, zero-warning lint, strict TypeScript, 379 tests across 83 files,
+production build, production dependency audit and the tracked-source secret
+scan. The full audit remains intentionally non-green for the documented
+development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`), for which no
+patched version is available. Authenticated production record rendering,
+school switching and role-specific mutation controls remain **NOT TESTED** in
+the independent browser because no authorized authenticated session was
+available; founder visual acceptance and the automated authorization/RLS
+regressions remain the supporting evidence. No schema, RLS, permission,
+entitlement, authentication or production-data change accompanied RU3.
+
+The full production record is in
+`docs/px6-release-unit-3-production-closeout.md` and the updated acceptance
+matrix.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

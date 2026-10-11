@@ -31,7 +31,12 @@
 | Netlify preview           | Deployment `6acb8fae42301d00087d781d` at corrected application revision `ec801aa`                                         | PASS — Ready, Next.js plugin successful              |
 | Netlify secret scan       | Regular and enhanced scan of 449 deployed files                                                                           | PASS — zero matches                                  |
 | Independent browser       | Protected Students/Staff routes require Netlify Team Protection and application login                                     | NOT TESTED — sign-in barrier reached                 |
-| Founder visual acceptance | Prior desktop and mobile review completed; final release acceptance withheld pending this verification                    | CONDITIONAL                                          |
+| Founder visual acceptance | Founder accepted revision `44548f3d67d21cd527042efd3c81e6637ddbe096`                                                      | PASS                                                 |
+| Application merge         | PR #104 merged to `main` as `137edf5b46f641774ffed0587478bcbbcea96c30`                                                    | PASS                                                 |
+| Production deployment     | Netlify `6acbbd979008ec0008a6dd4d`, Ready at the exact merge revision; Next.js plugin succeeded                           | PASS                                                 |
+| Production health         | `/api/health` HTTP 200; service `ok`; Supabase `connected`                                                                | PASS                                                 |
+| Production protection     | Unauthenticated Students, Staff and direct Student 360 requests redirected to sign-in                                     | PASS live browser/HTTP                               |
+| Authenticated production  | Record rendering, school switching and role-specific mutation controls                                                    | NOT TESTED — no authorized browser session           |
 
 ## Required founder checks
 
@@ -51,3 +56,6 @@
   guardian.
 - Focused regression coverage accepts a guardian-free preview row and proves
   that the same missing guardian data fails the operational creation schema.
+- The production deployment lineage, health evidence and remaining independent
+  browser limitations are recorded in
+  `docs/px6-release-unit-3-production-closeout.md`.

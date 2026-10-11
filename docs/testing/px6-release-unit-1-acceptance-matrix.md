@@ -26,9 +26,9 @@
 | Production isolation   | No schema, policy, dependency, entitlement, flag or production-data mutation                 | PASS changed-file review                                   |
 | Founder review         | Protected preview and screenshots accepted                                                   | PASS — founder accepted revision `b03bcf9`                 |
 | Controlled merge       | Protected merge without bypassing repository controls                                        | PASS — PR #100, merge `b586be3`                            |
-| Production deployment  | Ready deploy at exact merge revision with clean enhanced secret scan                          | PASS — `6acad83131a9180009331d6b`, 429 files, zero matches |
-| Production health      | Health endpoint and Supabase connectivity                                                     | PASS — `status: ok`, Supabase connected                    |
-| Authenticated browser  | Home/My Day continuity in an authenticated production session                                 | NOT TESTED — no reusable secure owner session              |
+| Production deployment  | Ready deploy at exact merge revision with clean enhanced secret scan                         | PASS — `6acad83131a9180009331d6b`, 429 files, zero matches |
+| Production health      | Health endpoint and Supabase connectivity                                                    | PASS — `status: ok`, Supabase connected                    |
+| Authenticated browser  | Home/My Day continuity in an authenticated production session                                | NOT TESTED — no reusable secure owner session              |
 
 ## Quality checkpoint
 

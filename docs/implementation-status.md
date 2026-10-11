@@ -237,6 +237,23 @@ patched version. No schema, RLS, authentication, entitlement, feature or
 production-data change accompanied RU1. RU2 Administration proceeds as a
 separate controlled release and cannot merge before founder acceptance.
 
+### PX6 Release Unit 2 founder-review checkpoint
+
+RU2 Administration is isolated on `feat/px6-ru2-administration`. It replaces
+the pilot-only access summary with a responsive Administration Center composed
+from live, caller-authorized membership, invitation, role-assignment,
+management-group and effective-authorization data. Context mismatch fails
+closed, RLS remains authoritative, personal profile visibility is not
+broadened, and module explanations reuse the application navigation evaluator.
+
+RU2 adds no schema, RLS, authentication, permission, entitlement, feature or
+production-data change. Organization Owner remains distinct from Platform
+Super Admin, and tenant users cannot mutate platform plans, entitlements or
+controlled rollouts. Invitation delivery and general access mutations remain
+deferred because the repository does not yet contain a complete reviewed
+server contract; RU2 does not substitute direct browser table writes. The
+release remains unmerged pending protected-preview founder acceptance.
+
 ## Current milestone
 
 M10 Assessment & Results — Completed — Deployed & Production-Verified. PRs #75 and #76 culminated in runtime revision `e5e2e46cfc774ebafcd534f43cef00dd79f871cd`; Netlify deploy `6abe8c384b3c27000714e977` is Ready. Synthetic lifecycle, denial controls, audit evidence and safe-state restoration passed. See `docs/testing/m10-assessment-results-matrix.md`.

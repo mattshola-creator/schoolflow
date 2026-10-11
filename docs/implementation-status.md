@@ -294,8 +294,19 @@ active-school enrollment or primary staff assignment before loading identity
 details. No schema, RLS, permission, entitlement, feature or production-data
 change is included. General student/staff profile editing remains deferred
 because M4/M5 do not yet provide an audited general edit contract; RU3 does not
-substitute unsafe direct browser writes. The release is unmerged pending its
-protected preview and founder visual acceptance.
+substitute unsafe direct browser writes.
+
+Draft PR #104 at application revision `4bf7309055defbd2d28b591222fe3b14f2727bb6`
+has Ready protected preview `6acb6d0316099a000814de50`; the deployed commit
+matches, the Next.js plugin succeeded and regular/enhanced scanning found zero
+secrets across 449 files. CI run #255 passed frozen install, formatting,
+zero-warning lint, strict TypeScript, 376 tests across 83 files and production
+build, then remained non-green at the documented unsuppressed development-only
+`braces@3.0.3` audit step; its following CI source scan was skipped, while the
+independent local tracked-source scan passed. Netlify Team Protection prevented
+independent authenticated browser inspection, so responsive visual evidence is
+**NOT TESTED** pending founder access. The release remains draft and unmerged
+pending founder visual acceptance.
 
 ## Current milestone
 

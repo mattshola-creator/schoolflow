@@ -25,7 +25,11 @@
 | Production audit          | Runtime dependency audit at high severity                                               | PASS — no known vulnerabilities                      |
 | Full dependency audit     | Development-only `braces@3.0.3`, `GHSA-vfj7-8cjw-p6xm`, no patch                        | EXPECTED NON-GREEN — documented and unsuppressed     |
 | Tracked-secret scan       | Established repository scan; sensitive values are not printed                           | PASS local                                           |
-| Protected preview         | Netlify preview at exact branch revision                                                | PENDING                                              |
+| GitHub CI                 | Run #255 install, format, lint, TypeScript, 376 tests and build                         | FUNCTIONAL GATES PASS; overall non-green at audit    |
+| CI secret step            | Runs after the full dependency audit                                                    | SKIPPED after documented audit failure               |
+| Netlify preview           | Deployment `6acb6d0316099a000814de50` at application revision `4bf7309`                 | PASS — Ready, Next.js plugin successful              |
+| Netlify secret scan       | Regular and enhanced scan of 449 deployed files                                         | PASS — zero matches                                  |
+| Independent browser       | Protected Students/Staff routes require Netlify Team Protection and application login   | NOT TESTED — sign-in barrier reached                 |
 | Founder visual acceptance | Desktop and mobile review                                                               | PENDING                                              |
 
 ## Required founder checks

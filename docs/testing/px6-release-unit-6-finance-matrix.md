@@ -46,13 +46,28 @@ accounting remain excluded by ADR-0023.
 
 Local automated results after implementation: focused Finance checks **10
 passed**; full regression **398 tests across 88 files passed**; formatting,
-zero-warning lint and strict TypeScript passed. The local production build could
-not fetch Geist fonts from Google Fonts because external network access is
-blocked in this workspace; this is not an application compilation result. The
-protected Netlify preview build and CI build are pending.
+zero-warning lint and strict TypeScript passed. On implementation head
+`6b07567cdb432acd1e6278c59e7454eebb5d5f59`, GitHub CI passed frozen install,
+format, lint, strict TypeScript, all tests and production build. The Netlify
+Deploy Preview was Ready on that exact head; the Next.js plugin passed and the
+regular/enhanced secret scan checked 473 files with zero findings. A subsequent
+matrix-only documentation update triggers those checks again on the latest PR
+head; verify the PR and deploy status against that exact revision before
+acceptance.
+
+The protected preview requires Netlify team SSO for non-production deploys. The
+review browser was redirected to Netlify Team Protection, so authenticated
+Finance UI inspection remains NOT TESTED.
+
+The local production build could not fetch Geist fonts from Google Fonts because
+external network access is blocked in this workspace; the successful CI and
+Netlify builds provide the independent build evidence.
 
 The frozen-lockfile install is also blocked locally: pnpm registry requests
 return `EPERM` and the workspace lacks its configured `/root/.local` store
-path. The CI install is the required independent confirmation. The existing
-unsuppressed development-only `braces@3.0.3` advisory
-(`GHSA-vfj7-8cjw-p6xm`) remains documented; the full audit is not green.
+path. GitHub CI completed the frozen install successfully. The CI dependency
+audit remains non-green for the existing unsuppressed development-only
+`braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`), through
+`eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch > braces`;
+the subsequent CI tracked-secret scan is skipped after that failure. The local
+tracked-source scan had no matches.

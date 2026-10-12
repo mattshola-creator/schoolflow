@@ -54,6 +54,23 @@ describe("manual timetable page", () => {
     ).toBeInTheDocument();
   });
 
+  it("provides a focused daily view and accessible day selection", async () => {
+    render(
+      await TimetablePage({
+        searchParams: Promise.resolve({ view: "daily", day: "2" }),
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Tuesday timetable" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: "Select timetable day" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Monday" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("fails closed when the feature is disabled", async () => {
     loadTimetableWorkspace.mockRejectedValueOnce(new Error("disabled"));
     render(await TimetablePage({ searchParams: Promise.resolve({}) }));

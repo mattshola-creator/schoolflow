@@ -14,11 +14,28 @@ const days = [
   "Sunday",
 ];
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
+const workdays = days.slice(0, 5);
+
+function currentSchoolWeekday() {
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Africa/Lagos",
+    weekday: "long",
+  }).format(new Date());
+  const index = workdays.indexOf(weekday);
+  return index >= 0 ? index + 1 : 1;
+}
 
 export default async function TimetablePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string; warning?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    message?: string;
+    warning?: string;
+    view?: string;
+    day?: string;
+    session?: string;
+  }>;
 }) {
   const notice = await searchParams;
   const workspace = await loadTimetableWorkspace().catch(() => null);
@@ -37,6 +54,21 @@ export default async function TimetablePage({
     );
   const canManage = workspace.authorization.permissions.includes(
     "academics.timetable.manage",
+  );
+  const view = notice.view === "daily" ? "daily" : "weekly";
+  const requestedDay = Number(notice.day);
+  const selectedDay =
+    Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= 5
+      ? requestedDay
+      : currentSchoolWeekday();
+  const selectedSession =
+    workspace.sessions.find((item) => item.id === notice.session) ??
+    workspace.sessions[0];
+  const visiblePeriods = workspace.periods.filter(
+    (period) => !selectedSession || period.session_id === selectedSession.id,
+  );
+  const visibleEntries = workspace.entries.filter(
+    (entry) => !selectedSession || entry.session_id === selectedSession.id,
   );
   const assignments = new Map(
     workspace.assignments.map((item) => [item.id, item]),
@@ -65,7 +97,7 @@ export default async function TimetablePage({
       <PageHeader
         eyebrow="Teaching management"
         title={`Manual timetable at ${workspace.active.schoolName}`}
-        description="Build the weekly timetable from approved teaching assignments. Potential teacher and class clashes require an explicit review."
+        description="Review the school timetable by day or week. Approved timetable changes retain existing clash review and permission controls."
         actions={
           <>
             <ButtonLink href="/teaching" variant="secondary">
@@ -88,6 +120,76 @@ export default async function TimetablePage({
           {notice.error ?? notice.warning ?? notice.message}
         </p>
       ) : null}
+
+      <section
+        className="mt-6 rounded-2xl border bg-white p-4 sm:p-5"
+        aria-label="Timetable view options"
+      >
+        <form
+          method="get"
+          className="grid gap-3 sm:grid-cols-[minmax(12rem,1fr)_auto] sm:items-end"
+        >
+          <input type="hidden" name="view" value={view} />
+          {view === "daily" ? (
+            <input type="hidden" name="day" value={selectedDay} />
+          ) : null}
+          <label className="text-sm font-medium">
+            Academic session
+            <select
+              className={fieldClass}
+              name="session"
+              defaultValue={selectedSession?.id ?? ""}
+            >
+              {workspace.sessions.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                  {item.status === "current" ? " · Current" : ""}
+                </option>
+              ))}
+              {!workspace.sessions.length ? (
+                <option value="">No active session</option>
+              ) : null}
+            </select>
+          </label>
+          <Button type="submit" variant="secondary">
+            Show timetable
+          </Button>
+        </form>
+        <div
+          className="mt-4 flex flex-wrap gap-2"
+          aria-label="Timetable layout"
+        >
+          <ButtonLink
+            href={`/teaching/timetable?view=weekly&session=${selectedSession?.id ?? ""}`}
+            variant={view === "weekly" ? "primary" : "secondary"}
+          >
+            Week
+          </ButtonLink>
+          <ButtonLink
+            href={`/teaching/timetable?view=daily&day=${selectedDay}&session=${selectedSession?.id ?? ""}`}
+            variant={view === "daily" ? "primary" : "secondary"}
+          >
+            Day
+          </ButtonLink>
+        </div>
+        {view === "daily" ? (
+          <nav
+            className="mt-3 flex gap-2 overflow-x-auto pb-1"
+            aria-label="Select timetable day"
+          >
+            {workdays.map((day, index) => (
+              <ButtonLink
+                className="shrink-0"
+                key={day}
+                href={`/teaching/timetable?view=daily&day=${index + 1}&session=${selectedSession?.id ?? ""}`}
+                variant={selectedDay === index + 1 ? "primary" : "secondary"}
+              >
+                {day}
+              </ButtonLink>
+            ))}
+          </nav>
+        ) : null}
+      </section>
 
       {canManage ? (
         <div className="mt-7 grid gap-5 xl:grid-cols-2">
@@ -221,62 +323,76 @@ export default async function TimetablePage({
 
       <section className="mt-7" aria-labelledby="weekly-heading">
         <h2 id="weekly-heading" className="text-xl font-semibold">
-          Weekly timetable
+          {view === "daily"
+            ? `${workdays[selectedDay - 1]} timetable`
+            : "Weekly timetable"}
         </h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-          {days.slice(0, 5).map((day, dayIndex) => {
-            const dayPeriods = workspace.periods.filter(
-              (period) => period.weekday === dayIndex + 1,
-            );
-            return (
-              <article className={panel} key={day}>
-                <h3 className="text-brand font-semibold">{day}</h3>
-                {dayPeriods.length ? (
-                  <ul className="mt-3 space-y-3">
-                    {dayPeriods.map((period) => {
-                      const matches = workspace.entries.filter(
-                        (entry) => entry.period_id === period.id,
-                      );
-                      return (
-                        <li
-                          className="rounded-lg bg-slate-50 p-3"
-                          key={period.id}
-                        >
-                          <p className="text-sm font-semibold">{period.name}</p>
-                          <p className="text-xs text-slate-500">
-                            {period.starts_at.slice(0, 5)}–
-                            {period.ends_at.slice(0, 5)}
-                          </p>
-                          {matches.length ? (
-                            matches.map((entry) => (
-                              <p className="mt-2 text-sm" key={entry.id}>
-                                {describeAssignment(
-                                  entry.teaching_assignment_id,
-                                )}
-                                {entry.conflict_acknowledged ? (
-                                  <span className="mt-1 block text-xs font-semibold text-amber-800">
-                                    Conflict reviewed
-                                  </span>
-                                ) : null}
-                              </p>
-                            ))
-                          ) : (
-                            <p className="mt-2 text-sm text-slate-500">
-                              Unallocated
+        {selectedSession ? (
+          <p className="mt-1 text-sm text-slate-600">
+            {selectedSession.name} · {workspace.active.schoolName}
+          </p>
+        ) : null}
+        <div
+          className={`mt-4 grid gap-4 ${view === "daily" ? "max-w-3xl" : "md:grid-cols-2 xl:grid-cols-5"}`}
+        >
+          {(view === "daily" ? [workdays[selectedDay - 1]] : workdays).map(
+            (day) => {
+              const dayIndex = workdays.indexOf(day);
+              const dayPeriods = visiblePeriods.filter(
+                (period) => period.weekday === dayIndex + 1,
+              );
+              return (
+                <article className={panel} key={day}>
+                  <h3 className="text-brand font-semibold">{day}</h3>
+                  {dayPeriods.length ? (
+                    <ul className="mt-3 space-y-3">
+                      {dayPeriods.map((period) => {
+                        const matches = visibleEntries.filter(
+                          (entry) => entry.period_id === period.id,
+                        );
+                        return (
+                          <li
+                            className="rounded-lg bg-slate-50 p-3"
+                            key={period.id}
+                          >
+                            <p className="text-sm font-semibold">
+                              {period.name}
                             </p>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <p className="mt-3 text-sm text-slate-500">
-                    No periods configured.
-                  </p>
-                )}
-              </article>
-            );
-          })}
+                            <p className="text-xs text-slate-500">
+                              {period.starts_at.slice(0, 5)}–
+                              {period.ends_at.slice(0, 5)}
+                            </p>
+                            {matches.length ? (
+                              matches.map((entry) => (
+                                <p className="mt-2 text-sm" key={entry.id}>
+                                  {describeAssignment(
+                                    entry.teaching_assignment_id,
+                                  )}
+                                  {entry.conflict_acknowledged ? (
+                                    <span className="mt-1 block text-xs font-semibold text-amber-800">
+                                      Conflict reviewed
+                                    </span>
+                                  ) : null}
+                                </p>
+                              ))
+                            ) : (
+                              <p className="mt-2 text-sm text-slate-500">
+                                Unallocated
+                              </p>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-500">
+                      No periods configured.
+                    </p>
+                  )}
+                </article>
+              );
+            },
+          )}
         </div>
       </section>
     </main>

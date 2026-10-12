@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { AuthorizationError } from "@/lib/authorization";
 
 const { loadStaffTimeOffWorkspace } = vi.hoisted(() => ({
   loadStaffTimeOffWorkspace: vi.fn(),
@@ -51,11 +52,34 @@ describe("staff time-off page", () => {
     ).toBeEnabled();
   });
 
-  it("fails closed when the feature is unavailable", async () => {
-    loadStaffTimeOffWorkspace.mockRejectedValueOnce(new Error("disabled"));
+  it("explains when the feature is disabled and keeps requests unavailable", async () => {
+    loadStaffTimeOffWorkspace.mockRejectedValueOnce(
+      new AuthorizationError("feature_disabled"),
+    );
     render(await StaffTimeOffPage({ searchParams: Promise.resolve({}) }));
     expect(
-      screen.getByRole("heading", { name: "Time off unavailable" }),
+      screen.getByRole("heading", { name: "Time Off unavailable" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Staff time-off is not activated for this organization.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Submit for approval" }),
+    ).toBeNull();
+  });
+
+  it("does not expose technical details when loading fails", async () => {
+    loadStaffTimeOffWorkspace.mockRejectedValueOnce(
+      new Error("protected database detail"),
+    );
+    render(await StaffTimeOffPage({ searchParams: Promise.resolve({}) }));
+    expect(
+      screen.getByText(
+        "Time Off could not be loaded for the selected school. Check the workspace and try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("protected database detail")).toBeNull();
   });
 });

@@ -36,19 +36,52 @@ this release unit.
 - Formatting: passed.
 - Zero-warning lint: passed.
 - Strict TypeScript: passed.
-- Automated suite: 392 tests across 86 files passed.
-- Production dependency audit: passed with no known vulnerabilities.
+- Automated suite: 394 tests across 86 files passed during final review.
+- Production dependency audit: a prior PR run reported no known production
+  vulnerabilities. It could not be independently rerun in this workspace because
+  registry access is blocked by the workspace proxy (`EPERM`).
 - Full dependency audit: expected non-green for the unsuppressed,
   development-only `braces@3.0.3` advisory `GHSA-vfj7-8cjw-p6xm` through
   `eslint-config-next` tooling.
-- Tracked privileged-secret scan: passed with zero matches.
+- Tracked privileged-secret scan: passed with zero matches during final review.
 - Local Next.js production build: blocked in this managed workspace. Turbopack
   cannot bind its process socket (`EPERM`); the Webpack build path cannot spawn
   TypeScript's `--showConfig` child process (`EPERM`). Formatting, lint,
   TypeScript and tests pass. The protected Netlify Deploy Preview build remains
   the remote production-build verification gate.
-- Netlify enhanced secret scan and preview revision: pending preview deployment.
-- Authenticated browser verification: not tested in this workspace.
+- Netlify Deploy Preview is the remote production-build gate; its final revision,
+  Ready state, and enhanced secret scan must be rechecked after these corrections
+  are pushed.
+- Authenticated browser verification: not tested because Netlify Team Protection
+  requires an invited account and this review session is not authorized.
+
+## Final functional review — 2026-10-12
+
+- The screenshots' `Alpha Nursery and Primary School` context is an accurate
+  empty configuration: the connected QA database has no academic sessions,
+  terms, teaching assignments, class levels, subjects, timetable rows,
+  curriculum, lesson plans, homework, or attendance policy for that school.
+- `SchoolFlow M7 QA School` is the configured read-only review context: it has a
+  current session and term, teaching assignment, class, subject, timetable
+  period and entry, curriculum item, lesson plan, lesson delivery, homework
+  assignment, and student/staff attendance policies. No records were changed.
+- `staff.leave_permission` is disabled by default and has no organization
+  overrides in the connected QA database. This explains the Time Off screen;
+  it is not caused by missing leave requests. The page now distinguishes
+  authorization/feature denials from unexpected load errors without displaying
+  protected diagnostics or enabling controls.
+- RU5's My Teaching dashboard was checking the nonexistent
+  `academics.lesson_plans.view` permission. It now uses only existing M8
+  lesson-plan, lesson-delivery, and homework permissions. No permissions or
+  data access policies were added or changed.
+- Mobile navigation is collapsed below the existing `md` breakpoint in source.
+  Native viewport, zoom/desktop-site mode, horizontal overflow, and desktop
+  rendering were not independently browser-tested because preview access is
+  behind Netlify Team Protection.
+- Authenticated teaching and attendance flows, including live submission,
+  correction, audit browsing, and school switching, remain not tested. The
+  connected QA project is not treated as an isolated disposable database, so
+  no mutation was used to create evidence.
 
 ## Preserved M8 contracts
 

@@ -122,4 +122,28 @@ describe("teaching assignment page", () => {
       screen.queryByRole("button", { name: "Create assignment" }),
     ).toBeNull();
   });
+
+  it("recognizes existing M8 lesson permissions for teaching activity access", async () => {
+    loadTeachingAssignmentWorkspace.mockResolvedValueOnce({
+      active: { schoolName: "QA School" },
+      authorization: {
+        permissions: ["academics.lesson_plans.manage"],
+      },
+      sessions: [],
+      levels: [],
+      arms: [],
+      subjects: [],
+      staff: [],
+      assignments: [],
+    });
+
+    render(await TeachingPage({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("link", { name: "Lessons & homework" }),
+    ).toHaveAttribute("href", "/teaching/lessons");
+    expect(
+      screen.queryByText("Lesson-plan access is not available in this role."),
+    ).toBeNull();
+  });
 });

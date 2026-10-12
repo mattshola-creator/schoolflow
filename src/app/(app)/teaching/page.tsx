@@ -64,8 +64,13 @@ export default async function TeachingPage({
   const canViewCurriculum = workspace.authorization.permissions.includes(
     "academics.curriculum.view",
   );
-  const canViewLessons = workspace.authorization.permissions.includes(
-    "academics.lesson_plans.view",
+  const canViewLessons = [
+    "academics.lesson_plans.manage",
+    "academics.lesson_plans.approve",
+    "academics.lesson_delivery.record",
+    "academics.homework.manage",
+  ].some((permission) =>
+    workspace.authorization.permissions.includes(permission),
   );
   const canViewAttendance = workspace.authorization.permissions.includes(
     "attendance.student.record",

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { loadStaffTimeOffWorkspace } from "@/features/staff/service";
+import { AuthorizationError } from "@/lib/authorization";
 import {
   createStaffLeaveType,
   saveSchoolTimezone,
@@ -26,11 +27,37 @@ export default async function StaffTimeOffPage({
   searchParams: Promise<{ message?: string; error?: string }>;
 }) {
   const params = await searchParams;
-  const data = await loadStaffTimeOffWorkspace().catch(() => null);
+  let data: Awaited<ReturnType<typeof loadStaffTimeOffWorkspace>> | null = null;
+  let unavailableMessage =
+    "Time Off could not be loaded for the selected school. Check the workspace and try again.";
+  try {
+    data = await loadStaffTimeOffWorkspace();
+  } catch (error) {
+    if (error instanceof AuthorizationError) {
+      unavailableMessage = {
+        invalid_context: "Select an authorized school workspace.",
+        permission_denied: "Your role does not grant access to Time Off.",
+        not_entitled:
+          "Time Off is not included in the organization's current plan.",
+        module_disabled:
+          "The Staff module is unavailable in this organization.",
+        feature_disabled:
+          "Staff time-off is not activated for this organization.",
+      }[error.reason];
+    }
+  }
   if (!data)
     return (
-      <main className="py-16">
-        <h1 className="text-3xl font-semibold">Time off unavailable</h1>
+      <main className="py-16" role="status">
+        <p className="text-sm font-semibold text-amber-800">Staff and HR</p>
+        <h1 className="mt-2 text-3xl font-semibold">Time Off unavailable</h1>
+        <p className="mt-3 max-w-xl text-slate-600">{unavailableMessage}</p>
+        <Link
+          href="/staff"
+          className="mt-5 inline-flex min-h-11 items-center rounded-lg border px-4 font-medium text-emerald-900"
+        >
+          Back to Staff
+        </Link>
       </main>
     );
   const canManage = data.authorization.permissions.includes(

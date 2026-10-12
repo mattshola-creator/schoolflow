@@ -55,24 +55,26 @@ was modified during this verification.
 
 ## Automated verification and security
 
-The recorded RU4 baseline is 387 passing tests across 85 files. The PR's local
-verification record reports frozen-lockfile installation, formatting,
-zero-warning lint, strict TypeScript, full tests, and production build passing.
-These checks were not independently rerun at closeout because the available
-coding workspace could not fetch the merged revision.
+The recorded RU4 baseline is 387 passing tests across 85 files. GitHub Actions
+run #267 on the closeout PR's source tree independently passed frozen-lockfile
+installation, formatting, zero-warning lint, strict TypeScript, all 387 tests
+across 85 files, and production build. The full audit failed on the single
+known development-only `braces` advisory; CI skipped tracked-secret scanning
+after that failure. This GitHub run is distinct from the original RU4 PR's
+recorded local verification.
 
-| Gate                         | Result                                                                                 |
-| ---------------------------- | -------------------------------------------------------------------------------------- |
-| Frozen-lockfile installation | PASS — recorded PR baseline                                                            |
-| Formatting                   | PASS — recorded PR baseline                                                            |
-| Zero-warning lint            | PASS — recorded PR baseline                                                            |
-| Strict TypeScript            | PASS — recorded PR baseline                                                            |
-| Automated tests              | PASS — 387 tests across 85 files; recorded PR baseline                                 |
-| Production build             | PASS — recorded PR baseline                                                            |
-| Production dependency audit  | PASS — no known production dependency advisory recorded                                |
-| Full dependency audit        | NON-GREEN — unsuppressed development-only `braces@3.0.3`, `GHSA-vfj7-8cjw-p6xm`        |
-| Tracked-secret scan          | PASS — recorded local scan; downstream GitHub scan was skipped after the audit failure |
-| Netlify secret scan          | PASS — 456 deployed files, zero regular/enhanced matches                               |
+| Gate                         | Result                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------- |
+| Frozen-lockfile installation | PASS — GitHub Actions #267                                                      |
+| Formatting                   | PASS — GitHub Actions #267                                                      |
+| Zero-warning lint            | PASS — GitHub Actions #267                                                      |
+| Strict TypeScript            | PASS — GitHub Actions #267                                                      |
+| Automated tests              | PASS — 387 tests across 85 files; GitHub Actions #267                           |
+| Production build             | PASS — GitHub Actions #267                                                      |
+| Production dependency audit  | PASS — no known production dependency advisory recorded                         |
+| Full dependency audit        | NON-GREEN — unsuppressed development-only `braces@3.0.3`, `GHSA-vfj7-8cjw-p6xm` |
+| Tracked-secret scan          | PASS — prior recorded local scan; CI #267 skipped after audit failure           |
+| Netlify secret scan          | PASS — 456 deployed files, zero regular/enhanced matches                        |
 
 The development-only advisory remains unsuppressed and visible. The dependency
 audit is reported as non-green; the successful production dependency audit is
@@ -87,8 +89,9 @@ not presented as a pass for the full dependency graph.
   closeout.
 - Netlify runtime function invocation logs were unavailable through the
   connected interface; the dashboard request timed out.
-- RU4's 387-test and local quality-gate results are the recorded PR baseline,
-  not a fresh rerun at closeout.
+- The full GitHub Actions audit is NON-GREEN; its downstream tracked-secret
+  scan was skipped. The prior recorded local tracked-secret scan and current
+  Netlify scan passed.
 - The full dependency audit remains non-green for the documented development-
   only `braces@3.0.3` advisory.
 

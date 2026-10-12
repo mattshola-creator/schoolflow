@@ -1,6 +1,8 @@
 import { fieldClass } from "@/components/auth-card";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
+import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
 import {
   loadFeeWorkspace,
   previewBillingRun,
@@ -20,20 +22,12 @@ export default async function FinancePage({
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadFeeWorkspace().catch(() => null);
+  const result = await loadFeeWorkspace()
+    .then((workspace) => ({ workspace, error: null }))
+    .catch((error: unknown) => ({ workspace: null, error }));
+  const workspace = result.workspace;
   if (!workspace)
-    return (
-      <main className="py-16">
-        <p className="text-sm font-semibold text-amber-800">Unavailable</p>
-        <h1 className="mt-2 text-3xl font-semibold">
-          Finance is not available
-        </h1>
-        <p className="mt-3 max-w-xl text-slate-600">
-          Select an authorized school and enable the Finance fee-management
-          feature.
-        </p>
-      </main>
-    );
+    return <FinanceUnavailableState area="Fee setup" error={result.error} />;
   const canConfigure =
     workspace.authorization.permissions.includes("finance.configure");
   const canBill = workspace.authorization.permissions.includes(
@@ -62,17 +56,10 @@ export default async function FinancePage({
         title={`Fee setup at ${workspace.active.schoolName}`}
         description="Configure effective-dated fee policy. Published billing will snapshot these values so later changes cannot rewrite history."
         actions={
-          <>
-            <ButtonLink href="/finance/payments" variant="secondary">
-              Payments
-            </ButtonLink>
-            <ButtonLink href="/finance/expenses" variant="secondary">
-              Expenses
-            </ButtonLink>
-            <ButtonLink href="/finance/reports" variant="secondary">
-              Reports
-            </ButtonLink>
-          </>
+          <FinanceWorkspaceNav
+            authorization={workspace.authorization}
+            currentPath="/finance"
+          />
         }
       />
       {notice.error || notice.message ? (

@@ -5,7 +5,8 @@ vi.mock("@/features/admissions/service", () => ({
   updateAdmissionChecklistItem: mocks.updateAdmissionChecklistItem,
 }));
 
-import { hasValidChecklistOrigin, POST } from "./route";
+import { hasSameRequestOrigin } from "@/lib/http/request-origin";
+import { POST } from "./route";
 
 const endpoint = "https://schoolflow-app.netlify.app/api/admissions/checklist";
 const applicationId = "33333333-3333-4333-8333-333333333333";
@@ -30,12 +31,12 @@ describe("POST /api/admissions/checklist", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("accepts same-origin requests and rejects missing or foreign origins", () => {
-    expect(hasValidChecklistOrigin(request())).toBe(true);
+    expect(hasSameRequestOrigin(request())).toBe(true);
     expect(
-      hasValidChecklistOrigin(new Request(endpoint, { method: "POST" })),
+      hasSameRequestOrigin(new Request(endpoint, { method: "POST" })),
     ).toBe(false);
     expect(
-      hasValidChecklistOrigin(request("complete", "https://evil.example")),
+      hasSameRequestOrigin(request("complete", "https://evil.example")),
     ).toBe(false);
   });
 

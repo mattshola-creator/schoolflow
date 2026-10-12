@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasSameRequestOrigin } from "@/lib/http/request-origin";
 import { checklistSchema } from "@/features/admissions/schemas";
 import { updateAdmissionChecklistItem } from "@/features/admissions/service";
 
 export const dynamic = "force-dynamic";
-
-export function hasValidChecklistOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  return origin !== null && origin === new URL(request.url).origin;
-}
 
 function redirect(
   request: Request,
@@ -22,7 +18,7 @@ function redirect(
 }
 
 export async function POST(request: NextRequest) {
-  if (!hasValidChecklistOrigin(request))
+  if (!hasSameRequestOrigin(request))
     return NextResponse.json({ error: "Request rejected" }, { status: 403 });
 
   let formData: FormData;

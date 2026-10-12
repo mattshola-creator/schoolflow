@@ -13,7 +13,8 @@ vi.mock("@/features/admissions/service", () => ({
   convertAdmissionToStudent: mocks.convert,
 }));
 
-import { hasValidConversionOrigin, POST } from "./route";
+import { hasValidConversionOrigin } from "@/features/admissions/conversion-origin";
+import { POST } from "./route";
 
 const endpoint = "https://schoolflow-app.netlify.app/api/admissions/convert";
 const applicationId = "33333333-3333-4333-8333-333333333333";

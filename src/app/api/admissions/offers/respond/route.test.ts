@@ -8,7 +8,8 @@ vi.mock("@/features/admissions/service", () => ({
   recordAdmissionOfferResponse: mocks.recordAdmissionOfferResponse,
 }));
 
-import { hasValidOfferResponseOrigin, POST } from "./route";
+import { hasSameRequestOrigin } from "@/lib/http/request-origin";
+import { POST } from "./route";
 
 const endpoint =
   "https://schoolflow-app.netlify.app/api/admissions/offers/respond";
@@ -32,12 +33,12 @@ describe("POST /api/admissions/offers/respond", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("accepts same-origin requests and rejects missing or foreign origins", () => {
-    expect(hasValidOfferResponseOrigin(request("accept"))).toBe(true);
+    expect(hasSameRequestOrigin(request("accept"))).toBe(true);
     expect(
-      hasValidOfferResponseOrigin(new Request(endpoint, { method: "POST" })),
+      hasSameRequestOrigin(new Request(endpoint, { method: "POST" })),
     ).toBe(false);
     expect(
-      hasValidOfferResponseOrigin(request("accept", "https://evil.example")),
+      hasSameRequestOrigin(request("accept", "https://evil.example")),
     ).toBe(false);
   });
 

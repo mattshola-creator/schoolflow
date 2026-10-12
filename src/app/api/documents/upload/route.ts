@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasSameRequestOrigin } from "@/lib/http/request-origin";
 import { persistDocumentUpload } from "@/features/shared-services/service";
 
 export const dynamic = "force-dynamic";
-
-export function hasValidUploadOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  return origin !== null && origin === new URL(request.url).origin;
-}
 
 function documentsRedirect(
   request: Request,
@@ -19,7 +15,7 @@ function documentsRedirect(
 }
 
 export async function POST(request: NextRequest) {
-  if (!hasValidUploadOrigin(request))
+  if (!hasSameRequestOrigin(request))
     return NextResponse.json({ error: "Request rejected" }, { status: 403 });
 
   try {

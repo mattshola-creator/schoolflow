@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasSameRequestOrigin } from "@/lib/http/request-origin";
 import {
   admissionDocumentInitializeSchema,
   admissionDocumentPolicySchema,
@@ -14,11 +15,6 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export function hasValidAdmissionDocumentOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  return origin !== null && origin === new URL(request.url).origin;
-}
-
 function redirect(
   request: Request,
   path: string,
@@ -31,7 +27,7 @@ function redirect(
 }
 
 export async function POST(request: NextRequest) {
-  if (!hasValidAdmissionDocumentOrigin(request))
+  if (!hasSameRequestOrigin(request))
     return NextResponse.json({ error: "Request rejected" }, { status: 403 });
   let values: Record<string, FormDataEntryValue>;
   try {

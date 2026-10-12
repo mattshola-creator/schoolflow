@@ -58,12 +58,12 @@ Use disposable isolated fixtures for write scenarios. Do not submit or correct s
 
 ## Completion record
 
-| Field | Value |
-| --- | --- |
-| Isolated environment | |
-| Tested application revision | |
-| Tester / role | |
-| Test date | |
-| Evidence links | |
-| Defects and follow-up issue/PR | |
-| Pilot-readiness decision | NOT DECIDED |
+| Field                          | Value       |
+| ------------------------------ | ----------- |
+| Isolated environment           |             |
+| Tested application revision    |             |
+| Tester / role                  |             |
+| Test date                      |             |
+| Evidence links                 |             |
+| Defects and follow-up issue/PR |             |
+| Pilot-readiness decision       | NOT DECIDED |

@@ -6,6 +6,11 @@ import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
 import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
 import { loadCollectionsWorkspace } from "@/features/finance/service";
 import {
+  paymentAllocationLabel,
+  paymentStatusLabel,
+  sumMoneyAmounts,
+} from "@/features/finance/payment-presentation";
+import {
   allocate,
   endCashier,
   handoverCash,
@@ -16,6 +21,12 @@ import {
   verifyPayment,
 } from "./actions";
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
+const money = (amount: number | string, currency: string) =>
+  new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+  }).format(Number(amount));
 export default async function PaymentsPage({
   searchParams,
 }: {
@@ -34,6 +45,14 @@ export default async function PaymentsPage({
     w.balances.map((x) => [x.student_charge_id, x.outstanding_amount]),
   );
   const receiptPayments = new Set(w.receipts.map((x) => x.payment_id));
+  const allocationsByPayment = new Map<string, Array<string | number>>();
+  for (const allocation of w.allocations) {
+    const existing = allocationsByPayment.get(allocation.payment_id) ?? [];
+    allocationsByPayment.set(allocation.payment_id, [
+      ...existing,
+      allocation.amount,
+    ]);
+  }
   const canRecord = w.authorization.permissions.includes(
       "finance.payments.record",
     ),
@@ -234,6 +253,11 @@ export default async function PaymentsPage({
                 ))}
               </select>
             </label>
+            <p className="text-sm text-slate-600 sm:col-span-2 lg:col-span-3">
+              Academic session and period are optional for manual payments in
+              the existing Finance workflow. Select them when the payment is
+              associated with a school session or term.
+            </p>
             <label className="text-sm font-medium">
               Notes
               <input className={fieldClass} name="notes" />
@@ -253,112 +277,133 @@ export default async function PaymentsPage({
         <h2 className="text-xl font-semibold">Payment register</h2>
         <div className="mt-4 grid gap-4">
           {w.payments.length ? (
-            w.payments.map((p) => (
-              <article className={panel} key={p.id}>
-                <div className="flex flex-wrap justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">
-                      ₦
-                      {Number(p.amount).toLocaleString("en-NG", {
-                        minimumFractionDigits: 2,
-                      })}{" "}
-                      · {p.method.replace("_", " ")}
-                    </p>
-                    <p className="text-sm text-slate-500">
-                      {p.payer_name ?? "Unidentified payer"} · {p.status}
-                    </p>
+            w.payments.map((p) => {
+              const allocatedAmount = sumMoneyAmounts(
+                allocationsByPayment.get(p.id) ?? [],
+              );
+              const allocationLabel = paymentAllocationLabel(
+                p.status,
+                p.amount,
+                allocatedAmount,
+              );
+              return (
+                <article className={panel} key={p.id}>
+                  <div className="flex flex-wrap justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">
+                        {money(p.amount, p.currency_code)} ·{" "}
+                        {p.method.replace("_", " ")}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {p.payer_name ?? "Unidentified payer"} ·{" "}
+                        {paymentStatusLabel(p.status)}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">
+                        {p.student_id
+                          ? "Matched student payment"
+                          : "Unmatched payment"}
+                      </p>
+                      {allocationLabel ? (
+                        <p className="mt-1 text-sm text-slate-600">
+                          {allocationLabel}
+                          {allocatedAmount !== "0.00"
+                            ? ` · ${money(allocatedAmount, p.currency_code)}`
+                            : ""}
+                        </p>
+                      ) : null}
+                    </div>
+                    <time className="text-sm text-slate-500">
+                      {new Date(p.paid_at).toLocaleString("en-NG")}
+                    </time>
                   </div>
-                  <time className="text-sm text-slate-500">
-                    {new Date(p.paid_at).toLocaleString("en-NG")}
-                  </time>
-                </div>
-                {canVerify && p.status === "recorded" ? (
-                  <form
-                    action={verifyPayment}
-                    className="mt-4 flex flex-wrap items-end gap-3"
-                  >
-                    <input type="hidden" name="paymentId" value={p.id} />
-                    <label className="text-sm font-medium">
-                      Verification note
-                      <input className={fieldClass} name="note" required />
-                    </label>
-                    <Button name="approve" value="true" type="submit">
-                      Verify
-                    </Button>
-                    <Button
-                      name="approve"
-                      value="false"
-                      type="submit"
-                      variant="secondary"
+                  {canVerify && p.status === "recorded" ? (
+                    <form
+                      action={verifyPayment}
+                      className="mt-4 flex flex-wrap items-end gap-3"
                     >
-                      Reject
-                    </Button>
-                  </form>
-                ) : null}
-                {canAllocate && p.status === "verified" ? (
-                  <form
-                    action={allocate}
-                    className="mt-4 grid gap-3 sm:grid-cols-3"
-                  >
-                    <input type="hidden" name="paymentId" value={p.id} />
-                    <label className="text-sm font-medium sm:col-span-2">
-                      Outstanding charge
-                      <select className={fieldClass} name="chargeId" required>
-                        <option value="">Select outstanding charge</option>
-                        {w.charges
-                          .filter((c) => Number(balances.get(c.id) ?? 0) > 0)
-                          .map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.fee_category_name_snapshot} · ₦
-                              {Number(balances.get(c.id)).toLocaleString(
-                                "en-NG",
-                              )}
-                            </option>
-                          ))}
-                      </select>
-                    </label>
-                    <label className="text-sm font-medium">
-                      Allocation amount
-                      <input
-                        className={fieldClass}
-                        name="amount"
-                        inputMode="decimal"
-                        required
-                      />
-                    </label>
-                    <Button type="submit">Allocate</Button>
-                  </form>
-                ) : null}
-                {p.status === "verified" && !receiptPayments.has(p.id) ? (
-                  <form action={makeReceipt} className="mt-3">
-                    <input type="hidden" name="paymentId" value={p.id} />
-                    <Button type="submit" variant="secondary">
-                      Issue receipt
-                    </Button>
-                  </form>
-                ) : null}
-                {canCorrect && p.status === "verified" ? (
-                  <form
-                    action={reverseRecordedPayment}
-                    className="mt-3 flex flex-wrap items-end gap-3"
-                  >
-                    <input type="hidden" name="paymentId" value={p.id} />
-                    <label className="text-sm font-medium">
-                      Correction reason
-                      <input
-                        className={fieldClass}
-                        name="reason"
-                        minLength={3}
-                        required
-                      />
-                    </label>
-                    <Button type="submit" variant="secondary">
-                      Reverse payment
-                    </Button>
-                  </form>
-                ) : null}
-              </article>
-            ))
+                      <input type="hidden" name="paymentId" value={p.id} />
+                      <label className="text-sm font-medium">
+                        Verification note
+                        <input className={fieldClass} name="note" required />
+                      </label>
+                      <Button name="approve" value="true" type="submit">
+                        Verify
+                      </Button>
+                      <Button
+                        name="approve"
+                        value="false"
+                        type="submit"
+                        variant="secondary"
+                      >
+                        Reject
+                      </Button>
+                    </form>
+                  ) : null}
+                  {canAllocate && p.status === "verified" ? (
+                    <form
+                      action={allocate}
+                      className="mt-4 grid gap-3 sm:grid-cols-3"
+                    >
+                      <input type="hidden" name="paymentId" value={p.id} />
+                      <label className="text-sm font-medium sm:col-span-2">
+                        Outstanding charge
+                        <select className={fieldClass} name="chargeId" required>
+                          <option value="">Select outstanding charge</option>
+                          {w.charges
+                            .filter((c) => Number(balances.get(c.id) ?? 0) > 0)
+                            .map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.fee_category_name_snapshot} · ₦
+                                {Number(balances.get(c.id)).toLocaleString(
+                                  "en-NG",
+                                )}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
+                      <label className="text-sm font-medium">
+                        Allocation amount
+                        <input
+                          className={fieldClass}
+                          name="amount"
+                          inputMode="decimal"
+                          required
+                        />
+                      </label>
+                      <Button type="submit">Allocate</Button>
+                    </form>
+                  ) : null}
+                  {p.status === "verified" && !receiptPayments.has(p.id) ? (
+                    <form action={makeReceipt} className="mt-3">
+                      <input type="hidden" name="paymentId" value={p.id} />
+                      <Button type="submit" variant="secondary">
+                        Issue receipt
+                      </Button>
+                    </form>
+                  ) : null}
+                  {canCorrect && p.status === "verified" ? (
+                    <form
+                      action={reverseRecordedPayment}
+                      className="mt-3 flex flex-wrap items-end gap-3"
+                    >
+                      <input type="hidden" name="paymentId" value={p.id} />
+                      <label className="text-sm font-medium">
+                        Correction reason
+                        <input
+                          className={fieldClass}
+                          name="reason"
+                          minLength={3}
+                          required
+                        />
+                      </label>
+                      <Button type="submit" variant="secondary">
+                        Reverse payment
+                      </Button>
+                    </form>
+                  ) : null}
+                </article>
+              );
+            })
           ) : (
             <StatePanel
               kind="empty"

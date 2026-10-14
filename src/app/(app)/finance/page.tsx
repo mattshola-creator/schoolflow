@@ -49,6 +49,14 @@ export default async function FinancePage({
   const categoryNames = new Map(
     workspace.categories.map((item) => [item.id, item.name]),
   );
+  const sessionNames = new Map(
+    workspace.sessions.map((item) => [item.id, item.name]),
+  );
+  const periodNames = new Map(
+    workspace.periods.map((item) => [item.id, item.name]),
+  );
+  const canCreateFeeStructure =
+    workspace.sessions.length > 0 && workspace.categories.length > 0;
   return (
     <main className="py-10 sm:py-12">
       <PageHeader
@@ -133,6 +141,10 @@ export default async function FinancePage({
           </section>
           <section className={panel}>
             <h2 className="text-xl font-semibold">Create draft structure</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              An academic session is required. A period is optional when the
+              structure applies to the whole session.
+            </p>
             <form
               action={saveFeeStructure}
               className="mt-5 grid gap-4 sm:grid-cols-2"
@@ -222,9 +234,29 @@ export default async function FinancePage({
                 Due date
                 <input className={fieldClass} name="dueDate" type="date" />
               </label>
-              <Button type="submit" className="sm:col-span-2 sm:w-fit">
+              <Button
+                type="submit"
+                disabled={!canCreateFeeStructure}
+                className="sm:col-span-2 sm:w-fit"
+                aria-describedby={
+                  canCreateFeeStructure
+                    ? undefined
+                    : "fee-structure-prerequisites"
+                }
+              >
                 Create draft
               </Button>
+              {!canCreateFeeStructure ? (
+                <p
+                  id="fee-structure-prerequisites"
+                  role="status"
+                  className="text-sm text-amber-900 sm:col-span-2"
+                >
+                  {workspace.sessions.length === 0
+                    ? "Set up an academic session before creating a fee structure."
+                    : "Create a fee category before creating a fee structure."}
+                </p>
+              ) : null}
             </form>
           </section>
         </div>
@@ -242,6 +274,13 @@ export default async function FinancePage({
                     <h3 className="font-semibold">{structure.name}</h3>
                     <p className="mt-1 text-sm text-slate-500">
                       Version {structure.version} · {structure.status}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {sessionNames.get(structure.session_id) ??
+                        "Academic session unavailable"}
+                      {structure.period_id
+                        ? ` · ${periodNames.get(structure.period_id) ?? "Academic period unavailable"}`
+                        : " · Whole session"}
                     </p>
                   </div>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">

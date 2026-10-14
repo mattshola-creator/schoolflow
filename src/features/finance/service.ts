@@ -514,12 +514,24 @@ export async function loadCollectionsWorkspace() {
     ].some((x) => x.error)
   )
     throw new Error("Collections workspace could not be loaded");
+  const paymentIds = (payments.data ?? []).map((payment) => payment.id);
+  const allocationResult = paymentIds.length
+    ? await loadAllPages((from, to) =>
+        context.supabase
+          .from("payment_allocations")
+          .select("payment_id, amount")
+          .match(scope)
+          .in("payment_id", paymentIds)
+          .range(from, to),
+      )
+    : [];
   return {
     ...context,
     students: students.data ?? [],
     sessions: sessions.data ?? [],
     periods: periods.data ?? [],
     payments: payments.data ?? [],
+    allocations: allocationResult,
     charges: charges.data ?? [],
     balances: balances.data ?? [],
     receipts: receipts.data ?? [],

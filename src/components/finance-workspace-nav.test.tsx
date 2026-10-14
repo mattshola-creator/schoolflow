@@ -99,4 +99,32 @@ describe("FinanceWorkspaceNav", () => {
       "page",
     );
   });
+
+  it("wraps available sections instead of requiring horizontal scrolling", () => {
+    render(
+      <FinanceWorkspaceNav
+        authorization={{
+          ...authorization,
+          permissions: [
+            ...authorization.permissions,
+            "finance.billing.view",
+            "finance.expenses.view",
+          ],
+          features: authorization.features.map((feature) => ({
+            ...feature,
+            enabled: true,
+          })),
+        }}
+        currentPath="/finance/overview"
+      />,
+    );
+
+    const navigation = screen.getByRole("navigation", {
+      name: "Finance workspace sections",
+    });
+    expect(navigation).not.toHaveClass("overflow-x-auto");
+    expect(navigation.querySelector("ul")).toHaveClass("flex-wrap");
+    expect(screen.getByRole("link", { name: "Reports" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Expenses" })).toBeInTheDocument();
+  });
 });

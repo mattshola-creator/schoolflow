@@ -62,9 +62,9 @@ export function FinanceWorkspaceNav({
   return (
     <nav
       aria-label="Finance workspace sections"
-      className="w-full min-w-0 overflow-x-auto pb-1 sm:w-auto sm:pb-0"
+      className="w-full min-w-0 sm:w-auto"
     >
-      <ul className="flex min-w-max gap-2">
+      <ul className="flex min-w-0 flex-wrap gap-2">
         {available.map((section) => {
           const current = currentPath === section.href;
           return (
@@ -72,7 +72,7 @@ export function FinanceWorkspaceNav({
               <Link
                 href={section.href}
                 aria-current={current ? "page" : undefined}
-                className={`inline-flex min-h-11 items-center rounded-xl border px-4 text-sm font-semibold transition-colors ${current ? "border-tenant-accent bg-tenant-accent text-white" : "border-border bg-surface text-slate-700 hover:bg-slate-50"}`}
+                className={`inline-flex min-h-11 items-center rounded-xl border px-4 text-sm font-semibold whitespace-nowrap transition-colors ${current ? "border-tenant-accent bg-tenant-accent text-white" : "border-border bg-surface text-slate-700 hover:bg-slate-50"}`}
               >
                 {section.label}
               </Link>

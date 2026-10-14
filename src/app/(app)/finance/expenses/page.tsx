@@ -138,6 +138,11 @@ export default async function ExpensesPage({
                 ))}
               </select>
             </label>
+            <p className="text-sm text-slate-600 sm:col-span-2 lg:col-span-3">
+              Academic session and period are optional for expenses in the
+              existing Finance workflow. Select them when the expense belongs to
+              a school session or term.
+            </p>
             <label className="text-sm font-medium sm:col-span-2 lg:col-span-3">
               Description
               <textarea

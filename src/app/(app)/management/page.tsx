@@ -12,6 +12,7 @@ import {
   searchReporting,
 } from "@/features/reporting/service";
 import { closeAcademic, rolloverSession } from "./actions";
+import { parseSchoolScopeQuery } from "@/features/reporting/scope-query";
 
 export const dynamic = "force-dynamic";
 const panel = "min-w-0 rounded-xl border bg-white p-4 sm:p-5";
@@ -25,10 +26,7 @@ export default async function ManagementPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const query = await searchParams;
-  const requestedSchools =
-    typeof query.schools === "string"
-      ? query.schools.split(",").filter(Boolean)
-      : undefined;
+  const requestedSchools = parseSchoolScopeQuery(query.schools);
   const workspace = await loadReportingWorkspace({
     schoolIds: requestedSchools,
     sessionId: typeof query.session === "string" ? query.session : undefined,
@@ -108,19 +106,75 @@ export default async function ManagementPage({
         </p>
       ) : null}
       <form
-        className={`${panel} mt-6 grid gap-3 md:grid-cols-4`}
+        className={`${panel} mt-6 grid gap-3 md:grid-cols-3`}
         aria-label="Report filters"
       >
+        {workspace.scope.length > 1 &&
+        workspace.scope.every((school) => school.can_cross_school) ? (
+          <fieldset className="grid gap-2">
+            <legend className="text-sm font-medium">Authorized schools</legend>
+            <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-2">
+              {workspace.scope.map((school) => (
+                <label
+                  className="flex min-h-11 items-center gap-2 text-sm"
+                  key={school.school_id}
+                >
+                  <input
+                    type="checkbox"
+                    name="schools"
+                    value={school.school_id}
+                    defaultChecked={workspace.filters.schoolIds.includes(
+                      school.school_id,
+                    )}
+                    className="size-4 accent-emerald-800"
+                  />
+                  <span>{school.school_name}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : (
+          <label className="grid gap-1 text-sm font-medium">
+            School
+            <select
+              name="schools"
+              defaultValue={workspace.filters.schoolIds.join(",")}
+              className={field}
+            >
+              {workspace.scope.map((school) => (
+                <option key={school.school_id} value={school.school_id}>
+                  {school.school_name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="grid gap-1 text-sm font-medium">
-          School
+          Academic session
           <select
-            name="schools"
-            defaultValue={workspace.filters.schoolIds.join(",")}
+            name="session"
+            defaultValue={workspace.filters.sessionId ?? ""}
             className={field}
           >
-            {workspace.scope.map((school) => (
-              <option key={school.school_id} value={school.school_id}>
-                {school.school_name}
+            <option value="">All sessions</option>
+            {workspace.sessions.map((session) => (
+              <option key={session.id} value={session.id}>
+                {session.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-medium">
+          Academic period
+          <select
+            name="period"
+            defaultValue={workspace.filters.periodId ?? ""}
+            className={field}
+          >
+            <option value="">All periods</option>
+            {workspace.periods.map((period) => (
+              <option key={period.id} value={period.id}>
+                {period.name}
               </option>
             ))}
           </select>

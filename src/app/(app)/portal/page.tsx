@@ -63,6 +63,14 @@ export default async function PortalPage({
         eyebrow="Portal"
         title={`${dashboard.student.firstName} ${dashboard.student.lastName}`}
         description={`Student number ${dashboard.student.studentNumber}`}
+        actions={
+          <Link
+            href="/portal/messages"
+            className="inline-flex min-h-11 items-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-medium text-white"
+          >
+            Messages
+          </Link>
+        }
       />
       {contexts.reduce((sum, context) => sum + context.learners.length, 0) >
       1 ? (

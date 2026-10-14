@@ -47,26 +47,26 @@ accounting remain excluded by ADR-0023.
 
 ## Quality evidence for this branch
 
-On the previously published head `ebc9f82c350225ddb9135a8a5d389b82f46ff4db`,
-GitHub CI passed frozen install, formatting, zero-warning lint, strict
-TypeScript, the full test suite and production build. Netlify preview
-`6acd6eb0b642bbf05eeadd14` was Ready on that exact head, with a successful
-Next.js plugin and regular/enhanced secret scans over 473 files with zero
-findings. Those checks predate the dashboard and bill-register changes.
-
-Local verification on the current RU6 working revision: frozen-lockfile install
-passed; format, lint, strict TypeScript and production build passed; full suite
-**399 tests across 88 files passed**; local tracked-source secret-pattern scan
-found no literal credential patterns. Production dependency audit passed. Full
-dependency audit remains non-green because the existing unsuppressed
-development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`) remains in
+Current PR head: `4180f145e82285d644d488e37d52f2904d5982e5`. Local frozen
+install, formatting, zero-warning lint, strict TypeScript, the full suite
+(**399 tests across 88 files**) and production build passed. `pnpm audit --prod`
+passed. The full dependency audit remains non-green because the existing
+unsuppressed development-only `braces@3.0.3` advisory
+(`GHSA-vfj7-8cjw-p6xm`) remains in
 `eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch > braces`.
-The updated PR and preview must rerun CI, Netlify regular/enhanced secret scans
-and preview build before founder review.
 
-The protected preview requires Netlify team SSO for non-production deploys. The
-review browser was redirected to Netlify Team Protection, so authenticated
-Finance UI inspection remains NOT TESTED.
+GitHub Actions run `38490587242` passed frozen install, formatting, lint,
+TypeScript, all tests and production build. Its dependency-audit gate failed on
+the same existing advisory, so its subsequent tracked-secret step was skipped.
+A separate local tracked-source pattern scan found no literal credential
+patterns. Netlify Deploy Preview `6acecd2d4e4ec2c5c72c481d` is Ready on the exact
+current head; the Next.js plugin succeeded and Netlify's regular and enhanced
+secret scans found no matches across 477 files.
+
+The protected preview requires Netlify team SSO for non-production deploys.
+Authenticated Finance UI inspection remains NOT TESTED. The founder's prior
+read-only owner-account inspection applies to the earlier Finance routes; the
+new overview and bill register have source/automated evidence only.
 
 The previously recorded owner-browser review was read-only. No production or
 shared tenant Finance records were created, modified, reversed or reconciled.

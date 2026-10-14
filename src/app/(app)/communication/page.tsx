@@ -1,12 +1,20 @@
 import { PageHeader } from "@/components/ui/page-header";
+import { StatusNotice } from "@/components/ui/status-notice";
 import { CommunicationNoticeList } from "@/components/communication-notice-list";
 import { loadCommunicationWorkspace } from "@/features/communication/service";
 import { publishNotice } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function CommunicationPage() {
-  const { notices } = await loadCommunicationWorkspace();
+export default async function CommunicationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ message?: string }>;
+}) {
+  const [{ notices }, { message }] = await Promise.all([
+    loadCommunicationWorkspace(),
+    searchParams,
+  ]);
   return (
     <div className="space-y-6 py-8">
       <PageHeader
@@ -14,6 +22,11 @@ export default async function CommunicationPage() {
         title="Information center"
         description="Publish targeted, auditable school communication without exposing personal contact details."
       />
+      {message === "published" ? (
+        <StatusNotice tone="success">
+          Notice published successfully.
+        </StatusNotice>
+      ) : null}
       <section
         className="rounded-xl border bg-white p-4 sm:p-6"
         aria-labelledby="publish-heading"

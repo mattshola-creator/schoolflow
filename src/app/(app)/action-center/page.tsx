@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusNotice } from "@/components/ui/status-notice";
 import { loadActionCenter } from "@/features/shared-services/service";
+import { NotificationList } from "@/components/notification-list";
 
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
 
@@ -273,29 +274,7 @@ export default async function ActionCenterPage({
           )}
         </div>
       </section>
-      {data.notifications.length > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold">Notifications</h2>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {data.notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className="rounded-xl border bg-white p-4"
-              >
-                <p className="font-medium break-words">{notification.title}</p>
-                {notification.body && (
-                  <p className="mt-1 text-sm break-words text-slate-600">
-                    {notification.body}
-                  </p>
-                )}
-                <p className="mt-2 text-xs text-slate-500">
-                  {new Date(notification.created_at).toLocaleString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <NotificationList notifications={data.notifications} />
     </main>
   );
 }

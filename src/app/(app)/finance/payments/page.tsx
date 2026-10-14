@@ -353,9 +353,10 @@ export default async function PaymentsPage({
                             .filter((c) => Number(balances.get(c.id) ?? 0) > 0)
                             .map((c) => (
                               <option key={c.id} value={c.id}>
-                                {c.fee_category_name_snapshot} · ₦
-                                {Number(balances.get(c.id)).toLocaleString(
-                                  "en-NG",
+                                {c.fee_category_name_snapshot} ·{" "}
+                                {money(
+                                  balances.get(c.id) ?? 0,
+                                  c.currency_code,
                                 )}
                               </option>
                             ))}

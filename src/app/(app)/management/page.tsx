@@ -105,102 +105,112 @@ export default async function ManagementPage({
           {String(query.error ?? query.message)}
         </p>
       ) : null}
-      <form
-        className={`${panel} mt-6 grid gap-3 md:grid-cols-3`}
-        aria-label="Report filters"
-      >
-        {workspace.scope.length > 1 &&
-        workspace.scope.every((school) => school.can_cross_school) ? (
-          <fieldset className="grid gap-2">
-            <legend className="text-sm font-medium">Authorized schools</legend>
-            <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-2">
-              {workspace.scope.map((school) => (
-                <label
-                  className="flex min-h-11 items-center gap-2 text-sm"
-                  key={school.school_id}
-                >
-                  <input
-                    type="checkbox"
-                    name="schools"
-                    value={school.school_id}
-                    defaultChecked={workspace.filters.schoolIds.includes(
-                      school.school_id,
-                    )}
-                    className="size-4 accent-emerald-800"
-                  />
-                  <span>{school.school_name}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        ) : (
+      <details className="mt-6 rounded-xl border bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer font-semibold">
+          Report filters
+          <span className="mt-1 block text-sm font-normal text-slate-600">
+            Adjust school, academic session, period and date range.
+          </span>
+        </summary>
+        <form
+          className="mt-4 grid gap-3 md:grid-cols-3"
+          aria-label="Report filters"
+        >
+          {workspace.scope.length > 1 &&
+          workspace.scope.every((school) => school.can_cross_school) ? (
+            <fieldset className="grid gap-2">
+              <legend className="text-sm font-medium">
+                Authorized schools
+              </legend>
+              <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-2">
+                {workspace.scope.map((school) => (
+                  <label
+                    className="flex min-h-11 items-center gap-2 text-sm"
+                    key={school.school_id}
+                  >
+                    <input
+                      type="checkbox"
+                      name="schools"
+                      value={school.school_id}
+                      defaultChecked={workspace.filters.schoolIds.includes(
+                        school.school_id,
+                      )}
+                      className="size-4 accent-emerald-800"
+                    />
+                    <span>{school.school_name}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ) : (
+            <label className="grid gap-1 text-sm font-medium">
+              School
+              <select
+                name="schools"
+                defaultValue={workspace.filters.schoolIds.join(",")}
+                className={field}
+              >
+                {workspace.scope.map((school) => (
+                  <option key={school.school_id} value={school.school_id}>
+                    {school.school_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <label className="grid gap-1 text-sm font-medium">
-            School
+            Academic session
             <select
-              name="schools"
-              defaultValue={workspace.filters.schoolIds.join(",")}
+              name="session"
+              defaultValue={workspace.filters.sessionId ?? ""}
               className={field}
             >
-              {workspace.scope.map((school) => (
-                <option key={school.school_id} value={school.school_id}>
-                  {school.school_name}
+              <option value="">All sessions</option>
+              {workspace.sessions.map((session) => (
+                <option key={session.id} value={session.id}>
+                  {session.name}
                 </option>
               ))}
             </select>
           </label>
-        )}
-        <label className="grid gap-1 text-sm font-medium">
-          Academic session
-          <select
-            name="session"
-            defaultValue={workspace.filters.sessionId ?? ""}
-            className={field}
-          >
-            <option value="">All sessions</option>
-            {workspace.sessions.map((session) => (
-              <option key={session.id} value={session.id}>
-                {session.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="grid gap-1 text-sm font-medium">
-          Academic period
-          <select
-            name="period"
-            defaultValue={workspace.filters.periodId ?? ""}
-            className={field}
-          >
-            <option value="">All periods</option>
-            {workspace.periods.map((period) => (
-              <option key={period.id} value={period.id}>
-                {period.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="grid gap-1 text-sm font-medium">
-          From
-          <input
-            name="from"
-            type="date"
-            defaultValue={workspace.filters.dateFrom}
-            className={field}
-          />
-        </label>
-        <label className="grid gap-1 text-sm font-medium">
-          To
-          <input
-            name="to"
-            type="date"
-            defaultValue={workspace.filters.dateTo}
-            className={field}
-          />
-        </label>
-        <button className="min-h-11 self-end rounded-lg border bg-slate-900 px-4 text-sm font-medium text-white">
-          Apply filters
-        </button>
-      </form>
+          <label className="grid gap-1 text-sm font-medium">
+            Academic period
+            <select
+              name="period"
+              defaultValue={workspace.filters.periodId ?? ""}
+              className={field}
+            >
+              <option value="">All periods</option>
+              {workspace.periods.map((period) => (
+                <option key={period.id} value={period.id}>
+                  {period.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            From
+            <input
+              name="from"
+              type="date"
+              defaultValue={workspace.filters.dateFrom}
+              className={field}
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            To
+            <input
+              name="to"
+              type="date"
+              defaultValue={workspace.filters.dateTo}
+              className={field}
+            />
+          </label>
+          <button className="min-h-11 self-end rounded-lg border bg-slate-900 px-4 text-sm font-medium text-white">
+            Apply filters
+          </button>
+        </form>
+      </details>
       {workspace.scope.length > 1 &&
       workspace.scope.every((x) => x.can_cross_school) ? (
         <div

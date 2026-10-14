@@ -43,6 +43,23 @@ export type PortalNotice = {
   readAt: string | null;
 };
 
+export type PortalMessage = {
+  id: string;
+  threadId: string;
+  subject: string;
+  status: "open" | "closed" | "archived";
+  studentId: string;
+  schoolId: string;
+  updatedAt: string;
+  messages: Array<{
+    id: string;
+    senderUserId: string;
+    body: string;
+    sentAt: string;
+    status: string;
+  }>;
+};
+
 export async function loadPortalContext() {
   const { supabase } = await requireUser();
   const result = await supabase.rpc("portal_context" as never);
@@ -64,6 +81,111 @@ export async function loadPortalDashboard(studentId: string, schoolId: string) {
   return {
     dashboard: dashboard.data as unknown as PortalDashboard,
     notices: (notices.data ?? []) as unknown as PortalNotice[],
+  };
+}
+
+/**
+ * Load the signed-in family account's controlled message threads. The learner
+ * and school filters come only from portal_context; table RLS continues to
+ * enforce active participation or the existing school communication grant.
+ */
+export async function loadPortalMessages() {
+  const { supabase, user } = await requireUser();
+  const contextResult = await supabase.rpc("portal_context" as never);
+  if (contextResult.error)
+    throw new Error("Portal messages could not be loaded");
+  const contexts = (contextResult.data ?? []) as unknown as PortalContext[];
+  const learnerIds = [
+    ...new Set(contexts.flatMap((x) => x.learners.map((l) => l.studentId))),
+  ];
+  const schoolIds = [...new Set(contexts.map((x) => x.schoolId))];
+  if (learnerIds.length === 0 || schoolIds.length === 0)
+    return { userId: user.id, threads: [] as PortalMessage[] };
+
+  type ThreadRow = {
+    id: string;
+    subject: string;
+    status: "open" | "closed" | "archived";
+    student_id: string;
+    school_id: string;
+    updated_at: string;
+  };
+  type MessageRow = {
+    id: string;
+    thread_id: string;
+    sender_user_id: string;
+    body: string;
+    sent_at: string;
+    status: string;
+  };
+  const client = supabase as unknown as {
+    from: (table: string) => {
+      select: (columns: string) => {
+        in: (
+          column: string,
+          values: string[],
+        ) => {
+          in: (
+            column: string,
+            values: string[],
+          ) => {
+            order: (
+              column: string,
+              options: { ascending: boolean },
+            ) => Promise<{ data: ThreadRow[] | null; error: unknown }>;
+          };
+          order: (
+            column: string,
+            options: { ascending: boolean },
+          ) => Promise<{ data: MessageRow[] | null; error: unknown }>;
+        };
+      };
+    };
+  };
+  const threadResult = await client
+    .from("communication_threads")
+    .select("id,subject,status,student_id,school_id,updated_at")
+    .in("student_id", learnerIds)
+    .in("school_id", schoolIds)
+    .order("updated_at", { ascending: false });
+  if (threadResult.error)
+    throw new Error("Portal messages could not be loaded");
+  const threads = threadResult.data ?? [];
+  if (threads.length === 0)
+    return { userId: user.id, threads: [] as PortalMessage[] };
+
+  const threadIds = threads.map((thread) => thread.id);
+  const messageResult = await client
+    .from("communication_messages")
+    .select("id,thread_id,sender_user_id,body,sent_at,status")
+    .in("thread_id", threadIds)
+    .order("sent_at", { ascending: true });
+  if (messageResult.error)
+    throw new Error("Portal messages could not be loaded");
+  const messagesByThread = new Map<string, PortalMessage["messages"]>();
+  for (const message of messageResult.data ?? []) {
+    const items = messagesByThread.get(message.thread_id) ?? [];
+    items.push({
+      id: message.id,
+      senderUserId: message.sender_user_id,
+      body: message.body,
+      sentAt: message.sent_at,
+      status: message.status,
+    });
+    messagesByThread.set(message.thread_id, items);
+  }
+  return {
+    userId: user.id,
+    threads: threads.map((thread) => ({
+      id: thread.id,
+      threadId: thread.id,
+      subject: thread.subject,
+      status: thread.status,
+      studentId: thread.student_id,
+      schoolId: thread.school_id,
+      updatedAt: thread.updated_at,
+      messages: messagesByThread.get(thread.id) ?? [],
+    })),
   };
 }
 

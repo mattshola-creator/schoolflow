@@ -10,8 +10,17 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusNotice } from "@/components/ui/status-notice";
 import { loadActionCenter } from "@/features/shared-services/service";
+import { NotificationList } from "@/components/notification-list";
 
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
+
+function readableStatus(status: string) {
+  return status
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
 
 export default async function ActionCenterPage({
   searchParams,
@@ -22,8 +31,12 @@ export default async function ActionCenterPage({
     searchParams,
     loadActionCenter(),
   ]);
+  const permissions = data.authorization.permissions;
+  const canManageTasks = permissions.includes("shared.tasks.manage");
+  const canManageApprovals = permissions.includes("shared.approvals.manage");
+  const canDecideApprovals = permissions.includes("shared.approvals.decide");
   return (
-    <main className="space-y-8 py-8">
+    <main className="flex flex-col gap-8 py-8">
       <PageHeader
         eyebrow="Shared operations"
         title="Action Center"
@@ -31,96 +44,116 @@ export default async function ActionCenterPage({
       />
       {message && <StatusNotice tone="success">{message}</StatusNotice>}
       {error && <StatusNotice tone="error">{error}</StatusNotice>}
-      <section className="grid gap-6 lg:grid-cols-2">
-        <div className={panel}>
-          <h2 className="font-semibold">New task</h2>
-          <form action={createTask} className="mt-4 grid gap-3">
-            <input
-              name="title"
-              required
-              minLength={3}
-              maxLength={160}
-              aria-label="Task title"
-              placeholder="Task title"
-              className={fieldClass}
-            />
-            <textarea
-              name="description"
-              maxLength={2000}
-              aria-label="Task details"
-              placeholder="Details (optional)"
-              className={`${fieldClass} min-h-24 py-3`}
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <select
-                name="priority"
-                defaultValue="normal"
-                aria-label="Task priority"
-                className={fieldClass}
-              >
-                <option value="low">Low priority</option>
-                <option value="normal">Normal priority</option>
-                <option value="high">High priority</option>
-                <option value="urgent">Urgent</option>
-              </select>
-              <input
-                name="dueAt"
-                type="datetime-local"
-                className={fieldClass}
-                aria-label="Due date"
-              />
-            </div>
-            <Button className="w-full" type="submit">
-              Add task
-            </Button>
-          </form>
-        </div>
-        <div className={panel}>
-          <h2 className="font-semibold">New approval policy</h2>
-          <form action={createApprovalPolicy} className="mt-4 grid gap-3">
-            <input
-              name="name"
-              required
-              aria-label="Policy name"
-              placeholder="Policy name"
-              className={fieldClass}
-            />
-            <input
-              name="key"
-              required
-              aria-label="Policy key"
-              placeholder="admissions.offer"
-              className={fieldClass}
-            />
-            <input
-              name="description"
-              aria-label="Policy purpose"
-              placeholder="Purpose (optional)"
-              className={fieldClass}
-            />
-            <select
-              name="approverRoleId"
-              required
-              aria-label="First-step approver role"
-              className={fieldClass}
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Choose first-step approver role
-              </option>
-              {data.roles.map((role) => (
-                <option key={role.id} value={role.id}>
-                  {role.name}
-                </option>
-              ))}
-            </select>
-            <Button className="w-full" type="submit" variant="secondary">
-              Create policy
-            </Button>
-          </form>
-        </div>
-      </section>
-      <section>
+      <details className="order-4 rounded-xl border bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer font-semibold">
+          Administrative setup
+          <span className="mt-1 block text-sm font-normal text-slate-600">
+            Manage tasks and approval policies when your role allows it.
+          </span>
+        </summary>
+        <section className="mt-5 grid gap-6 lg:grid-cols-2">
+          <div className={panel}>
+            <h2 className="font-semibold">New task</h2>
+            {canManageTasks ? (
+              <form action={createTask} className="mt-4 grid gap-3">
+                <input
+                  name="title"
+                  required
+                  minLength={3}
+                  maxLength={160}
+                  aria-label="Task title"
+                  placeholder="Task title"
+                  className={fieldClass}
+                />
+                <textarea
+                  name="description"
+                  maxLength={2000}
+                  aria-label="Task details"
+                  placeholder="Details (optional)"
+                  className={`${fieldClass} min-h-24 py-3`}
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <select
+                    name="priority"
+                    defaultValue="normal"
+                    aria-label="Task priority"
+                    className={fieldClass}
+                  >
+                    <option value="low">Low priority</option>
+                    <option value="normal">Normal priority</option>
+                    <option value="high">High priority</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                  <input
+                    name="dueAt"
+                    type="datetime-local"
+                    className={fieldClass}
+                    aria-label="Due date"
+                  />
+                </div>
+                <Button className="w-full" type="submit">
+                  Add task
+                </Button>
+              </form>
+            ) : (
+              <p className="mt-3 text-sm text-slate-600">
+                Task creation is unavailable for your role.
+              </p>
+            )}
+          </div>
+          <div className={panel}>
+            <h2 className="font-semibold">New approval policy</h2>
+            {canManageApprovals ? (
+              <form action={createApprovalPolicy} className="mt-4 grid gap-3">
+                <input
+                  name="name"
+                  required
+                  aria-label="Policy name"
+                  placeholder="Policy name"
+                  className={fieldClass}
+                />
+                <input
+                  name="key"
+                  required
+                  aria-label="Policy key"
+                  placeholder="admissions.offer"
+                  className={fieldClass}
+                />
+                <input
+                  name="description"
+                  aria-label="Policy purpose"
+                  placeholder="Purpose (optional)"
+                  className={fieldClass}
+                />
+                <select
+                  name="approverRoleId"
+                  required
+                  aria-label="First-step approver role"
+                  className={fieldClass}
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Choose first-step approver role
+                  </option>
+                  {data.roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
+                <Button className="w-full" type="submit" variant="secondary">
+                  Create policy
+                </Button>
+              </form>
+            ) : (
+              <p className="mt-3 text-sm text-slate-600">
+                Approval policy management is unavailable for your role.
+              </p>
+            )}
+          </div>
+        </section>
+      </details>
+      <section className="order-1">
         <h2 className="text-xl font-semibold">Open work</h2>
         <div className="mt-3 overflow-hidden rounded-xl border bg-white">
           {data.tasks.length === 0 ? (
@@ -136,41 +169,48 @@ export default async function ActionCenterPage({
                 <div className="min-w-0">
                   <p className="font-medium break-words">{task.title}</p>
                   <p className="text-sm break-words text-slate-500">
-                    {task.priority} · {task.status}
+                    {readableStatus(task.priority)} ·{" "}
+                    {readableStatus(task.status)}
                     {task.due_at
                       ? ` · due ${new Date(task.due_at).toLocaleString()}`
                       : ""}
                   </p>
                 </div>
-                <form
-                  action={updateTaskStatus}
-                  className="grid min-w-0 gap-2 sm:flex sm:shrink-0"
-                >
-                  <input type="hidden" name="taskId" value={task.id} />
-                  <select
-                    name="status"
-                    defaultValue={task.status}
-                    aria-label={`Status for ${task.title}`}
-                    className={`${fieldClass} mt-0 sm:w-auto`}
+                {canManageTasks ? (
+                  <form
+                    action={updateTaskStatus}
+                    className="grid min-w-0 gap-2 sm:flex sm:shrink-0"
                   >
-                    <option value="open">Open</option>
-                    <option value="in_progress">In progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                  <Button className="w-full sm:w-auto" type="submit">
-                    Save
-                  </Button>
-                </form>
+                    <input type="hidden" name="taskId" value={task.id} />
+                    <select
+                      name="status"
+                      defaultValue={task.status}
+                      aria-label={`Status for ${task.title}`}
+                      className={`${fieldClass} mt-0 sm:w-auto`}
+                    >
+                      <option value="open">Open</option>
+                      <option value="in_progress">In progress</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                    <Button className="w-full sm:w-auto" type="submit">
+                      Save
+                    </Button>
+                  </form>
+                ) : null}
               </div>
             ))
           )}
         </div>
       </section>
-      <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
-        <div className={panel}>
+      <section className="order-2 grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div className={`${panel} order-2`}>
           <h2 className="font-semibold">Submit approval</h2>
-          {data.policies.length === 0 ? (
+          {!canManageApprovals ? (
+            <p className="mt-3 text-sm text-slate-600">
+              Approval submission is unavailable for your role.
+            </p>
+          ) : data.policies.length === 0 ? (
             <p className="mt-3 text-sm text-slate-500">
               Create a policy first.
             </p>
@@ -185,6 +225,7 @@ export default async function ActionCenterPage({
                 {data.policies.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
+                    {p.description ? ` — ${p.description}` : ""}
                   </option>
                 ))}
               </select>
@@ -215,7 +256,7 @@ export default async function ActionCenterPage({
             </form>
           )}
         </div>
-        <div className={panel}>
+        <div className={`${panel} order-1`}>
           <h2 className="font-semibold">Approval inbox</h2>
           {data.requests.length === 0 ? (
             <p className="mt-3 text-sm text-slate-500">No approval requests.</p>
@@ -227,9 +268,9 @@ export default async function ActionCenterPage({
               >
                 <p className="font-medium break-words">{request.title}</p>
                 <p className="text-sm text-slate-500">
-                  {request.status} · step {request.current_step}
+                  {readableStatus(request.status)} · step {request.current_step}
                 </p>
-                {request.status === "pending" && (
+                {request.status === "pending" && canDecideApprovals && (
                   <form
                     action={decideApproval}
                     className="mt-3 grid min-w-0 gap-2 sm:grid-cols-3"
@@ -273,29 +314,9 @@ export default async function ActionCenterPage({
           )}
         </div>
       </section>
-      {data.notifications.length > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold">Notifications</h2>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {data.notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className="rounded-xl border bg-white p-4"
-              >
-                <p className="font-medium break-words">{notification.title}</p>
-                {notification.body && (
-                  <p className="mt-1 text-sm break-words text-slate-600">
-                    {notification.body}
-                  </p>
-                )}
-                <p className="mt-2 text-xs text-slate-500">
-                  {new Date(notification.created_at).toLocaleString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <div className="order-3">
+        <NotificationList notifications={data.notifications} />
+      </div>
     </main>
   );
 }

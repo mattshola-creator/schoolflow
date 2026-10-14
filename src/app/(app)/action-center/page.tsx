@@ -14,6 +14,14 @@ import { NotificationList } from "@/components/notification-list";
 
 const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
 
+function readableStatus(status: string) {
+  return status
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 export default async function ActionCenterPage({
   searchParams,
 }: {
@@ -161,7 +169,8 @@ export default async function ActionCenterPage({
                 <div className="min-w-0">
                   <p className="font-medium break-words">{task.title}</p>
                   <p className="text-sm break-words text-slate-500">
-                    {task.priority} · {task.status}
+                    {readableStatus(task.priority)} ·{" "}
+                    {readableStatus(task.status)}
                     {task.due_at
                       ? ` · due ${new Date(task.due_at).toLocaleString()}`
                       : ""}
@@ -195,7 +204,7 @@ export default async function ActionCenterPage({
         </div>
       </section>
       <section className="order-2 grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <div className={`${panel} order-2 lg:order-1`}>
+        <div className={`${panel} order-2`}>
           <h2 className="font-semibold">Submit approval</h2>
           {!canManageApprovals ? (
             <p className="mt-3 text-sm text-slate-600">
@@ -247,7 +256,7 @@ export default async function ActionCenterPage({
             </form>
           )}
         </div>
-        <div className={`${panel} order-1 lg:order-2`}>
+        <div className={`${panel} order-1`}>
           <h2 className="font-semibold">Approval inbox</h2>
           {data.requests.length === 0 ? (
             <p className="mt-3 text-sm text-slate-500">No approval requests.</p>
@@ -259,7 +268,7 @@ export default async function ActionCenterPage({
               >
                 <p className="font-medium break-words">{request.title}</p>
                 <p className="text-sm text-slate-500">
-                  {request.status} · step {request.current_step}
+                  {readableStatus(request.status)} · step {request.current_step}
                 </p>
                 {request.status === "pending" && canDecideApprovals && (
                   <form

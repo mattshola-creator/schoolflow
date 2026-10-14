@@ -31,43 +31,42 @@ accounting remain excluded by ADR-0023.
 
 ## Acceptance matrix
 
-| Check                                                                                                                                          | Evidence                                                                                          | Status                                     |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Finance section navigation uses the current authorization snapshot and hides destinations with missing module, feature or permission access    | `FinanceWorkspaceNav` focused tests                                                               | PASS — automated                           |
-| Unauthorized, unentitled, disabled, invalid-context and technical load states remain distinct and fail closed                                  | `FinanceUnavailableState` maps only existing authorization error reasons; focused component tests | PASS — automated                           |
-| Forms use visible field labels and mobile-friendly stacked layouts; empty registers explain the state                                          | Finance route source; full lint, type and test checks                                             | PASS — source/automated                    |
-| Exact-decimal validation, recorder/verifier separation, allocation, receipts, reversals, expense approvals and reconciliation remain unchanged | Existing `src/features/finance` service, schema, migration-contract tests and M9 matrix           | PASS — automated/source; no live mutations |
-| Authenticated browser review of populated fee, payment, expense, cashier, report and reconciliation flows                                      | Requires protected preview and authorized QA data                                                 | NOT TESTED                                 |
-| Responsive configured-state review on mobile and desktop                                                                                       | Founder visual acceptance step                                                                    | NOT TESTED                                 |
-| Live Finance write workflow in isolated synthetic data                                                                                         | Requires separate isolated demo/UAT execution                                                     | NOT TESTED                                 |
-| Production/shared tenant mutation                                                                                                              | Not performed                                                                                     | NONE                                       |
+| Check                                                                                                                                                        | Evidence                                                                                                           | Status                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| Finance section navigation uses the current authorization snapshot and hides destinations with missing module, feature or permission access                  | `FinanceWorkspaceNav` focused tests                                                                                | PASS — automated                           |
+| Unauthorized, unentitled, disabled, invalid-context and technical load states remain distinct and fail closed                                                | `FinanceUnavailableState` maps only existing authorization error reasons; focused component tests                  | PASS — automated                           |
+| Forms use visible field labels and mobile-friendly stacked layouts; empty registers explain the state                                                        | Finance route source; full lint, type and test checks                                                              | PASS — source/automated                    |
+| Finance overview uses exact paged school-scoped M9 rows, separates recorded from verified collections, and exposes tasks only for authorized sections        | `/finance/overview`; `loadFinanceDashboard`; RLS-scoped existing tables/views                                      | PASS — source/automated                    |
+| Student bill register and invoice detail use the existing `finance.billing.view` gate and show allocations only when Collections read access is also present | `/finance/billing`, `/finance/billing/[invoiceId]`; current authorization checks; M9 billing and allocation tables | PASS — source/automated                    |
+| Student identity in Finance views is displayed or searchable only when the current school authorization also grants existing student-record access           | Role-sensitive `students.view` + `students.student_records` check; otherwise identity is omitted                   | PASS — source/automated                    |
+| Exact-decimal validation, recorder/verifier separation, allocation, receipts, reversals, expense approvals and reconciliation remain unchanged               | Existing `src/features/finance` service, schema, migration-contract tests and M9 matrix                            | PASS — automated/source; no live mutations |
+| Authenticated browser review of populated fee, payment, expense, cashier, report and reconciliation flows                                                    | Requires protected preview and authorized QA data                                                                  | NOT TESTED                                 |
+| Responsive configured-state review on mobile and desktop                                                                                                     | Founder visual acceptance step                                                                                     | NOT TESTED                                 |
+| Live Finance write workflow in isolated synthetic data                                                                                                       | Requires separate isolated demo/UAT execution                                                                      | NOT TESTED                                 |
+| Production/shared tenant mutation                                                                                                                            | Not performed                                                                                                      | NONE                                       |
 
 ## Quality evidence for this branch
 
-Local automated results after implementation: focused Finance checks **10
-passed**; full regression **398 tests across 88 files passed**; formatting,
-zero-warning lint and strict TypeScript passed. On implementation head
-`6b07567cdb432acd1e6278c59e7454eebb5d5f59`, GitHub CI passed frozen install,
-format, lint, strict TypeScript, all tests and production build. The Netlify
-Deploy Preview was Ready on that exact head; the Next.js plugin passed and the
-regular/enhanced secret scan checked 473 files with zero findings. A subsequent
-matrix-only documentation update triggers those checks again on the latest PR
-head; verify the PR and deploy status against that exact revision before
-acceptance.
+On the previously published head `ebc9f82c350225ddb9135a8a5d389b82f46ff4db`,
+GitHub CI passed frozen install, formatting, zero-warning lint, strict
+TypeScript, the full test suite and production build. Netlify preview
+`6acd6eb0b642bbf05eeadd14` was Ready on that exact head, with a successful
+Next.js plugin and regular/enhanced secret scans over 473 files with zero
+findings. Those checks predate the dashboard and bill-register changes.
+
+Local verification on the current RU6 working revision: frozen-lockfile install
+passed; format, lint, strict TypeScript and production build passed; full suite
+**399 tests across 88 files passed**; local tracked-source secret-pattern scan
+found no literal credential patterns. Production dependency audit passed. Full
+dependency audit remains non-green because the existing unsuppressed
+development-only `braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`) remains in
+`eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch > braces`.
+The updated PR and preview must rerun CI, Netlify regular/enhanced secret scans
+and preview build before founder review.
 
 The protected preview requires Netlify team SSO for non-production deploys. The
 review browser was redirected to Netlify Team Protection, so authenticated
 Finance UI inspection remains NOT TESTED.
 
-The local production build could not fetch Geist fonts from Google Fonts because
-external network access is blocked in this workspace; the successful CI and
-Netlify builds provide the independent build evidence.
-
-The frozen-lockfile install is also blocked locally: pnpm registry requests
-return `EPERM` and the workspace lacks its configured `/root/.local` store
-path. GitHub CI completed the frozen install successfully. The CI dependency
-audit remains non-green for the existing unsuppressed development-only
-`braces@3.0.3` advisory (`GHSA-vfj7-8cjw-p6xm`), through
-`eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch > braces`;
-the subsequent CI tracked-secret scan is skipped after that failure. The local
-tracked-source scan had no matches.
+The previously recorded owner-browser review was read-only. No production or
+shared tenant Finance records were created, modified, reversed or reconciled.

@@ -1,3 +1,4 @@
+import { evaluateAccess } from "@/features/authorization/evaluator";
 import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
@@ -9,6 +10,232 @@ import type {
 } from "./schemas";
 import type { z } from "zod";
 import { otherIncomeSchema } from "./schemas";
+
+async function loadAllPages<T>(
+  readPage: (
+    from: number,
+    to: number,
+  ) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
+) {
+  const pageSize = 500;
+  const rows: T[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await readPage(from, from + pageSize - 1);
+    if (error) throw new Error("Finance summary could not be loaded");
+    const page = data ?? [];
+    rows.push(...page);
+    if (page.length < pageSize) return rows;
+  }
+}
+
+function totalsByCurrency(
+  rows: Array<{ currency_code: string | null; amount: number | string | null }>,
+) {
+  return rows.reduce<Record<string, number>>((totals, row) => {
+    const currency = row.currency_code ?? "NGN";
+    totals[currency] = (totals[currency] ?? 0) + Number(row.amount ?? 0);
+    return totals;
+  }, {});
+}
+
+export async function loadFinanceDashboard() {
+  const authorization = await requireCapability({
+    permission: "finance.view",
+    module: "finance",
+  });
+  if (!authorization.schoolId) throw new Error("A school context is required");
+  const [{ supabase }, { active }] = await Promise.all([
+    requireUser(),
+    loadTenantContext(),
+  ]);
+  if (
+    !active ||
+    active.organizationId !== authorization.organizationId ||
+    active.schoolId !== authorization.schoolId
+  )
+    throw new Error("The active school context is invalid");
+
+  const scope = {
+    organization_id: active.organizationId,
+    school_id: active.schoolId!,
+  };
+  const allowed = (permission: string, feature: string) =>
+    evaluateAccess(authorization, { permission, module: "finance", feature })
+      .allowed;
+  const canViewBilling = allowed("finance.billing.view", "finance.billing");
+  const canViewCollections = allowed(
+    "finance.payments.view",
+    "finance.collections",
+  );
+  const canViewExpenses = allowed("finance.expenses.view", "finance.expenses");
+  const canViewReports = allowed("finance.reports.view", "finance.reporting");
+  const canManageCashier = allowed(
+    "finance.cashier.manage",
+    "finance.cashier_control",
+  );
+  const canReconcile = allowed("finance.reconcile", "finance.cashier_control");
+  const recentSince = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const recentDate = recentSince.toISOString().slice(0, 10);
+
+  const [
+    charges,
+    balances,
+    payments,
+    expenses,
+    otherIncome,
+    pendingPayments,
+    pendingExpenses,
+    cashierSessions,
+    reconciliations,
+  ] = await Promise.all([
+    canViewBilling
+      ? loadAllPages((from, to) =>
+          supabase
+            .from("student_charges")
+            .select("id, original_amount, currency_code, status")
+            .match(scope)
+            .neq("status", "reversed")
+            .range(from, to),
+        )
+      : Promise.resolve([]),
+    canViewBilling
+      ? loadAllPages((from, to) =>
+          supabase
+            .from("student_charge_balances")
+            .select("student_charge_id, outstanding_amount")
+            .match(scope)
+            .range(from, to),
+        )
+      : Promise.resolve([]),
+    canViewCollections
+      ? loadAllPages((from, to) =>
+          supabase
+            .from("payments")
+            .select("amount, currency_code, status, paid_at")
+            .match(scope)
+            .gte("paid_at", recentSince.toISOString())
+            .in("status", ["recorded", "verified"])
+            .range(from, to),
+        )
+      : Promise.resolve([]),
+    canViewExpenses
+      ? loadAllPages((from, to) =>
+          supabase
+            .from("finance_expense_summary")
+            .select("expense_date, currency_code, expense_count, amount")
+            .match(scope)
+            .gte("expense_date", recentDate)
+            .range(from, to),
+        )
+      : Promise.resolve([]),
+    canViewReports
+      ? loadAllPages((from, to) =>
+          supabase
+            .from("other_income")
+            .select("amount, currency_code, received_at")
+            .match(scope)
+            .gte("received_at", recentSince.toISOString())
+            .range(from, to),
+        )
+      : Promise.resolve([]),
+    canViewCollections
+      ? supabase
+          .from("payments")
+          .select("id", { count: "exact", head: true })
+          .match(scope)
+          .eq("status", "recorded")
+      : Promise.resolve({ count: 0, error: null }),
+    canViewExpenses
+      ? supabase
+          .from("expenses")
+          .select("id", { count: "exact", head: true })
+          .match(scope)
+          .eq("status", "submitted")
+      : Promise.resolve({ count: 0, error: null }),
+    canManageCashier
+      ? supabase
+          .from("cashier_sessions")
+          .select("id", { count: "exact", head: true })
+          .match(scope)
+          .eq("status", "open")
+      : Promise.resolve({ count: 0, error: null }),
+    canReconcile
+      ? supabase
+          .from("reconciliation_records")
+          .select("id", { count: "exact", head: true })
+          .match(scope)
+          .eq("status", "exception")
+      : Promise.resolve({ count: 0, error: null }),
+  ]);
+
+  if (
+    pendingPayments.error ||
+    pendingExpenses.error ||
+    cashierSessions.error ||
+    reconciliations.error
+  )
+    throw new Error("Finance dashboard could not be loaded");
+
+  const chargeCurrency = new Map(
+    charges.map((charge) => [charge.id, charge.currency_code]),
+  );
+  const billedByCurrency = totalsByCurrency(
+    charges.map((charge) => ({
+      currency_code: charge.currency_code,
+      amount: charge.original_amount,
+    })),
+  );
+  const outstandingByCurrency = totalsByCurrency(
+    balances.map((balance) => ({
+      currency_code:
+        chargeCurrency.get(balance.student_charge_id ?? "") ?? "NGN",
+      amount: balance.outstanding_amount,
+    })),
+  );
+  const verifiedCollectionsByCurrency = totalsByCurrency(
+    payments
+      .filter((payment) => payment.status === "verified")
+      .map((payment) => ({
+        currency_code: payment.currency_code,
+        amount: payment.amount,
+      })),
+  );
+  const expensesByCurrency = totalsByCurrency(
+    expenses.map((expense) => ({
+      currency_code: expense.currency_code,
+      amount: expense.amount,
+    })),
+  );
+  const otherIncomeByCurrency = totalsByCurrency(
+    otherIncome.map((income) => ({
+      currency_code: income.currency_code,
+      amount: income.amount,
+    })),
+  );
+
+  return {
+    active,
+    authorization,
+    windowStart: recentDate,
+    billedByCurrency,
+    outstandingByCurrency,
+    verifiedCollectionsByCurrency,
+    expensesByCurrency,
+    otherIncomeByCurrency,
+    pendingPayments: pendingPayments.count ?? 0,
+    pendingExpenses: pendingExpenses.count ?? 0,
+    openCashierSessions: cashierSessions.count ?? 0,
+    openReconciliations: reconciliations.count ?? 0,
+    visibility: {
+      billing: canViewBilling,
+      collections: canViewCollections,
+      expenses: canViewExpenses,
+      reports: canViewReports,
+      cashier: canManageCashier,
+      reconciliation: canReconcile,
+    },
+  };
+}
 
 export async function requireFinanceContext(
   permission = "finance.view",
@@ -298,6 +525,276 @@ export async function loadCollectionsWorkspace() {
     receipts: receipts.data ?? [],
     cashierSessions: cashierSessions.data ?? [],
     members: members.data ?? [],
+  };
+}
+
+const billPageSize = 25;
+
+async function loadInvoiceLines(
+  context: Awaited<ReturnType<typeof requireFinanceContext>>,
+  invoiceIds: string[],
+) {
+  if (!invoiceIds.length)
+    return { lines: [], balances: [], allocations: [], payments: [] };
+  const scope = {
+    organization_id: context.active.organizationId,
+    school_id: context.active.schoolId!,
+  };
+  const lines = await loadAllPages((from, to) =>
+    context.supabase
+      .from("student_charges")
+      .select(
+        "id, invoice_id, fee_category_name_snapshot, fee_structure_name_snapshot, original_amount, currency_code, due_date, status",
+      )
+      .match(scope)
+      .in("invoice_id", invoiceIds)
+      .order("created_at", { ascending: true })
+      .range(from, to),
+  );
+  const lineIds = lines.map((line) => line.id);
+  if (!lineIds.length)
+    return { lines, balances: [], allocations: [], payments: [] };
+
+  const canViewPayments = evaluateAccess(context.authorization, {
+    permission: "finance.payments.view",
+    module: "finance",
+    feature: "finance.collections",
+  }).allowed;
+  const [balances, allocations] = await Promise.all([
+    loadAllPages((from, to) =>
+      context.supabase
+        .from("student_charge_balances")
+        .select("student_charge_id, outstanding_amount")
+        .match(scope)
+        .in("student_charge_id", lineIds)
+        .range(from, to),
+    ),
+    canViewPayments
+      ? loadAllPages((from, to) =>
+          context.supabase
+            .from("payment_allocations")
+            .select("id, payment_id, student_charge_id, amount, allocated_at")
+            .match(scope)
+            .in("student_charge_id", lineIds)
+            .order("allocated_at", { ascending: false })
+            .range(from, to),
+        )
+      : Promise.resolve([]),
+  ]);
+  const paymentIds = [...new Set(allocations.map((item) => item.payment_id))];
+  const payments =
+    canViewPayments && paymentIds.length
+      ? await loadAllPages((from, to) =>
+          context.supabase
+            .from("payments")
+            .select("id, status, paid_at, method")
+            .match(scope)
+            .in("id", paymentIds)
+            .range(from, to),
+        )
+      : [];
+  return { lines, balances, allocations, payments };
+}
+
+export async function loadStudentBillRegister(filters: {
+  query?: string;
+  status?: string;
+  sessionId?: string;
+  page?: number;
+}) {
+  const context = await requireFinanceContext(
+    "finance.billing.view",
+    "finance.billing",
+  );
+  const scope = {
+    organization_id: context.active.organizationId,
+    school_id: context.active.schoolId!,
+  };
+  const query = filters.query?.trim().slice(0, 100) ?? "";
+  const statuses = ["open", "partially_paid", "paid", "voided"] as const;
+  const status = statuses.find((candidate) => candidate === filters.status);
+  const page = Math.max(0, Math.min(10_000, Math.trunc(filters.page ?? 0)));
+
+  const canViewStudentIdentity = evaluateAccess(context.authorization, {
+    permission: "students.view",
+    module: "students",
+    feature: "students.student_records",
+  }).allowed;
+  let matchingStudentIds: string[] = [];
+  if (query && canViewStudentIdentity) {
+    const { data, error } = await context.supabase
+      .from("student_profiles")
+      .select("id")
+      .eq("organization_id", context.active.organizationId)
+      .ilike("student_number", `%${query}%`)
+      .limit(100);
+    if (error) throw new Error("Student billing search could not be loaded");
+    matchingStudentIds = (data ?? []).map((student) => student.id);
+  }
+
+  let invoicesQuery = context.supabase
+    .from("student_invoices")
+    .select(
+      "id, invoice_number, student_id, session_id, period_id, currency_code, status, issued_at",
+      { count: "exact" },
+    )
+    .match(scope);
+  if (status) invoicesQuery = invoicesQuery.eq("status", status);
+  if (filters.sessionId)
+    invoicesQuery = invoicesQuery.eq("session_id", filters.sessionId);
+  if (query) {
+    invoicesQuery = matchingStudentIds.length
+      ? invoicesQuery.in("student_id", matchingStudentIds)
+      : invoicesQuery.ilike("invoice_number", `%${query}%`);
+  }
+  const {
+    data: invoices,
+    count,
+    error,
+  } = await invoicesQuery
+    .order("issued_at", { ascending: false })
+    .range(page * billPageSize, page * billPageSize + billPageSize - 1);
+  if (error) throw new Error("Student bill register could not be loaded");
+
+  const invoiceRows = invoices ?? [];
+  const studentIds = [
+    ...new Set(invoiceRows.map((invoice) => invoice.student_id)),
+  ];
+  const profileResult =
+    canViewStudentIdentity && studentIds.length
+      ? await context.supabase
+          .from("student_profiles")
+          .select("id, student_number, people!inner(first_name, last_name)")
+          .eq("organization_id", context.active.organizationId)
+          .in("id", studentIds)
+      : { data: [], error: null };
+  if (profileResult.error)
+    throw new Error("Student details could not be loaded");
+  const studentById = new Map(
+    (profileResult.data ?? []).map((profile) => [profile.id, profile]),
+  );
+  const detail = await loadInvoiceLines(
+    context,
+    invoiceRows.map((invoice) => invoice.id),
+  );
+  const balanceByLine = new Map(
+    detail.balances.map((balance) => [
+      balance.student_charge_id,
+      Number(balance.outstanding_amount ?? 0),
+    ]),
+  );
+  const rows = invoiceRows.map((invoice) => {
+    const lines = detail.lines.filter((line) => line.invoice_id === invoice.id);
+    const profile = studentById.get(invoice.student_id);
+    return {
+      ...invoice,
+      studentNumber: profile?.student_number ?? null,
+      studentName: profile
+        ? `${profile.people.first_name} ${profile.people.last_name}`
+        : null,
+      chargeCount: lines.length,
+      billedAmount: lines.reduce(
+        (sum, line) => sum + Number(line.original_amount),
+        0,
+      ),
+      outstandingAmount: lines.reduce(
+        (sum, line) => sum + (balanceByLine.get(line.id) ?? 0),
+        0,
+      ),
+    };
+  });
+  return {
+    ...context,
+    rows,
+    page,
+    pageSize: billPageSize,
+    total: count ?? 0,
+    sessions: await context.supabase
+      .from("academic_sessions")
+      .select("id, name")
+      .match(scope)
+      .order("start_date", { ascending: false })
+      .then(({ data, error: sessionsError }) => {
+        if (sessionsError)
+          throw new Error("Academic sessions could not be loaded");
+        return data ?? [];
+      }),
+    canViewStudentIdentity,
+  };
+}
+
+export async function loadStudentBillDetail(invoiceId: string) {
+  const context = await requireFinanceContext(
+    "finance.billing.view",
+    "finance.billing",
+  );
+  const scope = {
+    organization_id: context.active.organizationId,
+    school_id: context.active.schoolId!,
+  };
+  const { data: invoice, error } = await context.supabase
+    .from("student_invoices")
+    .select(
+      "id, invoice_number, student_id, session_id, period_id, currency_code, status, issued_at",
+    )
+    .match(scope)
+    .eq("id", invoiceId)
+    .maybeSingle();
+  if (error) throw new Error("Student bill could not be loaded");
+  if (!invoice) return null;
+
+  const canViewStudentIdentity = evaluateAccess(context.authorization, {
+    permission: "students.view",
+    module: "students",
+    feature: "students.student_records",
+  }).allowed;
+  const profileResult = canViewStudentIdentity
+    ? await context.supabase
+        .from("student_profiles")
+        .select("id, student_number, people!inner(first_name, last_name)")
+        .eq("organization_id", context.active.organizationId)
+        .eq("id", invoice.student_id)
+        .maybeSingle()
+    : { data: null, error: null };
+  if (profileResult.error)
+    throw new Error("Student details could not be loaded");
+  const detail = await loadInvoiceLines(context, [invoice.id]);
+  const balanceByLine = new Map(
+    detail.balances.map((balance) => [
+      balance.student_charge_id,
+      Number(balance.outstanding_amount ?? 0),
+    ]),
+  );
+  const paymentById = new Map(
+    detail.payments.map((payment) => [payment.id, payment]),
+  );
+  const allocationsByLine = new Map<string, typeof detail.allocations>();
+  for (const allocation of detail.allocations) {
+    const existing = allocationsByLine.get(allocation.student_charge_id) ?? [];
+    allocationsByLine.set(allocation.student_charge_id, [
+      ...existing,
+      allocation,
+    ]);
+  }
+  const lines = detail.lines.map((line) => ({
+    ...line,
+    outstandingAmount: balanceByLine.get(line.id) ?? 0,
+    allocations: (allocationsByLine.get(line.id) ?? []).map((allocation) => ({
+      ...allocation,
+      payment: paymentById.get(allocation.payment_id) ?? null,
+    })),
+  }));
+  return {
+    ...context,
+    invoice: {
+      ...invoice,
+      studentNumber: profileResult.data?.student_number ?? null,
+      studentName: profileResult.data
+        ? `${profileResult.data.people.first_name} ${profileResult.data.people.last_name}`
+        : null,
+    },
+    lines,
+    canViewStudentIdentity,
   };
 }
 

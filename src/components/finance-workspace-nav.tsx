@@ -6,10 +6,22 @@ import {
 
 const sections = [
   {
+    href: "/finance/overview",
+    label: "Overview",
+    permission: "finance.view",
+    feature: undefined,
+  },
+  {
     href: "/finance",
     label: "Fee setup",
     permission: "finance.view",
     feature: "finance.fee_management",
+  },
+  {
+    href: "/finance/billing",
+    label: "Student bills",
+    permission: "finance.billing.view",
+    feature: "finance.billing",
   },
   {
     href: "/finance/payments",

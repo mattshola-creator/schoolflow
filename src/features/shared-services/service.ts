@@ -59,7 +59,7 @@ export async function loadActionCenter() {
       .limit(50),
     context.supabase
       .from("approval_policies")
-      .select("id,key,name,is_active")
+      .select("id,key,name,description,is_active")
       .eq("organization_id", context.active.organizationId)
       .eq("school_id", context.active.schoolId!)
       .order("name"),

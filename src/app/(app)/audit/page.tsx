@@ -1,3 +1,11 @@
+function readableAction(action: string) {
+  return action
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 import { PageHeader } from "@/components/ui/page-header";
 import { loadAuditEvents } from "@/features/shared-services/service";
 
@@ -20,7 +28,10 @@ export default async function AuditPage() {
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <h2 className="min-w-0 font-semibold break-words">
-                  {event.action}
+                  {readableAction(event.action)}
+                  <code className="mt-1 block text-xs font-normal text-slate-500">
+                    {event.action}
+                  </code>
                 </h2>
                 <time className="shrink-0 text-right text-xs text-slate-500">
                   {new Date(event.occurred_at).toLocaleString()}
@@ -72,7 +83,12 @@ export default async function AuditPage() {
                   <td className="p-3 whitespace-nowrap">
                     {new Date(event.occurred_at).toLocaleString()}
                   </td>
-                  <td className="p-3 font-medium">{event.action}</td>
+                  <td className="p-3 font-medium">
+                    {readableAction(event.action)}
+                    <code className="mt-1 block text-xs font-normal text-slate-500">
+                      {event.action}
+                    </code>
+                  </td>
                   <td className="p-3 text-slate-600">
                     {event.entity_type}
                     {event.entity_id

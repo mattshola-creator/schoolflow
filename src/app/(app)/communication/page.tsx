@@ -1,11 +1,20 @@
 import { PageHeader } from "@/components/ui/page-header";
+import { StatusNotice } from "@/components/ui/status-notice";
+import { CommunicationNoticeList } from "@/components/communication-notice-list";
 import { loadCommunicationWorkspace } from "@/features/communication/service";
 import { publishNotice } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function CommunicationPage() {
-  const { notices } = await loadCommunicationWorkspace();
+export default async function CommunicationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ message?: string }>;
+}) {
+  const [{ notices }, { message }] = await Promise.all([
+    loadCommunicationWorkspace(),
+    searchParams,
+  ]);
   return (
     <div className="space-y-6 py-8">
       <PageHeader
@@ -13,6 +22,11 @@ export default async function CommunicationPage() {
         title="Information center"
         description="Publish targeted, auditable school communication without exposing personal contact details."
       />
+      {message === "published" ? (
+        <StatusNotice tone="success">
+          Notice published successfully.
+        </StatusNotice>
+      ) : null}
       <section
         className="rounded-xl border bg-white p-4 sm:p-6"
         aria-labelledby="publish-heading"
@@ -70,32 +84,7 @@ export default async function CommunicationPage() {
           </button>
         </form>
       </section>
-      <section aria-labelledby="recent-heading">
-        <h2 id="recent-heading" className="mb-3 text-lg font-semibold">
-          Recent notices
-        </h2>
-        <div className="space-y-3">
-          {notices.map((notice) => {
-            const item = notice as Record<string, unknown>;
-            return (
-              <article
-                key={String(item.id)}
-                className="rounded-xl border bg-white p-4"
-              >
-                <div className="flex flex-wrap justify-between gap-2">
-                  <h3 className="font-semibold">{String(item.title)}</h3>
-                  <span className="text-xs text-slate-500 uppercase">
-                    {String(item.status)}
-                  </span>
-                </div>
-                <p className="mt-2 line-clamp-3 text-sm text-slate-600">
-                  {String(item.body)}
-                </p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
+      <CommunicationNoticeList notices={notices} />
     </div>
   );
 }

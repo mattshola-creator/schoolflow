@@ -3,8 +3,10 @@ import {
   billingRunSchema,
   cashHandoverSchema,
   expensePaymentSchema,
+  expenseSchema,
   feeCategorySchema,
   feeStructureSchema,
+  paymentSchema,
   paymentReversalSchema,
 } from "./schemas";
 
@@ -31,6 +33,48 @@ describe("finance schemas", () => {
         dueDate: "",
       }).amount,
     ).toBe("12500.50");
+  });
+
+  it("requires a session for fee structures while keeping payment and expense context optional", () => {
+    const session = crypto.randomUUID();
+    const period = crypto.randomUUID();
+    const feeStructure = {
+      name: "Primary Term Fees",
+      feeCategoryId: crypto.randomUUID(),
+      effectiveFrom: "2026-09-01",
+      amount: "100.00",
+    };
+    expect(
+      feeStructureSchema.safeParse({ ...feeStructure, sessionId: session })
+        .success,
+    ).toBe(true);
+    expect(feeStructureSchema.safeParse(feeStructure).success).toBe(false);
+    expect(
+      feeStructureSchema.safeParse({
+        ...feeStructure,
+        sessionId: session,
+        periodId: period,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      paymentSchema.safeParse({
+        amount: "100.00",
+        method: "cash",
+        paidAt: "2026-10-14T12:00:00",
+        payerName: "QA Parent",
+        idempotencyKey: crypto.randomUUID(),
+      }).success,
+    ).toBe(true);
+    expect(
+      expenseSchema.safeParse({
+        expenseCategoryId: crypto.randomUUID(),
+        kind: "expense",
+        description: "Approved office supplies",
+        requestedAmount: "50.00",
+        expenseDate: "2026-10-14",
+      }).success,
+    ).toBe(true);
   });
 
   it("rejects floating precision and reversed dates", () => {

@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createAndPublishNotice } from "@/features/communication/service";
 import { noticeSchema } from "@/features/communication/schemas";
 
@@ -12,4 +13,5 @@ export async function publishNotice(formData: FormData) {
   });
   await createAndPublishNotice(input);
   revalidatePath("/communication");
+  redirect("/communication?message=published");
 }

@@ -1,6 +1,8 @@
 import { fieldClass } from "@/components/auth-card";
-import { Button, ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
+import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
 import {
   loadFeeWorkspace,
   previewBillingRun,
@@ -20,20 +22,12 @@ export default async function FinancePage({
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadFeeWorkspace().catch(() => null);
+  const result = await loadFeeWorkspace()
+    .then((workspace) => ({ workspace, error: null }))
+    .catch((error: unknown) => ({ workspace: null, error }));
+  const workspace = result.workspace;
   if (!workspace)
-    return (
-      <main className="py-16">
-        <p className="text-sm font-semibold text-amber-800">Unavailable</p>
-        <h1 className="mt-2 text-3xl font-semibold">
-          Finance is not available
-        </h1>
-        <p className="mt-3 max-w-xl text-slate-600">
-          Select an authorized school and enable the Finance fee-management
-          feature.
-        </p>
-      </main>
-    );
+    return <FinanceUnavailableState area="Fee setup" error={result.error} />;
   const canConfigure =
     workspace.authorization.permissions.includes("finance.configure");
   const canBill = workspace.authorization.permissions.includes(
@@ -55,6 +49,14 @@ export default async function FinancePage({
   const categoryNames = new Map(
     workspace.categories.map((item) => [item.id, item.name]),
   );
+  const sessionNames = new Map(
+    workspace.sessions.map((item) => [item.id, item.name]),
+  );
+  const periodNames = new Map(
+    workspace.periods.map((item) => [item.id, item.name]),
+  );
+  const canCreateFeeStructure =
+    workspace.sessions.length > 0 && workspace.categories.length > 0;
   return (
     <main className="py-10 sm:py-12">
       <PageHeader
@@ -62,17 +64,10 @@ export default async function FinancePage({
         title={`Fee setup at ${workspace.active.schoolName}`}
         description="Configure effective-dated fee policy. Published billing will snapshot these values so later changes cannot rewrite history."
         actions={
-          <>
-            <ButtonLink href="/finance/payments" variant="secondary">
-              Payments
-            </ButtonLink>
-            <ButtonLink href="/finance/expenses" variant="secondary">
-              Expenses
-            </ButtonLink>
-            <ButtonLink href="/finance/reports" variant="secondary">
-              Reports
-            </ButtonLink>
-          </>
+          <FinanceWorkspaceNav
+            authorization={workspace.authorization}
+            currentPath="/finance"
+          />
         }
       />
       {notice.error || notice.message ? (
@@ -146,6 +141,10 @@ export default async function FinancePage({
           </section>
           <section className={panel}>
             <h2 className="text-xl font-semibold">Create draft structure</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              An academic session is required. A period is optional when the
+              structure applies to the whole session.
+            </p>
             <form
               action={saveFeeStructure}
               className="mt-5 grid gap-4 sm:grid-cols-2"
@@ -235,9 +234,29 @@ export default async function FinancePage({
                 Due date
                 <input className={fieldClass} name="dueDate" type="date" />
               </label>
-              <Button type="submit" className="sm:col-span-2 sm:w-fit">
+              <Button
+                type="submit"
+                disabled={!canCreateFeeStructure}
+                className="sm:col-span-2 sm:w-fit"
+                aria-describedby={
+                  canCreateFeeStructure
+                    ? undefined
+                    : "fee-structure-prerequisites"
+                }
+              >
                 Create draft
               </Button>
+              {!canCreateFeeStructure ? (
+                <p
+                  id="fee-structure-prerequisites"
+                  role="status"
+                  className="text-sm text-amber-900 sm:col-span-2"
+                >
+                  {workspace.sessions.length === 0
+                    ? "Set up an academic session before creating a fee structure."
+                    : "Create a fee category before creating a fee structure."}
+                </p>
+              ) : null}
             </form>
           </section>
         </div>
@@ -255,6 +274,13 @@ export default async function FinancePage({
                     <h3 className="font-semibold">{structure.name}</h3>
                     <p className="mt-1 text-sm text-slate-500">
                       Version {structure.version} · {structure.status}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {sessionNames.get(structure.session_id) ??
+                        "Academic session unavailable"}
+                      {structure.period_id
+                        ? ` · ${periodNames.get(structure.period_id) ?? "Academic period unavailable"}`
+                        : " · Whole session"}
                     </p>
                   </div>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">

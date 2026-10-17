@@ -17,6 +17,7 @@
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
     "db:reset": "supabase db reset",
+    "db:push:qa": "node scripts/qa-db-push.mjs",
     "db:lint": "supabase db lint --local",
     "pilot:smoke-load": "node scripts/pilot-smoke-load.mjs",
     "backup:database": "bash scripts/backup-database.sh",

@@ -64,6 +64,23 @@ describe("assessment and result schemas", () => {
     ).toBe(false);
   });
 
+  it("accepts grade-band form data when the passing checkbox is unchecked or checked", () => {
+    const form = new FormData();
+    form.set("schemeId", id());
+    form.set("minimumPercent", "0");
+    form.set("maximumPercent", "49");
+    form.set("grade", "F");
+    form.set("remark", "Needs support");
+    form.set("sequence", "1");
+
+    const unchecked = gradeBandSchema.parse(Object.fromEntries(form));
+    expect(unchecked.isPass).toBe(false);
+
+    form.set("isPass", "true");
+    const checked = gradeBandSchema.parse(Object.fromEntries(form));
+    expect(checked.isPass).toBe(true);
+  });
+
   it("requires durable correction evidence", () => {
     expect(
       correctionSchema.safeParse({

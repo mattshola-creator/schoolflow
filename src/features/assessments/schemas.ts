@@ -41,7 +41,12 @@ export const gradeBandSchema = z
     maximumPercent: z.coerce.number().min(0).max(100),
     grade: z.string().trim().min(1).max(12),
     remark: z.string().trim().min(1).max(120),
-    isPass: z.coerce.boolean(),
+    // HTML omits unchecked checkboxes from FormData. Treat that omission as
+    // false; only the form's explicit "true" value marks a passing grade.
+    isPass: z.preprocess(
+      (value) => value === "true" || value === true,
+      z.boolean(),
+    ),
     sequence: z.coerce.number().int().min(1).max(50),
   })
   .refine((value) => value.minimumPercent <= value.maximumPercent, {

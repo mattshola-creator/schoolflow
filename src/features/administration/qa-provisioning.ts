@@ -89,14 +89,15 @@ export function isQaInvitationHost(value: string | null) {
   );
 }
 
-
 export function isQaProvisioningOrigin(value: string | null) {
   if (!value) return false;
   try {
     const origin = new URL(value);
-    return origin.protocol === "https:" &&
+    return (
+      origin.protocol === "https:" &&
       origin.origin === value &&
-      isQaInvitationHost(origin.host);
+      isQaInvitationHost(origin.host)
+    );
   } catch {
     return false;
   }

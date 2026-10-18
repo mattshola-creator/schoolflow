@@ -1,7 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { createQaInvitation, type QaInvitationState } from "@/app/(app)/administration/actions";
+import {
+  createQaInvitation,
+  type QaInvitationState,
+} from "@/app/(app)/administration/actions";
 import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
 

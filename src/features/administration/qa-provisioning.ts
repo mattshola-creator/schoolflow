@@ -2,7 +2,7 @@ export const QA_SUPABASE_PROJECT_REF = "afqykqlxecpzspjoyegc";
 
 export const qaRolePresets = {
   payment_recorder: {
-    key: "px6qa_payment_recorder",
+    key: "qa_payment_recorder",
     name: "QA Payment Recorder",
     description: "SchoolFlow QA fixed least-privilege payment recorder preset.",
     syntheticEmail: "qa-payment-recorder@schoolflow.test",
@@ -17,7 +17,7 @@ export const qaRolePresets = {
     ],
   },
   payment_verifier: {
-    key: "px6qa_payment_verifier",
+    key: "qa_payment_verifier",
     name: "QA Independent Payment Verifier",
     description: "SchoolFlow QA fixed least-privilege payment verifier preset.",
     syntheticEmail: "qa-payment-verifier@schoolflow.test",
@@ -33,7 +33,7 @@ export const qaRolePresets = {
     ],
   },
   internal_qa_reader: {
-    key: "px6qa_internal_read_only",
+    key: "qa_internal_read_only",
     name: "QA Read Only",
     description: "SchoolFlow QA fixed read-only internal QA preset.",
     syntheticEmail: "qa-internal-reader@schoolflow.test",

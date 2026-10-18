@@ -26,9 +26,7 @@ export function QaInvitationForm({
   const internalQa = organizationName === "SchoolFlow Internal QA";
 
   return (
-    <section
-      className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6"
-    >
+    <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6">
       <h2 className="text-lg font-semibold text-slate-950">
         Prepare QA test access
       </h2>
@@ -94,10 +92,10 @@ export function QaInvitationForm({
         </label>
       ) : null}
       <p className="mt-3 text-xs text-slate-600">
-        These fixed @schoolflow.test identities have no real inbox. The
-        one-time sign-in link is shown only to this authorized manager. Open it
-        in the isolated QA browser, then open the role acceptance link. Links
-        are not sent externally.
+        These fixed @schoolflow.test identities have no real inbox. The one-time
+        sign-in link is shown only to this authorized manager. Open it in the
+        isolated QA browser, then open the role acceptance link. Links are not
+        sent externally.
       </p>
     </section>
   );

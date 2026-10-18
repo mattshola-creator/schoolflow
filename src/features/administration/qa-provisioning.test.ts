@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   isQaInvitationHost,
+  isQaProvisioningOrigin,
   isQaSupabaseUrl,
   qaRolePresets,
 } from "./qa-provisioning";
@@ -27,6 +28,45 @@ describe("QA role provisioning safeguards", () => {
         "attacker.example/deploy-preview-119--schoolflow-demo-qa.netlify.app",
       ),
     ).toBe(false);
+  });
+
+  it("accepts only HTTPS application origins on protected QA hosts", () => {
+    expect(
+      isQaProvisioningOrigin("https://schoolflow-demo-qa.netlify.app"),
+    ).toBe(true);
+    expect(
+      isQaProvisioningOrigin(
+        "https://deploy-preview-119--schoolflow-demo-qa.netlify.app",
+      ),
+    ).toBe(true);
+    expect(isQaProvisioningOrigin("http://schoolflow-demo-qa.netlify.app")).toBe(
+      false,
+    );
+    expect(
+      isQaProvisioningOrigin("https://schoolflow-app.netlify.app"),
+    ).toBe(false);
+    expect(
+      isQaProvisioningOrigin(
+        "https://attacker.example/deploy-preview-119--schoolflow-demo-qa.netlify.app",
+      ),
+    ).toBe(false);
+  });
+
+  it("uses fixed synthetic identities without real inboxes", () => {
+    expect(qaRolePresets.payment_recorder.syntheticEmail).toBe(
+      "qa-payment-recorder@schoolflow.test",
+    );
+    expect(qaRolePresets.payment_verifier.syntheticEmail).toBe(
+      "qa-payment-verifier@schoolflow.test",
+    );
+    expect(qaRolePresets.internal_qa_reader.syntheticEmail).toBe(
+      "qa-internal-reader@schoolflow.test",
+    );
+    expect(
+      Object.values(qaRolePresets).every((preset) =>
+        preset.syntheticEmail.endsWith("@schoolflow.test"),
+      ),
+    ).toBe(true);
   });
 
   it("keeps payment recording and verification in separate fixed roles", () => {

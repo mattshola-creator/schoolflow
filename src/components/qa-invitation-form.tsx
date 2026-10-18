@@ -9,7 +9,7 @@ import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
 
 const initialState: QaInvitationState = {
-  message: "Create a QA-only invitation. No email will be sent.",
+  message: "Prepare a fixed synthetic QA identity. No email will be sent.",
 };
 
 export function QaInvitationForm({
@@ -37,17 +37,6 @@ export function QaInvitationForm({
       <form action={formAction} className="mt-5 grid gap-4 sm:grid-cols-2">
         <input type="hidden" name="schoolId" value={schoolId} />
         <label className="grid gap-1.5 text-sm font-medium text-slate-700">
-          Account email
-          <input
-            className={fieldClass}
-            name="email"
-            type="email"
-            autoComplete="off"
-            maxLength={254}
-            required
-          />
-        </label>
-        <label className="grid gap-1.5 text-sm font-medium text-slate-700">
           Role and access scope
           <select className={fieldClass} name="rolePreset" required>
             <option value="">Select role</option>
@@ -69,19 +58,30 @@ export function QaInvitationForm({
         </label>
         <div className="sm:col-span-2">
           <Button type="submit" disabled={pending}>
-            {pending ? "Preparing invitation…" : "Create QA invitation"}
+            {pending ? "Preparing test account…" : "Prepare test account"}
           </Button>
         </div>
       </form>
       <p
         className="mt-4 text-sm text-slate-700"
-        role={state.inviteUrl ? "status" : "alert"}
+        role={state.inviteUrl || state.signInUrl ? "status" : "alert"}
       >
         {state.message}
       </p>
+      {state.signInUrl ? (
+        <label className="mt-3 grid gap-1.5 text-sm font-medium text-slate-700">
+          One-time synthetic account sign-in link
+          <input
+            className={fieldClass}
+            value={state.signInUrl}
+            readOnly
+            onFocus={(event) => event.currentTarget.select()}
+          />
+        </label>
+      ) : null}
       {state.inviteUrl ? (
         <label className="mt-3 grid gap-1.5 text-sm font-medium text-slate-700">
-          One-time invitation link
+          Single-use role acceptance link
           <input
             className={fieldClass}
             value={state.inviteUrl}
@@ -91,9 +91,10 @@ export function QaInvitationForm({
         </label>
       ) : null}
       <p className="mt-3 text-xs text-slate-600">
-        The invited person must sign up through SchoolFlow with this same email
-        and then accept the link. Share it privately; it grants the selected
-        role only after the signed-in email is matched.
+        These fixed @schoolflow.test identities have no real inbox. The
+        one-time sign-in link is shown only to this authorized manager. Use it
+        in a separate QA browser session, then open the role acceptance link. No
+        external email or notification is sent.
       </p>
     </section>
   );

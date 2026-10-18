@@ -8,6 +8,7 @@ import type {
 } from "./schemas";
 import type { z } from "zod";
 import type { resultBatchSchema } from "./schemas";
+import { buildScoreSheetRoster } from "./score-sheet-roster";
 
 type BatchInput = z.infer<typeof resultBatchSchema>;
 
@@ -230,9 +231,7 @@ export async function loadScoreSheet(batchId: string) {
     throw new Error("Score sheet could not be loaded");
   let membershipQuery = context.supabase
     .from("class_memberships")
-    .select(
-      "student_id,student_profiles!inner(student_number,people!inner(first_name,last_name))",
-    )
+    .select("student_id")
     .eq("organization_id", context.active.organizationId)
     .eq("school_id", context.active.schoolId!)
     .eq("academic_session_id", batch.data.session_id)
@@ -254,10 +253,28 @@ export async function loadScoreSheet(batchId: string) {
   ]);
   if (memberships.error || scores.error || results.error)
     throw new Error("Score sheet details could not be loaded");
+  const studentIds = [
+    ...new Set(
+      (memberships.data ?? []).map((membership) => membership.student_id),
+    ),
+  ];
+  const profiles = studentIds.length
+    ? await context.supabase
+        .from("student_profiles")
+        .select("id,student_number,people!inner(first_name,last_name)")
+        .eq("organization_id", context.active.organizationId)
+        .in("id", studentIds)
+    : { data: [], error: null };
+  if (profiles.error)
+    throw new Error("Score sheet student details could not be loaded");
+  const students = buildScoreSheetRoster(
+    memberships.data ?? [],
+    profiles.data ?? [],
+  );
   return {
     ...context,
     batch: batch.data,
-    students: memberships.data ?? [],
+    students,
     scores: scores.data ?? [],
     results: results.data ?? [],
   };

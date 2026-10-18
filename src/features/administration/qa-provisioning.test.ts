@@ -7,12 +7,12 @@ import {
 
 describe("QA role provisioning safeguards", () => {
   it("accepts only the designated QA Supabase project URL", () => {
-    expect(
-      isQaSupabaseUrl("https://afqykqlxecpzspjoyegc.supabase.co"),
-    ).toBe(true);
-    expect(
-      isQaSupabaseUrl("https://bgnmvfktscofbwpyougd.supabase.co"),
-    ).toBe(false);
+    expect(isQaSupabaseUrl("https://afqykqlxecpzspjoyegc.supabase.co")).toBe(
+      true,
+    );
+    expect(isQaSupabaseUrl("https://bgnmvfktscofbwpyougd.supabase.co")).toBe(
+      false,
+    );
     expect(isQaSupabaseUrl(undefined)).toBe(false);
   });
 
@@ -23,7 +23,9 @@ describe("QA role provisioning safeguards", () => {
     ).toBe(true);
     expect(isQaInvitationHost("schoolflow-app.netlify.app")).toBe(false);
     expect(
-      isQaInvitationHost("attacker.example/deploy-preview-119--schoolflow-demo-qa.netlify.app"),
+      isQaInvitationHost(
+        "attacker.example/deploy-preview-119--schoolflow-demo-qa.netlify.app",
+      ),
     ).toBe(false);
   });
 

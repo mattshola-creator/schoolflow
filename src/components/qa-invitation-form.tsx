@@ -26,7 +26,9 @@ export function QaInvitationForm({
   const internalQa = organizationName === "SchoolFlow Internal QA";
 
   return (
-    <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6">
+    <section
+      className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6"
+    >
       <h2 className="text-lg font-semibold text-slate-950">
         Prepare QA test access
       </h2>

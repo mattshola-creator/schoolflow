@@ -20,8 +20,6 @@ export function buildScoreSheetRoster(
   );
   return memberships.flatMap(({ student_id }) => {
     const profile = profilesById.get(student_id);
-    return profile
-      ? [{ student_id, student_profiles: [profile] }]
-      : [];
+    return profile ? [{ student_id, student_profiles: [profile] }] : [];
   });
 }

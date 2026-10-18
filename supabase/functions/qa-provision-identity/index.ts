@@ -132,8 +132,11 @@ function capabilitySnapshotIsAllowed(snapshot: unknown) {
   };
   if (
     !Array.isArray(value.permissions) ||
-    !PERMISSION_REQUIREMENTS.every((key) => value.permissions?.includes(key))
-  ) return false;
+    !PERMISSION_REQUIREMENTS.every((key) =>
+      value.permissions?.includes(key),
+    )
+  )
+    return false;
   const modules = Array.isArray(value.modules) ? value.modules : [];
   const foundation = modules.find(
     (item) => item && typeof item === "object" &&
@@ -142,7 +145,8 @@ function capabilitySnapshotIsAllowed(snapshot: unknown) {
   const features = Array.isArray(value.features) ? value.features : [];
   const feature = features.find(
     (item) => item && typeof item === "object" &&
-      (item as { key?: unknown }).key === "foundation.authorization_inspection" &&
+      (item as { key?: unknown }).key ===
+        "foundation.authorization_inspection" &&
       (item as { module?: unknown }).module === "foundation",
   ) as { enabled?: unknown } | undefined;
   return foundation?.entitled === true && foundation.enabled === true &&
@@ -157,11 +161,14 @@ function exactPermissionSet(actual: string[], expected: readonly string[]) {
 Deno.serve(async (request: Request) => {
   const origin = request.headers.get("origin");
   if (request.method === "OPTIONS") {
-    if (!origin || !isQaOrigin(origin)) return json({ error: "forbidden" }, 403, null);
+    if (!origin || !isQaOrigin(origin))
+      return json({ error: "forbidden" }, 403, null);
     return json({ ok: true }, 200, origin);
   }
-  if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, origin);
-  if (!origin || !isQaOrigin(origin)) return json({ error: "forbidden" }, 403, null);
+  if (request.method !== "POST")
+    return json({ error: "method_not_allowed" }, 405, origin);
+  if (!origin || !isQaOrigin(origin))
+    return json({ error: "forbidden" }, 403, null);
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -197,8 +204,10 @@ Deno.serve(async (request: Request) => {
       auth: { autoRefreshToken: false, persistSession: false },
       global: { headers: { Authorization: authorization } },
     });
-    const { data: actorResult, error: actorError } = await userClient.auth.getUser(token);
-    if (actorError || !actorResult.user) return json({ error: "unauthorized" }, 401, origin);
+    const { data: actorResult, error: actorError } =
+      await userClient.auth.getUser(token);
+    if (actorError || !actorResult.user)
+      return json({ error: "unauthorized" }, 401, origin);
 
     const { data: snapshot, error: authorizationError } = await userClient.rpc(
       "get_my_authorization",
@@ -211,17 +220,29 @@ Deno.serve(async (request: Request) => {
       return json({ error: "permission_denied" }, 403, origin);
     }
 
-    const [{ data: organization, error: organizationError }, { data: school, error: schoolError }] =
-      await Promise.all([
-        userClient.from("organizations").select("slug").eq("id", input.organizationId).maybeSingle(),
-        userClient.from("schools").select("id").eq("id", input.schoolId).eq("organization_id", input.organizationId).maybeSingle(),
-      ]);
+    const [
+      { data: organization, error: organizationError },
+      { data: school, error: schoolError },
+    ] = await Promise.all([
+      userClient
+        .from("organizations")
+        .select("slug")
+        .eq("id", input.organizationId)
+        .maybeSingle(),
+      userClient
+        .from("schools")
+        .select("id")
+        .eq("id", input.schoolId)
+        .eq("organization_id", input.organizationId)
+        .maybeSingle(),
+    ]);
     if (
       organizationError ||
       schoolError ||
       organization?.slug !== preset.organizationSlug ||
       !school
-    ) return json({ error: "scope_not_allowed" }, 403, origin);
+    )
+      return json({ error: "scope_not_allowed" }, 403, origin);
 
     const { data: role, error: roleError } = await userClient
       .from("roles")
@@ -235,7 +256,8 @@ Deno.serve(async (request: Request) => {
       role.name !== preset.name ||
       role.description !== preset.description ||
       role.is_system
-    ) return json({ error: "approved_role_required" }, 403, origin);
+    )
+      return json({ error: "approved_role_required" }, 403, origin);
 
     const { data: permissions, error: permissionsError } = await userClient
       .from("permissions")
@@ -253,19 +275,27 @@ Deno.serve(async (request: Request) => {
       permissions.length !== preset.permissions.length ||
       !grants ||
       !exactPermissionSet(
-        grants.map((grant) => permissions.find((permission) => permission.id === grant.permission_id)?.key ?? ""),
+        grants.map(
+          (grant) =>
+            permissions.find(
+              (permission) => permission.id === grant.permission_id,
+            )?.key ?? "",
+        ),
         preset.permissions,
       )
-    ) return json({ error: "role_permissions_mismatch" }, 403, origin);
+    )
+      return json({ error: "role_permissions_mismatch" }, 403, origin);
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
-    const { data: page, error: usersError } = await adminClient.auth.admin.listUsers({
+    const { data: page, error: usersError } =
+      await adminClient.auth.admin.listUsers({
       page: 1,
       perPage: 1000,
     });
-    if (usersError) return json({ error: "identity_lookup_failed" }, 503, origin);
+    if (usersError)
+      return json({ error: "identity_lookup_failed" }, 503, origin);
     let identity = page.users.find(
       (user) => user.email?.toLowerCase() === preset.email,
     );
@@ -275,7 +305,8 @@ Deno.serve(async (request: Request) => {
         !identity.email_confirmed_at
       ) return json({ error: "identity_conflict" }, 409, origin);
     } else {
-      const { data: created, error: createError } = await adminClient.auth.admin.createUser({
+      const { data: created, error: createError } =
+        await adminClient.auth.admin.createUser({
         email: preset.email,
         email_confirm: true,
         user_metadata: { full_name: preset.fullName },
@@ -292,16 +323,26 @@ Deno.serve(async (request: Request) => {
       .select("id")
       .eq("id", identity.id)
       .maybeSingle();
-    if (profileError || !profile) return json({ error: "profile_bootstrap_failed" }, 503, origin);
+    if (profileError || !profile)
+      return json({ error: "profile_bootstrap_failed" }, 503, origin);
 
     const [
       { data: memberships, error: membershipsError },
       { data: schoolMemberships, error: schoolMembershipsError },
       { data: assignments, error: assignmentsError },
     ] = await Promise.all([
-      adminClient.from("organization_memberships").select("organization_id,status").eq("user_id", identity.id),
-      adminClient.from("school_memberships").select("organization_id,school_id,status").eq("user_id", identity.id),
-      adminClient.from("role_assignments").select("organization_id,role_id,scope,school_id,status").eq("user_id", identity.id),
+      adminClient
+        .from("organization_memberships")
+        .select("organization_id,status")
+        .eq("user_id", identity.id),
+      adminClient
+        .from("school_memberships")
+        .select("organization_id,school_id,status")
+        .eq("user_id", identity.id),
+      adminClient
+        .from("role_assignments")
+        .select("organization_id,role_id,scope,school_id,status")
+        .eq("user_id", identity.id),
     ]);
     if (membershipsError || schoolMembershipsError || assignmentsError) {
       return json({ error: "membership_check_failed" }, 503, origin);
@@ -326,18 +367,21 @@ Deno.serve(async (request: Request) => {
         assignmentRows[0].scope === "school" &&
         assignmentRows[0].school_id === input.schoolId &&
         assignmentRows[0].status === "active";
-      if (!complete) return json({ error: "identity_scope_conflict" }, 409, origin);
+      if (!complete)
+        return json({ error: "identity_scope_conflict" }, 409, origin);
       membershipState = "complete";
     }
 
     const redirectTo = `${QA_APP_URL}/auth/callback?next=%2Fdashboard`;
-    const { data: link, error: linkError } = await adminClient.auth.admin.generateLink({
+    const { data: link, error: linkError } =
+      await adminClient.auth.admin.generateLink({
       type: "magiclink",
       email: preset.email,
       options: { redirectTo },
     });
     const signInUrl = link?.properties?.action_link;
-    if (linkError || !signInUrl) return json({ error: "sign_in_link_failed" }, 503, origin);
+    if (linkError || !signInUrl)
+      return json({ error: "sign_in_link_failed" }, 503, origin);
 
     return json({ signInUrl, membershipState }, 200, origin);
   } catch {

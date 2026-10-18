@@ -48,6 +48,14 @@ describe("QA role provisioning safeguards", () => {
     expect(isQaProvisioningOrigin("https://attacker.example")).toBe(false);
   });
 
+  it("uses role keys accepted by the existing database constraint", () => {
+    expect(
+      Object.values(qaRolePresets).every((preset) =>
+        /^[a-z]+(?:_[a-z]+)*$/.test(preset.key),
+      ),
+    ).toBe(true);
+  });
+
   it("uses fixed synthetic identities without real inboxes", () => {
     expect(qaRolePresets.payment_recorder.syntheticEmail).toBe(
       "qa-payment-recorder@schoolflow.test",

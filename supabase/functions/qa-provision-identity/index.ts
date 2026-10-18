@@ -100,8 +100,11 @@ function isQaHost(host: string) {
 function isQaOrigin(value: string) {
   try {
     const origin = new URL(value);
-    return origin.protocol === "https:" && origin.origin === value &&
-      isQaHost(origin.hostname);
+    return (
+      origin.protocol === "https:" &&
+      origin.origin === value &&
+      isQaHost(origin.hostname)
+    );
   } catch {
     return false;
   }
@@ -132,30 +135,37 @@ function capabilitySnapshotIsAllowed(snapshot: unknown) {
   };
   if (
     !Array.isArray(value.permissions) ||
-    !PERMISSION_REQUIREMENTS.every((key) =>
-      value.permissions?.includes(key),
-    )
+    !PERMISSION_REQUIREMENTS.every((key) => value.permissions?.includes(key))
   )
     return false;
   const modules = Array.isArray(value.modules) ? value.modules : [];
   const foundation = modules.find(
-    (item) => item && typeof item === "object" &&
+    (item) =>
+      item &&
+      typeof item === "object" &&
       (item as { key?: unknown }).key === "foundation",
   ) as { entitled?: unknown; enabled?: unknown } | undefined;
   const features = Array.isArray(value.features) ? value.features : [];
   const feature = features.find(
-    (item) => item && typeof item === "object" &&
+    (item) =>
+      item &&
+      typeof item === "object" &&
       (item as { key?: unknown }).key ===
         "foundation.authorization_inspection" &&
       (item as { module?: unknown }).module === "foundation",
   ) as { enabled?: unknown } | undefined;
-  return foundation?.entitled === true && foundation.enabled === true &&
-    feature?.enabled === true;
+  return (
+    foundation?.entitled === true &&
+    foundation.enabled === true &&
+    feature?.enabled === true
+  );
 }
 
 function exactPermissionSet(actual: string[], expected: readonly string[]) {
-  return actual.length === expected.length &&
-    expected.every((permission) => actual.includes(permission));
+  return (
+    actual.length === expected.length &&
+    expected.every((permission) => actual.includes(permission))
+  );
 }
 
 Deno.serve(async (request: Request) => {
@@ -178,13 +188,14 @@ Deno.serve(async (request: Request) => {
       new URL(supabaseUrl).hostname !== `${QA_PROJECT_REF}.supabase.co` ||
       !serviceRoleKey ||
       !publishableKey
-    ) return json({ error: "qa_environment_unavailable" }, 503, origin);
+    )
+      return json({ error: "qa_environment_unavailable" }, 503, origin);
 
     const authorization = request.headers.get("authorization") ?? "";
     const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
     if (!token) return json({ error: "unauthorized" }, 401, origin);
 
-    const input = await request.json() as {
+    const input = (await request.json()) as {
       rolePreset?: unknown;
       organizationId?: unknown;
       schoolId?: unknown;
@@ -197,7 +208,8 @@ Deno.serve(async (request: Request) => {
       typeof input.schoolId !== "string" ||
       typeof input.appOrigin !== "string" ||
       input.appOrigin !== origin
-    ) return json({ error: "invalid_request" }, 400, origin);
+    )
+      return json({ error: "invalid_request" }, 400, origin);
 
     const preset = presets[input.rolePreset as PresetKey];
     const userClient = createClient(supabaseUrl, publishableKey, {
@@ -291,9 +303,9 @@ Deno.serve(async (request: Request) => {
     });
     const { data: page, error: usersError } =
       await adminClient.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000,
-    });
+        page: 1,
+        perPage: 1000,
+      });
     if (usersError)
       return json({ error: "identity_lookup_failed" }, 503, origin);
     let identity = page.users.find(
@@ -303,15 +315,16 @@ Deno.serve(async (request: Request) => {
       if (
         identity.app_metadata?.schoolflow_qa_identity !== preset.key ||
         !identity.email_confirmed_at
-      ) return json({ error: "identity_conflict" }, 409, origin);
+      )
+        return json({ error: "identity_conflict" }, 409, origin);
     } else {
       const { data: created, error: createError } =
         await adminClient.auth.admin.createUser({
-        email: preset.email,
-        email_confirm: true,
-        user_metadata: { full_name: preset.fullName },
-        app_metadata: { schoolflow_qa_identity: preset.key },
-      });
+          email: preset.email,
+          email_confirm: true,
+          user_metadata: { full_name: preset.fullName },
+          app_metadata: { schoolflow_qa_identity: preset.key },
+        });
       if (createError || !created.user) {
         return json({ error: "identity_creation_failed" }, 503, origin);
       }
@@ -375,10 +388,10 @@ Deno.serve(async (request: Request) => {
     const redirectTo = `${QA_APP_URL}/auth/callback?next=%2Fdashboard`;
     const { data: link, error: linkError } =
       await adminClient.auth.admin.generateLink({
-      type: "magiclink",
-      email: preset.email,
-      options: { redirectTo },
-    });
+        type: "magiclink",
+        email: preset.email,
+        options: { redirectTo },
+      });
     const signInUrl = link?.properties?.action_link;
     if (linkError || !signInUrl)
       return json({ error: "sign_in_link_failed" }, 503, origin);

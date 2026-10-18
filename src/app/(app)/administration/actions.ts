@@ -13,7 +13,12 @@ import {
 } from "@/features/administration/qa-provisioning";
 
 const invitationInput = z.object({
-  email: z.string().trim().email().max(254).transform((value) => value.toLowerCase()),
+  email: z
+    .string()
+    .trim()
+    .email()
+    .max(254)
+    .transform((value) => value.toLowerCase()),
   schoolId: z.string().uuid(),
   rolePreset: z.enum([
     "payment_recorder",
@@ -77,7 +82,9 @@ export async function createQaInvitation(
       active.organizationId !== membershipAccess.organizationId ||
       active.organizationId !== membershipView.organizationId
     )
-      return { message: "Select an authorized school before creating an invitation." };
+      return {
+        message: "Select an authorized school before creating an invitation.",
+      };
 
     const preset = qaRolePresets[parsed.data.rolePreset];
     const organization = await userResult.supabase
@@ -90,7 +97,9 @@ export async function createQaInvitation(
       !organization.data ||
       organization.data.slug !== preset.organizationSlug
     )
-      return { message: "That role is not available in the active organization." };
+      return {
+        message: "That role is not available in the active organization.",
+      };
 
     const school = await userResult.supabase
       .from("schools")
@@ -139,7 +148,9 @@ export async function createQaInvitation(
       roleResult.data.is_system ||
       roleResult.data.description !== preset.description
     )
-      return { message: "The existing QA role differs from its approved preset." };
+      return {
+        message: "The existing QA role differs from its approved preset.",
+      };
 
     const currentGrants = await userResult.supabase
       .from("role_permissions")
@@ -154,7 +165,9 @@ export async function createQaInvitation(
       currentGrants.data?.map((grant) => grant.permission_id),
     );
     if ([...currentIds].some((id) => !permissionIds.has(id)))
-      return { message: "The existing QA role has grants outside its approved preset." };
+      return {
+        message: "The existing QA role has grants outside its approved preset.",
+      };
 
     const missingGrants = (permissionRows.data ?? []).filter(
       (item) => !currentIds.has(item.id),
@@ -187,7 +200,9 @@ export async function createQaInvitation(
     if (pending.error)
       return { message: "Existing invitations could not be checked." };
     if (pending.data)
-      return { message: "An active invitation already exists for this email and role." };
+      return {
+        message: "An active invitation already exists for this email and role.",
+      };
 
     const token = randomBytes(32).toString("hex");
     const tokenHash = createHash("sha256").update(token).digest("hex");
@@ -199,7 +214,9 @@ export async function createQaInvitation(
         role_id: roleResult.data.id,
         email: parsed.data.email,
         token_hash: tokenHash,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(
+          Date.now() + 7 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
         invited_by: userResult.user.id,
       });
     if (inviteError)
@@ -208,10 +225,13 @@ export async function createQaInvitation(
     const inviteUrl = new URL("https://" + host + "/accept-invitation");
     inviteUrl.searchParams.set("token", token);
     return {
-      message: "Invitation created. No email or external notification was sent.",
+      message:
+        "Invitation created. No email or external notification was sent.",
       inviteUrl: inviteUrl.toString(),
     };
   } catch {
-    return { message: "Invitation requires role and membership management access." };
+    return {
+      message: "Invitation requires role and membership management access.",
+    };
   }
 }

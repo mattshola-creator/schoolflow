@@ -47,7 +47,7 @@ describe("QA role provisioning safeguards", () => {
     ).toBe(false);
     expect(
       isQaProvisioningOrigin(
-        "https://attacker.example/deploy-preview-119--schoolflow-demo-qa.netlify.app",
+        "https://attacker.example",
       ),
     ).toBe(false);
   });

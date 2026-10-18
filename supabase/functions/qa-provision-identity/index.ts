@@ -137,10 +137,9 @@ function capabilitySnapshotIsAllowed(snapshot: unknown) {
     modules?: unknown;
     features?: unknown;
   };
-  if (
-    !Array.isArray(value.permissions) ||
-    !PERMISSION_REQUIREMENTS.every((key) => value.permissions?.includes(key))
-  )
+  const permissionKeys = value.permissions;
+  if (!Array.isArray(permissionKeys)) return false;
+  if (!PERMISSION_REQUIREMENTS.every((key) => permissionKeys.includes(key)))
     return false;
   const modules = Array.isArray(value.modules) ? value.modules : [];
   const foundation = modules.find(

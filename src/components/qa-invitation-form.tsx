@@ -24,15 +24,16 @@ export function QaInvitationForm({
     initialState,
   );
   const internalQa = organizationName === "SchoolFlow Internal QA";
+
   return (
     <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6">
       <h2 className="text-lg font-semibold text-slate-950">
         Prepare QA test access
       </h2>
       <p className="mt-2 max-w-3xl text-sm text-slate-700">
-        This QA-only tool uses fixed least-privilege roles and the existing
-        invitation acceptance flow. It creates no Auth users, sends no email,
-        and returns a one-time link that expires in seven days.
+        This QA-only tool creates one fixed synthetic identity through the
+        protected Auth Admin flow, then uses the existing single-use invitation
+        acceptance process. No email or external notification is sent.
       </p>
       <form action={formAction} className="mt-5 grid gap-4 sm:grid-cols-2">
         <input type="hidden" name="schoolId" value={schoolId} />
@@ -92,9 +93,9 @@ export function QaInvitationForm({
       ) : null}
       <p className="mt-3 text-xs text-slate-600">
         These fixed @schoolflow.test identities have no real inbox. The
-        one-time sign-in link is shown only to this authorized manager. Use it
-        in a separate QA browser session, then open the role acceptance link. No
-        external email or notification is sent.
+        one-time sign-in link is shown only to this authorized manager. Open it
+        in the isolated QA browser, then open the role acceptance link. Links
+        are not sent externally.
       </p>
     </section>
   );

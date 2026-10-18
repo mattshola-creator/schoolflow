@@ -254,7 +254,9 @@ export async function loadScoreSheet(batchId: string) {
   if (memberships.error || scores.error || results.error)
     throw new Error("Score sheet details could not be loaded");
   const studentIds = [
-    ...new Set((memberships.data ?? []).map((membership) => membership.student_id)),
+    ...new Set(
+      (memberships.data ?? []).map((membership) => membership.student_id),
+    ),
   ];
   const profiles = studentIds.length
     ? await context.supabase

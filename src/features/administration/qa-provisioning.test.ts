@@ -42,14 +42,10 @@ describe("QA role provisioning safeguards", () => {
     expect(
       isQaProvisioningOrigin("http://schoolflow-demo-qa.netlify.app"),
     ).toBe(false);
-    expect(
-      isQaProvisioningOrigin("https://schoolflow-app.netlify.app"),
-    ).toBe(false);
-    expect(
-      isQaProvisioningOrigin(
-        "https://attacker.example",
-      ),
-    ).toBe(false);
+    expect(isQaProvisioningOrigin("https://schoolflow-app.netlify.app")).toBe(
+      false,
+    );
+    expect(isQaProvisioningOrigin("https://attacker.example")).toBe(false);
   });
 
   it("uses fixed synthetic identities without real inboxes", () => {

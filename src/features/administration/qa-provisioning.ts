@@ -5,6 +5,8 @@ export const qaRolePresets = {
     key: "px6qa_payment_recorder",
     name: "QA Payment Recorder",
     description: "SchoolFlow QA fixed least-privilege payment recorder preset.",
+    syntheticEmail: "qa-payment-recorder@schoolflow.test",
+    fullName: "QA Payment Recorder",
     organizationSlug: "cedarbridge-learning-group",
     label: "Cedarbridge payment recorder",
     permissions: [
@@ -18,6 +20,8 @@ export const qaRolePresets = {
     key: "px6qa_payment_verifier",
     name: "QA Independent Payment Verifier",
     description: "SchoolFlow QA fixed least-privilege payment verifier preset.",
+    syntheticEmail: "qa-payment-verifier@schoolflow.test",
+    fullName: "QA Independent Payment Verifier",
     organizationSlug: "cedarbridge-learning-group",
     label: "Cedarbridge independent payment verifier",
     permissions: [
@@ -32,6 +36,8 @@ export const qaRolePresets = {
     key: "px6qa_internal_read_only",
     name: "QA Read Only",
     description: "SchoolFlow QA fixed read-only internal QA preset.",
+    syntheticEmail: "qa-internal-reader@schoolflow.test",
+    fullName: "SchoolFlow Internal QA Reader",
     organizationSlug: "schoolflow-internal-qa",
     label: "SchoolFlow Internal QA only",
     permissions: [
@@ -81,4 +87,17 @@ export function isQaInvitationHost(value: string | null) {
     previewId.length > 0 &&
     [...previewId].every((character) => character >= "0" && character <= "9")
   );
+}
+
+
+export function isQaProvisioningOrigin(value: string | null) {
+  if (!value) return false;
+  try {
+    const origin = new URL(value);
+    return origin.protocol === "https:" &&
+      origin.origin === value &&
+      isQaInvitationHost(origin.host);
+  } catch {
+    return false;
+  }
 }

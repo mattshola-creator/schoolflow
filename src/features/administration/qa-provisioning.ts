@@ -68,9 +68,17 @@ export function isQaSupabaseUrl(value: string | undefined) {
 export function isQaInvitationHost(value: string | null) {
   if (!value) return false;
   const host = value.toLowerCase();
-  return (
+  if (
     host === "schoolflow-demo-qa.netlify.app" ||
-    host === "ops-option-bplus-px6-integration--schoolflow-demo-qa.netlify.app" ||
-    /^deploy-preview-\\d+--schoolflow-demo-qa\\.netlify\\.app$/.test(host)
+    host === "ops-option-bplus-px6-integration--schoolflow-demo-qa.netlify.app"
+  )
+    return true;
+  const prefix = "deploy-preview-";
+  const suffix = "--schoolflow-demo-qa.netlify.app";
+  if (!host.startsWith(prefix) || !host.endsWith(suffix)) return false;
+  const previewId = host.slice(prefix.length, -suffix.length);
+  return (
+    previewId.length > 0 &&
+    [...previewId].every((character) => character >= "0" && character <= "9")
   );
 }

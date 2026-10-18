@@ -13,12 +13,6 @@ import {
 } from "@/features/administration/qa-provisioning";
 
 const invitationInput = z.object({
-  email: z
-    .string()
-    .trim()
-    .email()
-    .max(254)
-    .transform((value) => value.toLowerCase()),
   schoolId: z.string().uuid(),
   rolePreset: z.enum([
     "payment_recorder",
@@ -30,6 +24,7 @@ const invitationInput = z.object({
 export type QaInvitationState = {
   message: string;
   inviteUrl?: string;
+  signInUrl?: string;
 };
 
 const permissionRequirement = {
@@ -186,23 +181,66 @@ export async function createQaInvitation(
         return { message: "The QA role permissions could not be prepared." };
     }
 
+    const appOrigin = `https://${host}`;
+    const { data: identity, error: identityError } =
+      await userResult.supabase.functions.invoke<{
+        signInUrl: string;
+        membershipState: "unassigned" | "complete";
+      }>("qa-provision-identity", {
+        body: {
+          rolePreset: parsed.data.rolePreset,
+          organizationId: active.organizationId,
+          schoolId: active.schoolId,
+          appOrigin,
+        },
+        headers: { Origin: appOrigin },
+      });
+    if (
+      identityError ||
+      !identity?.signInUrl ||
+      !["unassigned", "complete"].includes(identity.membershipState)
+    )
+      return {
+        message:
+          "QA identity creation was blocked. No email or notification was sent.",
+      };
+    if (identity.membershipState === "complete")
+      return {
+        message:
+          "This synthetic QA identity already has its approved school membership and role.",
+        signInUrl: identity.signInUrl,
+      };
+
     const pending = await userResult.supabase
       .from("invitations")
-      .select("id")
+      .select("id,invited_by")
       .eq("organization_id", active.organizationId)
       .eq("school_id", active.schoolId)
       .eq("role_id", roleResult.data.id)
-      .eq("email", parsed.data.email)
+      .eq("email", preset.syntheticEmail)
       .eq("status", "pending")
       .gt("expires_at", new Date().toISOString())
       .limit(1)
       .maybeSingle();
     if (pending.error)
       return { message: "Existing invitations could not be checked." };
-    if (pending.data)
-      return {
-        message: "An active invitation already exists for this email and role.",
-      };
+    if (pending.data) {
+      if (pending.data.invited_by !== userResult.user.id)
+        return {
+          message:
+            "An active invitation for this synthetic identity was created by another manager.",
+        };
+      const { error: revokeError } = await userResult.supabase
+        .from("invitations")
+        .update({ status: "revoked" })
+        .eq("id", pending.data.id)
+        .eq("invited_by", userResult.user.id);
+      if (revokeError)
+        return {
+          message:
+            "The previous unused invitation could not be safely replaced.",
+        };
+    }
 
     const token = randomBytes(32).toString("hex");
     const tokenHash = createHash("sha256").update(token).digest("hex");
@@ -212,7 +250,7 @@ export async function createQaInvitation(
         organization_id: active.organizationId,
         school_id: active.schoolId,
         role_id: roleResult.data.id,
-        email: parsed.data.email,
+        email: preset.syntheticEmail,
         token_hash: tokenHash,
         expires_at: new Date(
           Date.now() + 7 * 24 * 60 * 60 * 1000,
@@ -226,8 +264,9 @@ export async function createQaInvitation(
     inviteUrl.searchParams.set("token", token);
     return {
       message:
-        "Invitation created. No email or external notification was sent.",
+        "QA sign-in and role acceptance links are ready. No email or external notification was sent.",
       inviteUrl: inviteUrl.toString(),
+      signInUrl: identity.signInUrl,
     };
   } catch {
     return {

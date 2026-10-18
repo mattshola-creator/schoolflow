@@ -19,11 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - name: Apply and print pinned formatter output (temporary diagnosis)
-        run: |
-          pnpm exec prettier --write src/components/qa-invitation-form.tsx src/features/administration/qa-provisioning.test.ts supabase/functions/qa-provision-identity/index.ts
-          git diff --no-color -- src/components/qa-invitation-form.tsx src/features/administration/qa-provisioning.test.ts supabase/functions/qa-provision-identity/index.ts
-          pnpm format:check
+      - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

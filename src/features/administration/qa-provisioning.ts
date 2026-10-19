@@ -63,8 +63,14 @@ export const qaRolePresets = {
 
 export type QaRolePresetKey = keyof typeof qaRolePresets;
 
-export function qaInvitationAcceptanceUrl(token: string) {
-  const url = new URL("/accept-invitation", QA_APP_ORIGIN);
+export function qaInvitationAcceptanceUrl(
+  token: string,
+  appOrigin: string = QA_APP_ORIGIN,
+) {
+  if (!isQaProvisioningOrigin(appOrigin)) {
+    throw new Error("Invitation links require an approved QA application origin.");
+  }
+  const url = new URL("/accept-invitation", appOrigin);
   url.searchParams.set("token", token);
   return url.toString();
 }

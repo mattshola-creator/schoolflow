@@ -105,29 +105,53 @@ export function QaInvitationForm({
         {state.message}
       </p>
       {state.signInUrl ? (
-        <label className="mt-3 grid gap-1.5 text-sm font-medium text-slate-700">
-          One-time synthetic account sign-in link
-          <input
-            className={fieldClass}
-            value={state.signInUrl}
-            readOnly
-            onFocus={(event) => event.currentTarget.select()}
-          />
-        </label>
+        <div className="mt-3">
+          <a
+            href={state.signInUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            referrerPolicy="no-referrer"
+            className="text-brand font-semibold underline"
+          >
+            Sign in to the prepared QA account
+          </a>
+          <label className="mt-3 grid gap-1.5 text-sm font-medium text-slate-700">
+            One-time synthetic account sign-in link
+            <input
+              className={fieldClass}
+              value={state.signInUrl}
+              readOnly
+              onFocus={(event) => event.currentTarget.select()}
+            />
+          </label>
+        </div>
       ) : null}
       {state.inviteUrl ? (
-        <label className="mt-3 grid gap-1.5 text-sm font-medium text-slate-700">
-          Single-use role acceptance link
-          <input
-            className={fieldClass}
-            value={state.inviteUrl}
-            readOnly
-            onFocus={(event) => event.currentTarget.select()}
-          />
-        </label>
+        <div className="mt-3">
+          <a
+            href={state.inviteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            referrerPolicy="no-referrer"
+            className="text-brand font-semibold underline"
+          >
+            Open the prepared QA invitation
+          </a>
+          <label className="mt-3 grid gap-1.5 text-sm font-medium text-slate-700">
+            Single-use role acceptance link
+            <input
+              className={fieldClass}
+              value={state.inviteUrl}
+              readOnly
+              onFocus={(event) => event.currentTarget.select()}
+            />
+          </label>
+        </div>
       ) : null}
       <p className="mt-3 text-xs text-slate-600">
-        These fixed @schoolflow.test identities have no real inbox. The one-time
+        Sign out of the current application account before following a sign-in
+        link. Other tabs on the same hostname share the signed-in account. These
+        fixed @schoolflow.test identities have no real inbox. The one-time
         sign-in link is shown only to this authorized manager. Open it in the
         isolated QA browser, then open the role acceptance link. Links are not
         sent externally.

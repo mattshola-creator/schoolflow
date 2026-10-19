@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { renderToStaticMarkup } from "react-dom/server";
 import { AuthorizationError } from "@/lib/authorization";
 import { loadScoreSheet } from "@/features/assessments/service";
 import ScoreSheetPage from "./page";
@@ -28,12 +29,18 @@ describe("assessment score sheet access handling", () => {
       searchParams: Promise.resolve({}),
     });
 
-  it("maps authorization denial to not found", async () => {
-    vi.mocked(loadScoreSheet).mockRejectedValue(
-      new AuthorizationError("permission_denied"),
-    );
-
-    await expect(renderPage()).rejects.toThrow("NEXT_NOT_FOUND");
+  it.each([
+    "permission_denied",
+    "invalid_context",
+    "not_entitled",
+    "module_disabled",
+    "feature_disabled",
+  ] as const)("explains %s without exposing score records", async (reason) => {
+    vi.mocked(loadScoreSheet).mockRejectedValue(new AuthorizationError(reason));
+    const html = renderToStaticMarkup(await renderPage());
+    expect(html).toContain("Assessment access unavailable");
+    expect(html).not.toContain("060c826b-ecc1-4e6b-b9f2-406bafe6e2b1");
+    expect(html).not.toContain("<form");
   });
 
   it("preserves score sheet data errors", async () => {

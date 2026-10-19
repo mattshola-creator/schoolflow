@@ -1,4 +1,5 @@
 export const QA_SUPABASE_PROJECT_REF = "afqykqlxecpzspjoyegc";
+export const QA_APP_ORIGIN = "https://schoolflow-demo-qa.netlify.app";
 
 export const qaRolePresets = {
   payment_recorder: {
@@ -61,6 +62,12 @@ export const qaRolePresets = {
 } as const;
 
 export type QaRolePresetKey = keyof typeof qaRolePresets;
+
+export function qaInvitationAcceptanceUrl(token: string) {
+  const url = new URL("/accept-invitation", QA_APP_ORIGIN);
+  url.searchParams.set("token", token);
+  return url.toString();
+}
 
 export function isQaSupabaseUrl(value: string | undefined) {
   if (!value) return false;

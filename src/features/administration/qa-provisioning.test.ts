@@ -49,10 +49,24 @@ describe("QA role provisioning safeguards", () => {
     expect(isQaProvisioningOrigin("https://attacker.example")).toBe(false);
   });
 
-  it("keeps invitation acceptance on the QA auth origin from Deploy Previews", () => {
+  it("keeps invitation acceptance on the validated QA request origin", () => {
+    expect(
+      qaInvitationAcceptanceUrl(
+        "synthetic-test-token",
+        "https://deploy-preview-119--schoolflow-demo-qa.netlify.app",
+      ),
+    ).toBe(
+      "https://deploy-preview-119--schoolflow-demo-qa.netlify.app/accept-invitation?token=synthetic-test-token",
+    );
     expect(qaInvitationAcceptanceUrl("synthetic-test-token")).toBe(
       "https://schoolflow-demo-qa.netlify.app/accept-invitation?token=synthetic-test-token",
     );
+    expect(() =>
+      qaInvitationAcceptanceUrl(
+        "synthetic-test-token",
+        "https://attacker.example",
+      ),
+    ).toThrow("Invitation links require an approved QA application origin.");
   });
 
   it("uses role keys accepted by the existing database constraint", () => {

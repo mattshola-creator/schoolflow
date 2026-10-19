@@ -1,31 +1,7 @@
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { loadPublishedReport } from "@/features/assessments/service";
-import type { Json } from "@/types/database.generated";
-
-type SnapshotResult = {
-  student_id: string;
-  weighted_percent: number;
-  total_score: number;
-  grade: string;
-  remark: string;
-  is_pass: boolean;
-};
-function resultsFrom(snapshot: Json): SnapshotResult[] {
-  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot))
-    return [];
-  const value = snapshot.results;
-  return Array.isArray(value)
-    ? value.filter((item): item is SnapshotResult =>
-        Boolean(
-          item &&
-          typeof item === "object" &&
-          !Array.isArray(item) &&
-          typeof item.student_id === "string",
-        ),
-      )
-    : [];
-}
+import { publishedReportResults } from "@/features/assessments/published-report";
 
 export default async function ReportCardPage({
   params,
@@ -35,7 +11,7 @@ export default async function ReportCardPage({
   const { batchId } = await params;
   const workspace = await loadPublishedReport(batchId);
   const batch = workspace.publication.result_batches;
-  const results = resultsFrom(workspace.publication.snapshot);
+  const results = publishedReportResults(workspace.publication.snapshot);
   return (
     <main className="py-10 sm:py-12 print:py-0">
       <PageHeader
@@ -57,7 +33,7 @@ export default async function ReportCardPage({
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
               <tr className="border-b">
-                <th className="p-3">Student ID</th>
+                <th className="p-3">Student</th>
                 <th className="p-3">Total</th>
                 <th className="p-3">Percent</th>
                 <th className="p-3">Grade</th>
@@ -67,7 +43,12 @@ export default async function ReportCardPage({
             <tbody>
               {results.map((r) => (
                 <tr key={r.student_id} className="border-b last:border-0">
-                  <td className="p-3">{r.student_id}</td>
+                  <td className="p-3">
+                    <p>{r.studentName ?? "Name not captured at publication"}</p>
+                    <p className="text-xs text-slate-500">
+                      {r.studentNumber ?? r.student_id}
+                    </p>
+                  </td>
                   <td className="p-3">{r.total_score}</td>
                   <td className="p-3">{r.weighted_percent}%</td>
                   <td className="p-3 font-semibold">{r.grade}</td>

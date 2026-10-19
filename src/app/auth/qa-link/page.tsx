@@ -6,9 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function QaMagicLinkPage() {
   const attempted = useRef(false);
-  const [message, setMessage] = useState(
-    "Verifying your one-time QA sign-in…",
-  );
+  const [message, setMessage] = useState("Verifying your one-time QA sign-in…");
 
   useEffect(() => {
     if (attempted.current) return;

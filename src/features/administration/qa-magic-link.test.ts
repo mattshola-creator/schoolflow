@@ -12,9 +12,7 @@ describe("QA PKCE-compatible synthetic sign-in links", () => {
     expect(readQaMagicLinkTokenHash("")).toBeNull();
     expect(readQaMagicLinkTokenHash("#token_hash=one-time")).toBeNull();
     expect(
-      readQaMagicLinkTokenHash(
-        "#token_hash=synthetic-otp&type=recovery",
-      ),
+      readQaMagicLinkTokenHash("#token_hash=synthetic-otp&type=recovery"),
     ).toBeNull();
   });
 

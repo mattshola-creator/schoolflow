@@ -283,7 +283,7 @@ export async function createQaInvitation(
     if (inviteError)
       return { message: "The QA invitation could not be created." };
 
-    const inviteUrl = qaInvitationAcceptanceUrl(token);
+    const inviteUrl = qaInvitationAcceptanceUrl(token, appOrigin);
     return {
       message:
         "QA sign-in and role acceptance links are ready. No email or external notification was sent.",

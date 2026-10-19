@@ -3,7 +3,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { requireCapability } from "@/lib/authorization";
+import { AuthorizationError, requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import {
@@ -33,6 +33,18 @@ const permissionRequirement = {
   feature: "foundation.authorization_inspection",
 } as const;
 
+type QaInvitationStage =
+  | "authorization"
+  | "tenant_context"
+  | "organization_check"
+  | "school_check"
+  | "permission_catalog"
+  | "role_check"
+  | "role_grants"
+  | "identity_provisioning"
+  | "invitation_lookup"
+  | "invitation_creation";
+
 export async function createQaInvitation(
   _previousState: QaInvitationState,
   formData: FormData,
@@ -51,6 +63,7 @@ export async function createQaInvitation(
   if (!isQaInvitationHost(host))
     return { message: "This host is not an approved SchoolFlow QA site." };
 
+  let stage: QaInvitationStage = "authorization";
   try {
     const [roleAccess, membershipAccess, membershipView, userResult, tenant] =
       await Promise.all([
@@ -69,6 +82,7 @@ export async function createQaInvitation(
         requireUser(),
         loadTenantContext(),
       ]);
+    stage = "tenant_context";
     const active = tenant.active;
     if (
       !active ||
@@ -83,6 +97,7 @@ export async function createQaInvitation(
       };
 
     const preset = qaRolePresets[parsed.data.rolePreset];
+    stage = "organization_check";
     const organization = await userResult.supabase
       .from("organizations")
       .select("slug")
@@ -97,6 +112,7 @@ export async function createQaInvitation(
         message: "That role is not available in the active organization.",
       };
 
+    stage = "school_check";
     const school = await userResult.supabase
       .from("schools")
       .select("id")
@@ -106,6 +122,7 @@ export async function createQaInvitation(
     if (school.error || !school.data)
       return { message: "The active school could not be verified." };
 
+    stage = "permission_catalog";
     const permissionRows = await userResult.supabase
       .from("permissions")
       .select("id,key")
@@ -116,6 +133,7 @@ export async function createQaInvitation(
     )
       return { message: "The QA role permission set is incomplete." };
 
+    stage = "role_check";
     let roleResult = await userResult.supabase
       .from("roles")
       .select("id,description,is_system")
@@ -148,6 +166,7 @@ export async function createQaInvitation(
         message: "The existing QA role differs from its approved preset.",
       };
 
+    stage = "role_grants";
     const currentGrants = await userResult.supabase
       .from("role_permissions")
       .select("permission_id")
@@ -183,6 +202,7 @@ export async function createQaInvitation(
     }
 
     const appOrigin = `https://${host}`;
+    stage = "identity_provisioning";
     const { data: identity, error: identityError } =
       await userResult.supabase.functions.invoke<{
         signInUrl: string;
@@ -212,6 +232,7 @@ export async function createQaInvitation(
         signInUrl: identity.signInUrl,
       };
 
+    stage = "invitation_lookup";
     const pending = await userResult.supabase
       .from("invitations")
       .select("id,invited_by")
@@ -243,6 +264,7 @@ export async function createQaInvitation(
         };
     }
 
+    stage = "invitation_creation";
     const token = randomBytes(32).toString("hex");
     const tokenHash = createHash("sha256").update(token).digest("hex");
     const { error: inviteError } = await userResult.supabase
@@ -268,7 +290,15 @@ export async function createQaInvitation(
       inviteUrl: inviteUrl.toString(),
       signInUrl: identity.signInUrl,
     };
-  } catch {
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        event: "qa_invitation_preparation_failed",
+        stage,
+        category:
+          error instanceof AuthorizationError ? error.reason : "unexpected",
+      }),
+    );
     return {
       message: "Invitation requires role and membership management access.",
     };

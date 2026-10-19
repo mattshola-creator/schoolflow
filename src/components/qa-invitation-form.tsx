@@ -1,12 +1,14 @@
 "use client";
 
-import { useActionState } from "react";
-import {
-  createQaInvitation,
-  type QaInvitationState,
-} from "@/app/(app)/administration/actions";
+import { useState, type FormEvent } from "react";
 import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
+
+type QaInvitationState = {
+  message: string;
+  inviteUrl?: string;
+  signInUrl?: string;
+};
 
 const initialState: QaInvitationState = {
   message: "Prepare a fixed synthetic QA identity. No email will be sent.",
@@ -19,11 +21,41 @@ export function QaInvitationForm({
   organizationName: string;
   schoolId: string;
 }) {
-  const [state, formAction, pending] = useActionState(
-    createQaInvitation,
-    initialState,
-  );
+  const [state, setState] = useState<QaInvitationState>(initialState);
+  const [pending, setPending] = useState(false);
   const internalQa = organizationName === "SchoolFlow Internal QA";
+
+  async function submitInvitation(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPending(true);
+    setState({ message: "Preparing the authorized synthetic QA identity…" });
+
+    try {
+      const response = await fetch("/api/administration/qa-invitation", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+        body: new FormData(event.currentTarget),
+      });
+      const result = (await response.json()) as QaInvitationState;
+      setState(
+        response.ok
+          ? result
+          : {
+              message:
+                result.message ??
+                "QA identity creation was blocked. No email or notification was sent.",
+            },
+      );
+    } catch {
+      setState({
+        message:
+          "The QA invitation request could not be completed. No email or external notification was sent.",
+      });
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6">
@@ -35,7 +67,10 @@ export function QaInvitationForm({
         protected Auth Admin flow, then uses the existing single-use invitation
         acceptance process. No email or external notification is sent.
       </p>
-      <form action={formAction} className="mt-5 grid gap-4 sm:grid-cols-2">
+      <form
+        onSubmit={submitInvitation}
+        className="mt-5 grid gap-4 sm:grid-cols-2"
+      >
         <input type="hidden" name="schoolId" value={schoolId} />
         <label className="grid gap-1.5 text-sm font-medium text-slate-700">
           Role and access scope

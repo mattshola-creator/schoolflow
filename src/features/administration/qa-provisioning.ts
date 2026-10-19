@@ -68,7 +68,9 @@ export function qaInvitationAcceptanceUrl(
   appOrigin: string = QA_APP_ORIGIN,
 ) {
   if (!isQaProvisioningOrigin(appOrigin)) {
-    throw new Error("Invitation links require an approved QA application origin.");
+    throw new Error(
+      "Invitation links require an approved QA application origin.",
+    );
   }
   const url = new URL("/accept-invitation", appOrigin);
   url.searchParams.set("token", token);

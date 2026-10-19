@@ -16,7 +16,7 @@ function request(origin = new URL(endpoint).origin) {
   formData.set("rolePreset", "payment_recorder");
   return new Request(endpoint, {
     method: "POST",
-    headers: { origin },
+    headers: { origin, host: new URL(endpoint).host },
     body: formData,
   });
 }
@@ -38,10 +38,25 @@ describe("POST /api/administration/qa-invitation", () => {
       hasValidQaInvitationOrigin(
         new Request(productionEndpoint, {
           method: "POST",
-          headers: { origin: "https://schoolflow-app.netlify.app" },
+          headers: {
+            origin: "https://schoolflow-app.netlify.app",
+            host: "schoolflow-app.netlify.app",
+          },
         }),
       ),
     ).toBe(false);
+  });
+
+  it("accepts the forwarded host used by the protected QA proxy", () => {
+    const forwardedRequest = new Request(endpoint, {
+      method: "POST",
+      headers: {
+        origin: new URL(endpoint).origin,
+        host: "internal.netlify.local",
+        "x-forwarded-host": new URL(endpoint).host,
+      },
+    });
+    expect(hasValidQaInvitationOrigin(forwardedRequest)).toBe(true);
   });
 
   it("passes the authenticated form request to the existing authorization flow", async () => {

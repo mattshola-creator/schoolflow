@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createQaInvitation } from "@/app/(app)/administration/actions";
-import { isQaInvitationHost } from "@/features/administration/qa-provisioning";
-import { hasSameRequestOrigin } from "@/lib/http/request-origin";
+import {
+  isQaInvitationHost,
+  isQaProvisioningOrigin,
+} from "@/features/administration/qa-provisioning";
 
 export const dynamic = "force-dynamic";
 
 export function hasValidQaInvitationOrigin(request: Request) {
-  return (
-    hasSameRequestOrigin(request) &&
-    isQaInvitationHost(new URL(request.url).host)
+  const origin = request.headers.get("origin");
+  const forwardedHost = request.headers
+    .get("x-forwarded-host")
+    ?.split(",")[0]
+    ?.trim();
+  const host = forwardedHost ?? request.headers.get("host");
+  return Boolean(
+    isQaProvisioningOrigin(origin) &&
+    host &&
+    isQaInvitationHost(host) &&
+    new URL(origin!).host === host.toLowerCase(),
   );
 }
 

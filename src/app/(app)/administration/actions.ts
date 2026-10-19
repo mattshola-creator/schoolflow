@@ -9,6 +9,7 @@ import { loadTenantContext } from "@/lib/tenant-context";
 import {
   isQaInvitationHost,
   isQaSupabaseUrl,
+  qaInvitationAcceptanceUrl,
   qaRolePresets,
 } from "@/features/administration/qa-provisioning";
 
@@ -260,8 +261,7 @@ export async function createQaInvitation(
     if (inviteError)
       return { message: "The QA invitation could not be created." };
 
-    const inviteUrl = new URL("https://" + host + "/accept-invitation");
-    inviteUrl.searchParams.set("token", token);
+    const inviteUrl = qaInvitationAcceptanceUrl(token);
     return {
       message:
         "QA sign-in and role acceptance links are ready. No email or external notification was sent.",

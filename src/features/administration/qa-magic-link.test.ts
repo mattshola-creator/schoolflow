@@ -4,9 +4,7 @@ import { readQaMagicLinkTokenHash } from "./qa-magic-link";
 describe("QA PKCE-compatible synthetic sign-in links", () => {
   it("reads a magic-link OTP from the fragment", () => {
     expect(
-      readQaMagicLinkTokenHash(
-        "#token_hash=synthetic-otp&type=magiclink",
-      ),
+      readQaMagicLinkTokenHash("#token_hash=synthetic-otp&type=magiclink"),
     ).toBe("synthetic-otp");
   });
 

@@ -9,7 +9,9 @@ export function assembleScoreSheetStudents(
   memberships: ScoreSheetMembership[],
   profiles: ScoreSheetProfile[],
 ) {
-  const profilesById = new Map(profiles.map((profile) => [profile.id, profile]));
+  const profilesById = new Map(
+    profiles.map((profile) => [profile.id, profile]),
+  );
   return memberships.flatMap(({ student_id }) => {
     const profile = profilesById.get(student_id);
     if (!profile) return [];

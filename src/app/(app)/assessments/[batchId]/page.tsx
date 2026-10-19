@@ -1,3 +1,5 @@
+import { AuthorizationError } from "@/lib/authorization";
+import { notFound } from "next/navigation";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -12,7 +14,10 @@ export default async function ScoreSheetPage({
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const [{ batchId }, notice] = await Promise.all([params, searchParams]);
-  const workspace = await loadScoreSheet(batchId);
+  const workspace = await loadScoreSheet(batchId).catch((error: unknown) => {
+    if (error instanceof AuthorizationError) notFound();
+    throw error;
+  });
   const components = [
     ...workspace.batch.assessment_schemes.assessment_components,
   ].sort((a, b) => a.sequence - b.sequence);

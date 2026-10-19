@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { readQaMagicLinkTokenHash } from "@/features/administration/qa-magic-link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function QaMagicLinkPage() {
   const attempted = useRef(false);
-  const [message, setMessage] = useState("Verifying your one-time QA sign-in…");
+  const [message, setMessage] = useState(
+    "Verifying your one-time QA sign-in…",
+  );
 
   useEffect(() => {
     if (attempted.current) return;
@@ -17,7 +19,9 @@ export default function QaMagicLinkPage() {
     window.history.replaceState(null, "", window.location.pathname);
 
     if (!tokenHash) {
-      setMessage("This QA sign-in link is invalid or already used. Request a new link.");
+      setMessage(
+        "This QA sign-in link is invalid or already used. Request a new link.",
+      );
       return;
     }
 
@@ -25,7 +29,9 @@ export default function QaMagicLinkPage() {
       .auth.verifyOtp({ token_hash: tokenHash, type: "magiclink" })
       .then(({ error }) => {
         if (error) {
-          setMessage("This QA sign-in link is invalid or already used. Request a new link.");
+          setMessage(
+            "This QA sign-in link is invalid or already used. Request a new link.",
+          );
           return;
         }
         window.location.replace("/dashboard");
@@ -38,8 +44,14 @@ export default function QaMagicLinkPage() {
   return (
     <main className="mx-auto max-w-lg px-5 py-16">
       <section className="rounded-xl border bg-white p-6">
-        <h1 className="text-lg font-semibold text-slate-950">QA account sign-in</h1>
-        <p className="mt-3 text-sm text-slate-700" role="status" aria-live="polite">
+        <h1 className="text-lg font-semibold text-slate-950">
+          QA account sign-in
+        </h1>
+        <p
+          className="mt-3 text-sm text-slate-700"
+          role="status"
+          aria-live="polite"
+        >
           {message}
         </p>
       </section>

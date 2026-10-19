@@ -6,7 +6,6 @@ declare const Deno: {
 };
 
 const QA_PROJECT_REF = "afqykqlxecpzspjoyegc";
-const QA_APP_URL = "https://schoolflow-demo-qa.netlify.app";
 const QA_BASE_HOST = "schoolflow-demo-qa.netlify.app";
 const QA_INTEGRATION_HOST =
   "ops-option-bplus-px6-integration--schoolflow-demo-qa.netlify.app";

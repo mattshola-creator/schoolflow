@@ -17,8 +17,10 @@ export default function QaMagicLinkPage() {
     window.history.replaceState(null, "", window.location.pathname);
 
     if (!tokenHash) {
-      setMessage(
-        "This QA sign-in link is invalid or already used. Request a new link.",
+      queueMicrotask(() =>
+        setMessage(
+          "This QA sign-in link is invalid or already used. Request a new link.",
+        ),
       );
       return;
     }

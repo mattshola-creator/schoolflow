@@ -388,18 +388,24 @@ Deno.serve(async (request: Request) => {
       membershipState = "complete";
     }
 
-    const redirectTo = `${QA_APP_URL}/auth/callback?next=%2Fdashboard`;
     const { data: link, error: linkError } =
       await adminClient.auth.admin.generateLink({
         type: "magiclink",
         email: preset.email,
-        options: { redirectTo },
+        options: { redirectTo: `${origin}/auth/qa-link` },
       });
-    const signInUrl = link?.properties?.action_link;
-    if (linkError || !signInUrl)
+    const tokenHash = link?.properties?.hashed_token;
+    if (linkError || !tokenHash)
       return json({ error: "sign_in_link_failed" }, 503, origin);
 
-    return json({ signInUrl, membershipState }, 200, origin);
+    // Keep the one-time OTP in the URL fragment. Fragments are not sent to the
+    // server; the QA page removes it from browser history before verification.
+    const signIn = new URL("/auth/qa-link", origin);
+    signIn.hash = new URLSearchParams({
+      token_hash: tokenHash,
+      type: "magiclink",
+    }).toString();
+    return json({ signInUrl: signIn.toString(), membershipState }, 200, origin);
   } catch {
     return json({ error: "qa_identity_provisioning_failed" }, 503, origin);
   }

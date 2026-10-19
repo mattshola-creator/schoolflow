@@ -65,23 +65,23 @@ export async function createQaInvitation(
 
   let stage: QaInvitationStage = "authorization";
   try {
-    const [roleAccess, membershipAccess, membershipView, userResult, tenant] =
-      await Promise.all([
-        requireCapability({
-          ...permissionRequirement,
-          permission: "role.manage",
-        }),
-        requireCapability({
-          ...permissionRequirement,
-          permission: "membership.manage",
-        }),
-        requireCapability({
-          ...permissionRequirement,
-          permission: "membership.view",
-        }),
-        requireUser(),
-        loadTenantContext(),
-      ]);
+    // Resolve authorization and tenant context sequentially. Each capability
+    // check performs authenticated Supabase reads; running several in parallel
+    // can race session refresh and turn valid owner access into a generic denial.
+    const roleAccess = await requireCapability({
+      ...permissionRequirement,
+      permission: "role.manage",
+    });
+    const membershipAccess = await requireCapability({
+      ...permissionRequirement,
+      permission: "membership.manage",
+    });
+    const membershipView = await requireCapability({
+      ...permissionRequirement,
+      permission: "membership.view",
+    });
+    const userResult = await requireUser();
+    const tenant = await loadTenantContext();
     stage = "tenant_context";
     const active = tenant.active;
     if (

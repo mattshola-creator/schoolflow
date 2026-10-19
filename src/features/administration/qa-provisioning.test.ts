@@ -3,6 +3,7 @@ import {
   isQaInvitationHost,
   isQaProvisioningOrigin,
   isQaSupabaseUrl,
+  qaInvitationAcceptanceUrl,
   qaRolePresets,
 } from "./qa-provisioning";
 
@@ -46,6 +47,12 @@ describe("QA role provisioning safeguards", () => {
       false,
     );
     expect(isQaProvisioningOrigin("https://attacker.example")).toBe(false);
+  });
+
+  it("keeps invitation acceptance on the QA auth origin from Deploy Previews", () => {
+    expect(qaInvitationAcceptanceUrl("synthetic-test-token")).toBe(
+      "https://schoolflow-demo-qa.netlify.app/accept-invitation?token=synthetic-test-token",
+    );
   });
 
   it("uses role keys accepted by the existing database constraint", () => {

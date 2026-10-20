@@ -205,7 +205,11 @@ async function requireCommunication(permission: string, feature: string) {
     active.schoolId !== authorization.schoolId
   )
     throw new Error("The active school context is invalid");
-  return { supabase, active: { ...active, schoolId: active.schoolId } };
+  return {
+    supabase,
+    authorization,
+    active: { ...active, schoolId: active.schoolId },
+  };
 }
 
 export async function loadCommunicationWorkspace() {

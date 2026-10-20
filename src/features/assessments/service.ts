@@ -316,6 +316,29 @@ export async function transitionBatch(
   if (error) throw new Error("Result workflow transition failed");
 }
 
+export async function reopenBatch(id: string, reason: string) {
+  const context = await requireAssessmentContext(
+    "academics.results.correct",
+    "academics.result_workflow",
+  );
+  const batch = await context.supabase
+    .from("result_batches")
+    .select("id")
+    .eq("id", id)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .eq("status", "published")
+    .maybeSingle();
+  if (batch.error || !batch.data)
+    throw new Error("Published batch unavailable");
+  const result = await context.supabase.rpc("reopen_result_batch", {
+    target_batch_id: id,
+    reason,
+  });
+  if (result.error || !result.data)
+    throw new Error("Correction could not be created");
+}
+
 export async function promoteStudent(input: PromotionInput) {
   const c = await requireAssessmentContext(
     "academics.promotions.manage",

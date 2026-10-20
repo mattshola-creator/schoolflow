@@ -5,6 +5,7 @@ import { loadAssessmentWorkspace } from "@/features/assessments/service";
 import {
   activateAssessmentScheme,
   advanceResultBatch,
+  createResultCorrection,
   saveComponent,
   saveGradeBand,
   saveResultBatch,
@@ -39,6 +40,37 @@ export default async function AssessmentsPage({
   const canEnter = workspace.authorization.permissions.includes(
     "academics.scores.enter",
   );
+  const canCorrect = workspace.authorization.permissions.includes(
+    "academics.results.correct",
+  );
+  const correctionControl = (batch: { id: string; status: string }) =>
+    canCorrect && batch.status === "published" ? (
+      <details className="w-full rounded-lg border p-3">
+        <summary className="cursor-pointer font-medium">
+          Create correction version
+        </summary>
+        <p className="mt-2 text-sm text-slate-600">
+          The published report is preserved. Review and publish the new version
+          separately.
+        </p>
+        <form action={createResultCorrection} className="mt-3 grid gap-2">
+          <input type="hidden" name="batchId" value={batch.id} />
+          <label className={label}>
+            Correction reason
+            <input
+              name="reason"
+              required
+              minLength={3}
+              maxLength={500}
+              className={fieldClass}
+            />
+          </label>
+          <Button type="submit" variant="secondary">
+            Create correction
+          </Button>
+        </form>
+      </details>
+    ) : null;
   const names = (items: { id: string; name: string }[]) =>
     new Map(items.map((item) => [item.id, item.name]));
   const sessionNames = names(workspace.sessions),
@@ -461,6 +493,7 @@ export default async function AssessmentsPage({
                       Report cards
                     </ButtonLink>
                   ) : null}
+                  {correctionControl(b)}
                   {next ? (
                     <form action={advanceResultBatch}>
                       <input type="hidden" name="batchId" value={b.id} />
@@ -520,6 +553,7 @@ export default async function AssessmentsPage({
                             Report
                           </ButtonLink>
                         ) : null}
+                        {correctionControl(b)}
                         {next ? (
                           <form action={advanceResultBatch}>
                             <input type="hidden" name="batchId" value={b.id} />

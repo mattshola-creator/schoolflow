@@ -2,6 +2,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { loadPublishedReport } from "@/features/assessments/service";
 import { publishedReportResults } from "@/features/assessments/published-report";
+import { AuthorizationError } from "@/lib/authorization";
+import { StatePanel } from "@/components/ui/state-panel";
 
 export default async function ReportCardPage({
   params,
@@ -9,7 +11,28 @@ export default async function ReportCardPage({
   params: Promise<{ batchId: string }>;
 }) {
   const { batchId } = await params;
-  const workspace = await loadPublishedReport(batchId);
+  const workspace = await loadPublishedReport(batchId).catch(
+    (error: unknown) => {
+      if (error instanceof AuthorizationError) return null;
+      throw error;
+    },
+  );
+  if (!workspace)
+    return (
+      <main className="py-10 sm:py-12">
+        <h1 className="mb-5 text-3xl font-semibold">
+          Report access unavailable
+        </h1>
+        <StatePanel
+          kind="unauthorized"
+          title="This report is not available in your current workspace"
+          description="Select an authorized school and account with published-result access. An administrator can review your permissions and module availability."
+          action={
+            <ButtonLink href="/dashboard">Back to school overview</ButtonLink>
+          }
+        />
+      </main>
+    );
   const batch = workspace.publication.result_batches;
   const results = publishedReportResults(workspace.publication.snapshot);
   return (

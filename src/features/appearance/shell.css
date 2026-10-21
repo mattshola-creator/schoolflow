@@ -91,11 +91,6 @@
   outline: 3px solid var(--shell-nav-focus);
   outline-offset: 2px;
 }
-@media (max-width: 359px) {
-  .sf-themed-shell .sf-shell-theme-picker select {
-    max-width: 6rem;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .sf-themed-shell *,
   .sf-themed-shell *::before,

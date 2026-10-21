@@ -393,6 +393,21 @@
   .sf-design-metrics p {
     min-height: 0;
   }
+  .sf-design-metrics article {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 8px;
+    padding: 14px;
+  }
+  .sf-design-metrics strong {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    margin: 0;
+  }
+  .sf-design-metrics small {
+    grid-column: 1;
+  }
   .sf-design-activity p {
     flex-wrap: wrap;
   }

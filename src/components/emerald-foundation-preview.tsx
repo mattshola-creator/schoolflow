@@ -26,7 +26,7 @@ export function EmeraldFoundationPreview() {
         <label className="grid gap-1 text-sm font-semibold">
           Preview theme
           <select
-            className="min-h-11 rounded-lg border bg-white px-3 text-slate-900"
+            className="min-h-11 rounded-lg border bg-white px-3 text-base text-slate-900"
             value={themeId}
             onChange={(event) => {
               if (isAppearanceTheme(event.target.value))

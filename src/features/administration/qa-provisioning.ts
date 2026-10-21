@@ -33,6 +33,21 @@ export const qaRolePresets = {
       "finance.payments.allocate",
     ],
   },
+  assessment_teacher: {
+    key: "qa_assessment_teacher",
+    name: "QA Assessment Teacher",
+    description: "SchoolFlow QA fixed Assessment entry and submission preset.",
+    syntheticEmail: "qa-assessment-teacher@schoolflow.test",
+    fullName: "QA Assessment Teacher",
+    organizationSlug: "cedarbridge-learning-group",
+    permissions: [
+      "students.view",
+      "academics.view",
+      "academics.scores.view",
+      "academics.scores.enter",
+      "academics.scores.submit",
+    ],
+  },
   internal_qa_reader: {
     key: "qa_internal_read_only",
     name: "QA Read Only",
@@ -62,6 +77,17 @@ export const qaRolePresets = {
 } as const;
 
 export type QaRolePresetKey = keyof typeof qaRolePresets;
+
+export function qaSignInOrigin(
+  requestOrigin: string,
+  destination: "current" | "stable_qa",
+) {
+  if (!isQaProvisioningOrigin(requestOrigin))
+    throw new Error("Invalid QA request origin");
+  if (destination === "stable_qa") return QA_APP_ORIGIN;
+  if (destination === "current") return requestOrigin;
+  throw new Error("Invalid QA sign-in destination");
+}
 
 export function qaInvitationAcceptanceUrl(
   token: string,

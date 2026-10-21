@@ -11,6 +11,7 @@ import {
   isQaSupabaseUrl,
   qaInvitationAcceptanceUrl,
   qaRolePresets,
+  qaSignInOrigin,
 } from "@/features/administration/qa-provisioning";
 
 const invitationInput = z.object({
@@ -19,7 +20,9 @@ const invitationInput = z.object({
     "payment_recorder",
     "payment_verifier",
     "internal_qa_reader",
+    "assessment_teacher",
   ]),
+  signInDestination: z.enum(["current", "stable_qa"]).default("current"),
 });
 
 export type QaInvitationState = {
@@ -202,6 +205,10 @@ export async function createQaInvitation(
     }
 
     const appOrigin = `https://${host}`;
+    const destinationOrigin = qaSignInOrigin(
+      appOrigin,
+      parsed.data.signInDestination,
+    );
     stage = "identity_provisioning";
     const { data: identity, error: identityError } =
       await userResult.supabase.functions.invoke<{
@@ -213,6 +220,7 @@ export async function createQaInvitation(
           organizationId: active.organizationId,
           schoolId: active.schoolId,
           appOrigin,
+          signInDestination: parsed.data.signInDestination,
         },
         headers: { Origin: appOrigin },
       });
@@ -283,7 +291,7 @@ export async function createQaInvitation(
     if (inviteError)
       return { message: "The QA invitation could not be created." };
 
-    const inviteUrl = qaInvitationAcceptanceUrl(token, appOrigin);
+    const inviteUrl = qaInvitationAcceptanceUrl(token, destinationOrigin);
     return {
       message:
         "QA sign-in and role acceptance links are ready. No email or external notification was sent.",

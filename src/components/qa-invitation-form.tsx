@@ -85,12 +85,32 @@ export function QaInvitationForm({
                 <option value="payment_recorder">
                   Cedarbridge payment recorder
                 </option>
+                <option value="assessment_teacher">
+                  Cedarbridge Assessment teacher
+                </option>
                 <option value="payment_verifier">
                   Cedarbridge independent payment verifier
                 </option>
               </>
             )}
           </select>
+        </label>
+        <label className="grid gap-1.5 text-sm font-medium text-slate-700">
+          Sign-in workspace
+          <select
+            className={fieldClass}
+            name="signInDestination"
+            defaultValue="current"
+          >
+            <option value="current">This preview or workspace</option>
+            <option value="stable_qa">
+              Stable QA — separate account session
+            </option>
+          </select>
+          <span className="text-sm font-normal">
+            Both private links use the selected workspace. Choose stable QA to
+            preserve the owner session on this preview.
+          </span>
         </label>
         <div className="sm:col-span-2">
           <Button type="submit" disabled={pending}>

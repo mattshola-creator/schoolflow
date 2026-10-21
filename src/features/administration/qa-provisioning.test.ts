@@ -5,9 +5,36 @@ import {
   isQaSupabaseUrl,
   qaInvitationAcceptanceUrl,
   qaRolePresets,
+  qaSignInOrigin,
 } from "./qa-provisioning";
 
 describe("QA role provisioning safeguards", () => {
+  it("keeps current-origin links by default and permits only an explicit fixed stable-QA destination", () => {
+    const preview =
+      "https://deploy-preview-119--schoolflow-demo-qa.netlify.app";
+    expect(qaSignInOrigin(preview, "current")).toBe(preview);
+    expect(qaSignInOrigin(preview, "stable_qa")).toBe(
+      "https://schoolflow-demo-qa.netlify.app",
+    );
+    expect(() =>
+      qaSignInOrigin("https://attacker.example", "stable_qa"),
+    ).toThrow();
+    expect(() =>
+      qaSignInOrigin(preview, "https://attacker.example" as "current"),
+    ).toThrow();
+  });
+  it("keeps the teacher preset separate from approval, correction, finance and access administration", () => {
+    expect(qaRolePresets.assessment_teacher.permissions).toEqual([
+      "students.view",
+      "academics.view",
+      "academics.scores.view",
+      "academics.scores.enter",
+      "academics.scores.submit",
+    ]);
+    expect(qaRolePresets.assessment_teacher.syntheticEmail).toBe(
+      "qa-assessment-teacher@schoolflow.test",
+    );
+  });
   it("accepts only the designated QA Supabase project URL", () => {
     expect(isQaSupabaseUrl("https://afqykqlxecpzspjoyegc.supabase.co")).toBe(
       true,

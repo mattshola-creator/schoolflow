@@ -24,9 +24,12 @@ describe("QA invitation handoff", () => {
         schoolId="11111111-1111-4111-8111-111111111111"
       />,
     );
-    fireEvent.change(screen.getByRole("combobox"), {
-      target: { value: "payment_verifier" },
-    });
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Role and access scope" }),
+      {
+        target: { value: "payment_verifier" },
+      },
+    );
     fireEvent.click(
       screen.getByRole("button", { name: "Prepare test account" }),
     );

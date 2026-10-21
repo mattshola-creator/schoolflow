@@ -339,6 +339,8 @@ export async function reopenBatch(id: string, reason: string) {
     throw new Error("Correction could not be created");
 }
 
+export class PromotionError extends Error {}
+
 export async function promoteStudent(input: PromotionInput) {
   const c = await requireAssessmentContext(
     "academics.promotions.manage",
@@ -354,5 +356,79 @@ export async function promoteStudent(input: PromotionInput) {
     idempotency_key: input.idempotencyKey,
     notes: input.notes,
   });
-  if (error) throw new Error("Student promotion failed");
+  if (error) throw new PromotionError("Student promotion failed");
+}
+
+export async function loadPromotionWorkspace() {
+  const context = await requireAssessmentContext(
+    "academics.promotions.manage",
+    "academics.promotion",
+  );
+  const scope = {
+    organization_id: context.active.organizationId,
+    school_id: context.authorization.schoolId!,
+  };
+  const [enrollments, sessions, periods, levels, arms, history] =
+    await Promise.all([
+      context.supabase
+        .from("student_enrollments")
+        .select("student_id")
+        .match(scope)
+        .neq("status", "cancelled"),
+      context.supabase
+        .from("academic_sessions")
+        .select("id,name,status")
+        .match(scope)
+        .order("start_date", { ascending: false }),
+      context.supabase
+        .from("academic_periods")
+        .select("id,session_id,name")
+        .match(scope)
+        .order("sequence"),
+      context.supabase
+        .from("class_levels")
+        .select("id,name")
+        .match(scope)
+        .eq("status", "active")
+        .order("sort_order"),
+      context.supabase
+        .from("class_arms")
+        .select("id,name,class_level_id")
+        .match(scope)
+        .eq("status", "active")
+        .order("sort_order"),
+      context.supabase
+        .from("student_promotions")
+        .select(
+          "id,student_id,source_period_id,outcome,target_session_id,target_class_level_id,created_at",
+        )
+        .match(scope)
+        .order("created_at", { ascending: false }),
+    ]);
+  if (
+    [enrollments, sessions, periods, levels, arms, history].some(
+      (result) => result.error,
+    )
+  )
+    throw new Error("Promotion workspace could not be loaded");
+  const ids = [
+    ...new Set((enrollments.data ?? []).map((row) => row.student_id)),
+  ];
+  const profiles = ids.length
+    ? await context.supabase
+        .from("student_profiles")
+        .select("id,student_number,people!inner(first_name,last_name)")
+        .eq("organization_id", scope.organization_id)
+        .in("id", ids)
+    : { data: [], error: null };
+  if (profiles.error) throw new Error("Promotion learners could not be loaded");
+  return {
+    ...context,
+    students: profiles.data ?? [],
+    sessions: sessions.data ?? [],
+    periods: periods.data ?? [],
+    levels: levels.data ?? [],
+    arms: arms.data ?? [],
+    history: history.data ?? [],
+  };
 }

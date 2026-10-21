@@ -45,6 +45,21 @@ const presets = {
       "finance.payments.allocate",
     ],
   },
+  assessment_teacher: {
+    key: "qa_assessment_teacher",
+    name: "QA Assessment Teacher",
+    description: "SchoolFlow QA fixed Assessment entry and submission preset.",
+    email: "qa-assessment-teacher@schoolflow.test",
+    fullName: "QA Assessment Teacher",
+    organizationSlug: "cedarbridge-learning-group",
+    permissions: [
+      "students.view",
+      "academics.view",
+      "academics.scores.view",
+      "academics.scores.enter",
+      "academics.scores.submit",
+    ],
+  },
   internal_qa_reader: {
     key: "qa_internal_read_only",
     name: "QA Read Only",
@@ -105,6 +120,7 @@ function isQaOrigin(value: string) {
     const origin = new URL(value);
     return (
       origin.protocol === "https:" &&
+      origin.port === "" &&
       origin.origin === value &&
       isQaHost(origin.hostname)
     );
@@ -202,17 +218,25 @@ Deno.serve(async (request: Request) => {
       organizationId?: unknown;
       schoolId?: unknown;
       appOrigin?: unknown;
+      signInDestination?: unknown;
     };
     if (
       typeof input.rolePreset !== "string" ||
-      !(input.rolePreset in presets) ||
+      !Object.hasOwn(presets, input.rolePreset) ||
       typeof input.organizationId !== "string" ||
       typeof input.schoolId !== "string" ||
       typeof input.appOrigin !== "string" ||
-      input.appOrigin !== origin
+      input.appOrigin !== origin ||
+      (input.signInDestination !== undefined &&
+        input.signInDestination !== "current" &&
+        input.signInDestination !== "stable_qa")
     )
       return json({ error: "invalid_request" }, 400, origin);
 
+    const destinationOrigin =
+      input.signInDestination === "stable_qa"
+        ? `https://${QA_BASE_HOST}`
+        : origin;
     const preset = presets[input.rolePreset as PresetKey];
     const userClient = createClient(supabaseUrl, publishableKey, {
       auth: { autoRefreshToken: false, persistSession: false },
@@ -391,7 +415,7 @@ Deno.serve(async (request: Request) => {
       await adminClient.auth.admin.generateLink({
         type: "magiclink",
         email: preset.email,
-        options: { redirectTo: `${origin}/auth/qa-link` },
+        options: { redirectTo: `${destinationOrigin}/auth/qa-link` },
       });
     const tokenHash = link?.properties?.hashed_token;
     if (linkError || !tokenHash)
@@ -399,7 +423,7 @@ Deno.serve(async (request: Request) => {
 
     // Keep the one-time OTP in the URL fragment. Fragments are not sent to the
     // server; the QA page removes it from browser history before verification.
-    const signIn = new URL("/auth/qa-link", origin);
+    const signIn = new URL("/auth/qa-link", destinationOrigin);
     signIn.hash = new URLSearchParams({
       token_hash: tokenHash,
       type: "magiclink",

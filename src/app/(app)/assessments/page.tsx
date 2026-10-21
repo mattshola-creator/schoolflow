@@ -37,6 +37,9 @@ export default async function AssessmentsPage({
   const canConfigure = workspace.authorization.permissions.includes(
     "academics.assessments.configure",
   );
+  const canPromote = workspace.authorization.permissions.includes(
+    "academics.promotions.manage",
+  );
   const canEnter = workspace.authorization.permissions.includes(
     "academics.scores.enter",
   );
@@ -86,6 +89,13 @@ export default async function AssessmentsPage({
   } as const;
   return (
     <main className="py-10 sm:py-12">
+      {canPromote && (
+        <div className="mb-5">
+          <ButtonLink href="/assessments/promotions" variant="secondary">
+            Student promotion
+          </ButtonLink>
+        </div>
+      )}
       <PageHeader
         eyebrow="Assessment & Results"
         title={`Academic results at ${workspace.active.schoolName}`}

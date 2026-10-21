@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SharedShellReviewPage() {
   if (
-    (process.env.CONTEXT !== "deploy-preview" ||
+    (process.env.SCHOOLFLOW_SHELL_REVIEW !== "true" ||
       process.env.NEXT_PUBLIC_SUPABASE_URL !==
         "https://afqykqlxecpzspjoyegc.supabase.co") &&
     process.env.NODE_ENV !== "development"

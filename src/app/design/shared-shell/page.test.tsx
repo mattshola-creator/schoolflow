@@ -25,7 +25,8 @@ vi.mock("@/app/(app)/actions", () => ({
 describe("shared-shell QA route", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.stubEnv("CONTEXT", "deploy-preview");
+    vi.stubEnv("SCHOOLFLOW_SHELL_REVIEW", "true");
+    vi.stubEnv("CONTEXT", undefined);
     vi.stubEnv(
       "NEXT_PUBLIC_SUPABASE_URL",
       "https://afqykqlxecpzspjoyegc.supabase.co",
@@ -33,10 +34,11 @@ describe("shared-shell QA route", () => {
   });
   afterEach(() => vi.unstubAllEnvs());
   it("is absent from production and other project bindings before loading identity", async () => {
-    vi.stubEnv("CONTEXT", "production");
+    vi.stubEnv("SCHOOLFLOW_SHELL_REVIEW", "false");
     await expect(SharedShellReviewPage()).rejects.toThrow("not found");
     expect(mocks.guard).not.toHaveBeenCalled();
-    vi.stubEnv("CONTEXT", "deploy-preview");
+    vi.stubEnv("SCHOOLFLOW_SHELL_REVIEW", "true");
+    vi.stubEnv("CONTEXT", undefined);
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://other.supabase.co");
     await expect(SharedShellReviewPage()).rejects.toThrow("not found");
   });

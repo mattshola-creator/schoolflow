@@ -15,3 +15,5 @@ Verify all themes at 320,360,768,1440px; desktop sidebar collapse; mobile focus 
 Runtime theme values do not change html, body, application-wide tokens, cookies, localStorage or database settings. The existing sidebar-collapse preference is retained. Removing enableAppearance restores the existing shell; removing the review route leaves existing application routes unchanged. Broader app-layout wiring and live role-dashboard redesign require their own review after this contained implementation.
 
 Browser verification also corrected the icon-only home link name, made navigation heading IDs unique across desktop and mobile, improved drawer account contrast and allowed long context labels to wrap. These changes preserve existing navigation targets and context actions.
+
+The review availability marker is computed at build time from the QA project binding and deploy context, then embedded as a non-secret constant. Netlify build-only CONTEXT is not read by the server-rendered route at runtime. This marker controls review-route availability only; authenticated capability and matching tenant checks remain mandatory.

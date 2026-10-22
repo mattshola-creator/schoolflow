@@ -8,6 +8,7 @@ import type {
 } from "./schemas";
 import type { z } from "zod";
 import type { resultBatchSchema } from "./schemas";
+import { assembleScoreSheetStudents } from "./score-sheet-roster";
 
 type BatchInput = z.infer<typeof resultBatchSchema>;
 
@@ -230,9 +231,7 @@ export async function loadScoreSheet(batchId: string) {
     throw new Error("Score sheet could not be loaded");
   let membershipQuery = context.supabase
     .from("class_memberships")
-    .select(
-      "student_id,student_profiles!inner(student_number,people!inner(first_name,last_name))",
-    )
+    .select("student_id")
     .eq("organization_id", context.active.organizationId)
     .eq("school_id", context.active.schoolId!)
     .eq("academic_session_id", batch.data.session_id)
@@ -241,8 +240,18 @@ export async function loadScoreSheet(batchId: string) {
   membershipQuery = batch.data.class_arm_id
     ? membershipQuery.eq("class_arm_id", batch.data.class_arm_id)
     : membershipQuery.is("class_arm_id", null);
-  const [memberships, scores, results] = await Promise.all([
-    membershipQuery,
+  const memberships = await membershipQuery;
+  if (memberships.error)
+    throw new Error("Score sheet details could not be loaded");
+  const studentIds = (memberships.data ?? []).map((row) => row.student_id);
+  const [profiles, scores, results] = await Promise.all([
+    studentIds.length
+      ? context.supabase
+          .from("student_profiles")
+          .select("id,student_number,people!inner(first_name,last_name)")
+          .eq("organization_id", context.active.organizationId)
+          .in("id", studentIds)
+      : Promise.resolve({ data: [], error: null }),
     context.supabase
       .from("assessment_scores")
       .select("student_id,component_id,score")
@@ -252,12 +261,15 @@ export async function loadScoreSheet(batchId: string) {
       .select("student_id,weighted_percent,total_score,grade,remark,is_pass")
       .eq("batch_id", batchId),
   ]);
-  if (memberships.error || scores.error || results.error)
+  if (profiles.error || scores.error || results.error)
     throw new Error("Score sheet details could not be loaded");
   return {
     ...context,
     batch: batch.data,
-    students: memberships.data ?? [],
+    students: assembleScoreSheetStudents(
+      memberships.data ?? [],
+      profiles.data ?? [],
+    ),
     scores: scores.data ?? [],
     results: results.data ?? [],
   };
@@ -304,6 +316,31 @@ export async function transitionBatch(
   if (error) throw new Error("Result workflow transition failed");
 }
 
+export async function reopenBatch(id: string, reason: string) {
+  const context = await requireAssessmentContext(
+    "academics.results.correct",
+    "academics.result_workflow",
+  );
+  const batch = await context.supabase
+    .from("result_batches")
+    .select("id")
+    .eq("id", id)
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .eq("status", "published")
+    .maybeSingle();
+  if (batch.error || !batch.data)
+    throw new Error("Published batch unavailable");
+  const result = await context.supabase.rpc("reopen_result_batch", {
+    target_batch_id: id,
+    reason,
+  });
+  if (result.error || !result.data)
+    throw new Error("Correction could not be created");
+}
+
+export class PromotionError extends Error {}
+
 export async function promoteStudent(input: PromotionInput) {
   const c = await requireAssessmentContext(
     "academics.promotions.manage",
@@ -319,5 +356,79 @@ export async function promoteStudent(input: PromotionInput) {
     idempotency_key: input.idempotencyKey,
     notes: input.notes,
   });
-  if (error) throw new Error("Student promotion failed");
+  if (error) throw new PromotionError("Student promotion failed");
+}
+
+export async function loadPromotionWorkspace() {
+  const context = await requireAssessmentContext(
+    "academics.promotions.manage",
+    "academics.promotion",
+  );
+  const scope = {
+    organization_id: context.active.organizationId,
+    school_id: context.authorization.schoolId!,
+  };
+  const [enrollments, sessions, periods, levels, arms, history] =
+    await Promise.all([
+      context.supabase
+        .from("student_enrollments")
+        .select("student_id")
+        .match(scope)
+        .neq("status", "cancelled"),
+      context.supabase
+        .from("academic_sessions")
+        .select("id,name,status")
+        .match(scope)
+        .order("start_date", { ascending: false }),
+      context.supabase
+        .from("academic_periods")
+        .select("id,session_id,name")
+        .match(scope)
+        .order("sequence"),
+      context.supabase
+        .from("class_levels")
+        .select("id,name")
+        .match(scope)
+        .eq("status", "active")
+        .order("sort_order"),
+      context.supabase
+        .from("class_arms")
+        .select("id,name,class_level_id")
+        .match(scope)
+        .eq("status", "active")
+        .order("sort_order"),
+      context.supabase
+        .from("student_promotions")
+        .select(
+          "id,student_id,source_period_id,outcome,target_session_id,target_class_level_id,created_at",
+        )
+        .match(scope)
+        .order("created_at", { ascending: false }),
+    ]);
+  if (
+    [enrollments, sessions, periods, levels, arms, history].some(
+      (result) => result.error,
+    )
+  )
+    throw new Error("Promotion workspace could not be loaded");
+  const ids = [
+    ...new Set((enrollments.data ?? []).map((row) => row.student_id)),
+  ];
+  const profiles = ids.length
+    ? await context.supabase
+        .from("student_profiles")
+        .select("id,student_number,people!inner(first_name,last_name)")
+        .eq("organization_id", scope.organization_id)
+        .in("id", ids)
+    : { data: [], error: null };
+  if (profiles.error) throw new Error("Promotion learners could not be loaded");
+  return {
+    ...context,
+    students: profiles.data ?? [],
+    sessions: sessions.data ?? [],
+    periods: periods.data ?? [],
+    levels: levels.data ?? [],
+    arms: arms.data ?? [],
+    history: history.data ?? [],
+  };
 }

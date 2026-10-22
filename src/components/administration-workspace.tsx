@@ -1,4 +1,6 @@
 import { StatusBadge } from "@/components/ui/status-badge";
+import { QaInvitationForm } from "@/components/qa-invitation-form";
+import { isQaSupabaseUrl } from "@/features/administration/qa-provisioning";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { shortMemberReference } from "@/features/administration/model";
 
@@ -21,6 +23,14 @@ export function AdministrationWorkspace({
   workspace: Workspace;
 }) {
   const scope = workspace.active.schoolName ?? "Organization-wide";
+  const canPrepareQaInvites =
+    isQaSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    workspace.permissions.manageMembers &&
+    workspace.permissions.manageRoles &&
+    Boolean(workspace.active.schoolId) &&
+    ["Cedarbridge Learning Group", "SchoolFlow Internal QA"].includes(
+      workspace.active.organizationName,
+    );
   const summaries = [
     [
       "Authorized workspaces",
@@ -49,6 +59,12 @@ export function AdministrationWorkspace({
   ] as const;
   return (
     <div className="space-y-8">
+      {canPrepareQaInvites && workspace.active.schoolId ? (
+        <QaInvitationForm
+          organizationName={workspace.active.organizationName}
+          schoolId={workspace.active.schoolId}
+        />
+      ) : null}
       <section
         className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
         aria-label="Administration summary"

@@ -1,3 +1,5 @@
+import { AuthorizationError } from "@/lib/authorization";
+import { StatePanel } from "@/components/ui/state-panel";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -12,7 +14,26 @@ export default async function ScoreSheetPage({
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const [{ batchId }, notice] = await Promise.all([params, searchParams]);
-  const workspace = await loadScoreSheet(batchId);
+  const workspace = await loadScoreSheet(batchId).catch((error: unknown) => {
+    if (error instanceof AuthorizationError) return null;
+    throw error;
+  });
+  if (!workspace)
+    return (
+      <main className="py-10 sm:py-12">
+        <h1 className="mb-5 text-3xl font-semibold">
+          Assessment access unavailable
+        </h1>
+        <StatePanel
+          kind="unauthorized"
+          title="This score sheet is not available in your current workspace"
+          description="Select an authorized school and account with Assessment access. An administrator can review your permissions and module availability."
+          action={
+            <ButtonLink href="/dashboard">Back to school overview</ButtonLink>
+          }
+        />
+      </main>
+    );
   const components = [
     ...workspace.batch.assessment_schemes.assessment_components,
   ].sort((a, b) => a.sequence - b.sequence);
@@ -31,8 +52,8 @@ export default async function ScoreSheetPage({
     <main className="py-10 sm:py-12">
       <PageHeader
         eyebrow="Score sheet"
-        title={`${workspace.batch.subjects.name} · ${workspace.batch.class_levels.name}${workspace.batch.class_arms ? ` ${workspace.batch.class_arms.name}` : ""}`}
-        description={`${workspace.batch.academic_sessions.name} · ${workspace.batch.academic_periods.name} · ${workspace.batch.assessment_schemes.name}`}
+        title={`${workspace.batch.subjects?.name ?? "Subject label unavailable"} · ${workspace.batch.class_levels?.name ?? "Class label unavailable"}${workspace.batch.class_arms ? ` ${workspace.batch.class_arms.name}` : ""}`}
+        description={`${workspace.batch.academic_sessions?.name ?? "Session label unavailable"} · ${workspace.batch.academic_periods?.name ?? "Period label unavailable"} · ${workspace.batch.assessment_schemes.name}`}
         actions={
           <ButtonLink href="/assessments" variant="secondary">
             Back

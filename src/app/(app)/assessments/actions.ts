@@ -9,6 +9,7 @@ import {
   resultBatchSchema,
   resultTransitionSchema,
   scoreSchema,
+  correctionSchema,
 } from "@/features/assessments/schemas";
 import {
   activateScheme,
@@ -18,6 +19,7 @@ import {
   createResultBatch,
   transitionBatch,
   saveScore,
+  reopenBatch,
 } from "@/features/assessments/service";
 
 async function finish(task: () => Promise<void>, success: string) {
@@ -93,4 +95,14 @@ export async function saveAssessmentScore(formData: FormData) {
   }
   revalidatePath(back);
   redirect(`${back}?message=Score+saved`);
+}
+
+export async function createResultCorrection(formData: FormData) {
+  const parsed = correctionSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success)
+    redirect("/assessments?error=Provide+a+correction+reason");
+  await finish(
+    () => reopenBatch(parsed.data.batchId, parsed.data.reason),
+    "Correction version created; the published version is preserved",
+  );
 }

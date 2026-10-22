@@ -5,9 +5,20 @@ const optionalUuid = z.preprocess(
   z.string().uuid().optional(),
 );
 
+const schoolSelectionSchema = z
+  .array(z.string().uuid())
+  .min(1)
+  .max(100)
+  .refine(
+    (ids) => new Set(ids.map((id) => id.toLowerCase())).size === ids.length,
+    {
+      message: "Select each school only once",
+    },
+  );
+
 export const reportingFiltersSchema = z
   .object({
-    schoolIds: z.array(z.string().uuid()).min(1).max(100),
+    schoolIds: schoolSelectionSchema,
     sessionId: optionalUuid,
     periodId: optionalUuid,
     dateFrom: z.iso.date(),
@@ -19,7 +30,7 @@ export const reportingFiltersSchema = z
 
 export const reportingSearchSchema = z.object({
   query: z.string().trim().min(2).max(100),
-  schoolIds: z.array(z.string().uuid()).min(1).max(100),
+  schoolIds: schoolSelectionSchema,
 });
 
 export const academicCloseSchema = z.object({

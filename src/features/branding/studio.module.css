@@ -137,6 +137,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
 }
 .fields label {
+  min-width: 0;
   display: grid;
   gap: 8px;
 }
@@ -147,6 +148,14 @@
   border: 1px solid var(--sf-border);
   border-radius: 8px;
   padding: 8px;
+}
+.studio input[type="file"] {
+  width: 100%;
+  min-width: 0;
+}
+.fields small {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .studio button {
   cursor: pointer;

@@ -2,6 +2,20 @@
 -- No application, Storage operation or grant is authorized by this file.
 do $$ begin raise exception 'Specific Studio asset security approval required'; end $$;
 
+create function public.school_branding_images_allowed(org uuid,school uuid)
+returns boolean language sql stable security definer set search_path='' as $$
+ select auth.uid() is not null and exists(select 1 from public.schools s where s.id=school and s.organization_id=org and s.status='active') and public.has_school_membership(org,school)
+ and public.has_module_entitlement(org,'foundation')
+ and public.is_feature_enabled(org,'foundation.authorization_inspection')
+ and 1=(select count(*) from public.organization_plans op join public.plans p on p.id=op.plan_id and p.is_active
+  where op.organization_id=org and op.status in ('active','trialing') and op.starts_at<=now() and (op.ends_at is null or op.ends_at>now()))
+ and exists(select 1 from public.organization_plans op join public.plans p on p.id=op.plan_id and p.is_active
+  where op.organization_id=org and op.status='active' and p.key in ('professional','enterprise')
+   and op.starts_at<=now() and (op.ends_at is null or op.ends_at>now()))
+$$;
+revoke all on function public.school_branding_images_allowed(uuid,uuid) from public,anon;
+grant execute on function public.school_branding_images_allowed(uuid,uuid) to authenticated;
+
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('schoolflow-branding','schoolflow-branding',false,5242880,array['image/webp']);
 -- RESTRICTIVE policies also defeat any unrelated broad permissive Storage policy.
@@ -45,7 +59,7 @@ returns uuid language plpgsql security definer set search_path='' as $$
 declare target uuid; previous uuid; bound uuid;
 begin
  if not public.can_manage_school_branding(org,school)
-  or not public.school_branding_theme_allowed(org,school,'winter-frost') then
+  or not public.school_branding_images_allowed(org,school) then
   raise exception 'Not authorized or not entitled' using errcode='42501'; end if;
  if not exists(select 1 from public.school_branding_assets a where a.id=asset and a.organization_id=org and a.school_id=school) then
   raise exception 'Processed asset unavailable' using errcode='42501'; end if;
@@ -75,7 +89,7 @@ begin
  if new.published_version_id is distinct from old.published_version_id
   and exists(select 1 from public.school_branding_version_assets va where va.version_id=new.published_version_id)
   and (not public.can_manage_school_branding(new.organization_id,new.school_id)
-   or not public.school_branding_theme_allowed(new.organization_id,new.school_id,'winter-frost')) then
+   or not public.school_branding_images_allowed(new.organization_id,new.school_id)) then
   raise exception 'Image publication not authorized or entitled' using errcode='42501';
  end if;
  return new;
@@ -83,8 +97,19 @@ end $$;
 revoke all on function private.guard_branding_asset_publication() from public,anon,authenticated;
 create trigger guard_branding_asset_publication before update on public.school_branding_state
  for each row execute function private.guard_branding_asset_publication();
+-- The processor supplies created_by from server-verified identity, never request JSON.
+-- Service JWTs do not carry the originating Owner in auth.uid().
+create function private.capture_branding_asset_audit() returns trigger
+language plpgsql security definer set search_path='' as $$
+begin
+ insert into public.audit_events(organization_id,school_id,actor_user_id,action,entity_type,entity_id,metadata)
+ values(new.organization_id,new.school_id,new.created_by,'insert.school_branding_assets','school_branding_assets',new.id,
+  jsonb_build_object('processorVersion',new.processor_version));
+ return new;
+end $$;
+revoke all on function private.capture_branding_asset_audit() from public,anon,authenticated,service_role;
 create trigger audit_school_branding_assets after insert on public.school_branding_assets
- for each row execute function private.capture_audit_event();
+ for each row execute function private.capture_branding_asset_audit();
 create trigger audit_school_branding_version_assets after insert on public.school_branding_version_assets
  for each row execute function private.capture_audit_event();
 -- No background URL or arbitrary styling enters JSON. Binding stores UUIDs only.

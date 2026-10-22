@@ -5,7 +5,7 @@ do $$ begin raise exception 'Studio persistence security approval is required'; 
 
 create function public.can_manage_school_branding(org uuid,school uuid)
 returns boolean language sql stable security definer set search_path='' as $$
- select auth.uid() is not null and public.has_school_membership(org,school)
+ select auth.uid() is not null and exists(select 1 from public.schools s where s.id=school and s.organization_id=org and s.status='active') and public.has_school_membership(org,school)
  and public.has_permission(org,school,'school.manage')
  and public.has_module_entitlement(org,'foundation')
  and public.is_feature_enabled(org,'foundation.authorization_inspection')
@@ -19,7 +19,7 @@ grant execute on function public.can_manage_school_branding(uuid,uuid) to authen
 
 create function public.school_branding_theme_allowed(org uuid,school uuid,theme text)
 returns boolean language sql stable security definer set search_path='' as $$
- select auth.uid() is not null and public.has_school_membership(org,school)
+ select auth.uid() is not null and exists(select 1 from public.schools s where s.id=school and s.organization_id=org and s.status='active') and public.has_school_membership(org,school)
  and public.has_module_entitlement(org,'foundation') and coalesce((
   select case
    when theme in ('emerald','ocean','amethyst','sunrise','slate','midnight','premium-emerald','classic-light','midnight-emerald') then true
@@ -27,7 +27,7 @@ returns boolean language sql stable security definer set search_path='' as $$
    when theme in ('winter-frost','autumn-heritage','spring-bloom','midnight-luxe') then op.status='active' and p.key in ('professional','enterprise')
    else false end
   from public.organization_plans op join public.plans p on p.id=op.plan_id and p.is_active
-  where op.organization_id=org and op.status in ('active','trialing') and op.starts_at<=now()
+  where p.key in ('starter','growth','professional','enterprise') and op.organization_id=org and op.status in ('active','trialing') and op.starts_at<=now()
    and (op.ends_at is null or op.ends_at>now())
    and 1=(select count(*) from public.organization_plans x join public.plans px on px.id=x.plan_id and px.is_active
       where x.organization_id=org and x.status in ('active','trialing') and x.starts_at<=now() and (x.ends_at is null or x.ends_at>now()))
@@ -39,7 +39,7 @@ grant execute on function public.school_branding_theme_allowed(uuid,uuid,text) t
 create function private.valid_school_branding(c jsonb) returns boolean
 language plpgsql immutable set search_path='' as $$
 begin
- if jsonb_typeof(c)<>'object' or not c ?& array['themeId','preset','focalX','focalY','overlay']
+ if c is null or jsonb_typeof(c)<>'object' or not c ?& array['themeId','preset','focalX','focalY','overlay']
   or (c-array['themeId','preset','focalX','focalY','overlay'])<>'{}'::jsonb then return false; end if;
  if jsonb_typeof(c->'themeId')<>'string' or jsonb_typeof(c->'preset')<>'string'
   or jsonb_typeof(c->'focalX')<>'number' or jsonb_typeof(c->'focalY')<>'number' or jsonb_typeof(c->'overlay')<>'number' then return false; end if;
@@ -97,7 +97,7 @@ begin
   if existing.config is distinct from config or existing.restored_from is distinct from restore_version then raise exception 'Request reuse differs' using errcode='23514'; end if;
   return existing.id;
  end if;
- if state_row.revision<>expected_revision then raise exception 'Appearance changed; reload before saving' using errcode='40001'; end if;
+ if expected_revision is null or expected_revision<0 or state_row.revision is distinct from expected_revision then raise exception 'Appearance changed; reload before saving' using errcode='40001'; end if;
  if restore_version is not null and not exists(select 1 from public.school_branding_versions v where v.id=restore_version and v.organization_id=org and v.school_id=school and v.config=save_school_branding_draft.config) then raise exception 'Restore source unavailable' using errcode='42501'; end if;
  insert into public.school_branding_versions(organization_id,school_id,version,request_id,config,restored_from,created_by)
   values(org,school,(select coalesce(max(v.version),0)+1 from public.school_branding_versions v where v.organization_id=org and v.school_id=school),request_id,config,restore_version,auth.uid()) returning id into version_id;
@@ -117,7 +117,7 @@ begin
  select v.config into target_config from public.school_branding_versions v where v.id=target_version and v.organization_id=org and v.school_id=school;
  if not found or not public.school_branding_theme_allowed(org,school,target_config->>'themeId') then raise exception 'Draft unavailable or no longer entitled' using errcode='42501'; end if;
  if state_row.published_version_id=target_version then return target_version; end if;
- if state_row.revision<>expected_revision or state_row.draft_version_id<>target_version then raise exception 'Draft changed; reload' using errcode='40001'; end if;
+ if expected_revision is null or expected_revision<0 or state_row.revision is distinct from expected_revision or state_row.draft_version_id is distinct from target_version then raise exception 'Draft changed; reload' using errcode='40001'; end if;
  update public.school_branding_state set published_version_id=target_version,revision=revision+1,updated_by=auth.uid(),updated_at=now() where organization_id=org and school_id=school;
  insert into public.audit_events(organization_id,school_id,actor_user_id,action,entity_type,entity_id,metadata)
  values(org,school,auth.uid(),'branding.published','school_branding_versions',target_version,
@@ -130,7 +130,7 @@ grant execute on function public.publish_school_branding(uuid,uuid,uuid,bigint) 
 create function public.set_school_appearance_preference(org uuid,school uuid,theme text,expected_revision bigint)
 returns void language plpgsql security definer set search_path='' as $$
 begin
- if auth.uid() is null or not public.has_school_membership(org,school) or (theme is not null and not public.school_branding_theme_allowed(org,school,theme)) then raise exception 'Not authorized' using errcode='42501'; end if;
+ if expected_revision is null or expected_revision<0 or auth.uid() is null or not public.has_school_membership(org,school) or (theme is not null and not public.school_branding_theme_allowed(org,school,theme)) then raise exception 'Not authorized' using errcode='42501'; end if;
  insert into public.school_appearance_preferences(organization_id,school_id,user_id) values(org,school,auth.uid()) on conflict do nothing;
  update public.school_appearance_preferences set theme_id=theme,revision=revision+1,updated_at=now()
  where organization_id=org and school_id=school and user_id=auth.uid() and revision=expected_revision;

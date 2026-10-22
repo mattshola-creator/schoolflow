@@ -1,8 +1,8 @@
 # Studio security approval package: private processed assets
 
-Status: proposed, not applied, not yet disposable-database verified. Approve QA validation of both exact SQL files, in order: studio-persistence-proposal.sql then studio-private-assets-proposal.sql. This does not authorize production application. Execution guards remain intact.
+Founder authorized disposable validation and subsequent reviewed QA-only implementation on 22 October 2026. Status: corrected SQL passes 33 embedded PostgreSQL checks; applied only to QA after schema preflight. Dependency order: studio-persistence-proposal.sql then studio-private-assets-proposal.sql. This does not authorize production application. Execution guards remain intact in the review proposals; validated migration copies preserve QA history.
 
-Additional security impact: one private bucket, one restrictive Storage policy, two RLS-enabled tables, one authenticated asset-draft RPC, one private publication trigger function. No platform authority, plan changes or direct authenticated asset/Storage writes. Service-only asset registration uses the existing server secret; no new client secret. The new definer only binds current school assets after Owner and current subscription checks. Restoring an image creates a new version and requires current entitlement.
+Additional security impact: one private bucket, one restrictive Storage policy, two RLS-enabled tables, one authenticated asset-draft RPC, one explicit authenticated premium-image eligibility predicate, private publication and processor-audit trigger functions. No platform authority, plan changes or direct authenticated asset/Storage writes. Service-only asset registration uses the existing server secret; no new client secret. The new definer only binds current school assets after Owner and current subscription checks. Restoring an image creates a new version and requires current entitlement.
 
 ## Required endpoint contract before enablement
 
@@ -25,4 +25,4 @@ Additional security impact: one private bucket, one restrictive Storage policy, 
 - Orphan cleanup fault injection and reference race tests; no registered/history asset deletion.
 - Actual Owner browser, 12 themes, keyboard, 320/360/768/1440, image upload/crop/overlay, Starter/Growth denials; all synthetic chart data labeled.
 
-The existing first-slice state table exposes the current draft UUID to school members. It contains no draft content but this is an explicit metadata exposure for founder review; tighten its read DTO before release if even draft existence is considered confidential. Organization defaults/platform policy overrides remain deferred. The exact SQL has not been applied or declared release-ready.
+The existing first-slice state table exposes the current draft UUID to school members. It contains no draft content but this is an explicit metadata exposure for founder review; tighten its read DTO before release if even draft existence is considered confidential. Organization defaults/platform policy overrides remain deferred. The validated SQL has been applied to QA only; application integration is not release-ready. See ../testing/studio-disposable-validation-2026-10-22.md for actual coverage and limits.

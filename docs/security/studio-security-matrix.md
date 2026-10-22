@@ -1,3 +1,5 @@
+> Update 22 October 2026: founder authorized validation and QA-only application. Corrected SQL passed 33 disposable assertions and QA rolled-back Owner/teacher checks. Actual QA migrations are 20261022204324 and 20261022204346. See ../testing/studio-disposable-validation-2026-10-22.md. Earlier proposal wording below is historical; live UI/Storage API acceptance remains open.
+
 # Branding & Experience Studio: implementation and gated persistence
 
 The code is an authenticated QA-only implementation slice, not a claim that persistence is live. It reuses all twelve original designs/tokens/textures, existing charts and existing identity/authorization/plan tables. Existing Starter/Growth/Professional/Enterprise keys were inspected. Trial access is capped at core themes. No plan, price, feature entitlement or subscription record was changed.

@@ -11,6 +11,7 @@ import {
   hasEffectiveOwnerAssignment,
   ownerVisibility,
   projectOwnerSummary,
+  projectOwnerWork,
   type OwnerSummary,
 } from "./model";
 
@@ -121,28 +122,7 @@ export async function loadOwnerDashboard() {
           }
         : null,
       workError: work.error,
-      work: work.value
-        ? {
-            counts: {
-              tasks: work.value.counts.tasks,
-              urgent: work.value.counts.urgent,
-              ...(visibility.approvals
-                ? { approvals: work.value.counts.approvals }
-                : {}),
-              ...(visibility.notifications
-                ? { notifications: work.value.counts.notifications }
-                : {}),
-            },
-            tasks: work.value.tasks
-              .filter(
-                (task) =>
-                  task.kind === "task" ||
-                  (task.kind === "approval" && visibility.approvals) ||
-                  (task.kind === "notification" && visibility.notifications),
-              )
-              .slice(0, 6),
-          }
-        : null,
+      work: work.value ? projectOwnerWork(work.value, visibility) : null,
     },
   };
 }

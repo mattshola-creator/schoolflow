@@ -4,6 +4,7 @@ import {
   hasEffectiveOwnerAssignment,
   ownerVisibility,
   projectOwnerSummary,
+  projectOwnerWork,
 } from "./model";
 import type { AuthorizationSnapshot } from "@/features/authorization/evaluator";
 import type { SchoolSummary } from "@/features/reporting/service";
@@ -133,4 +134,58 @@ it("rejects future, expired and malformed owner assignment windows", () => {
       now,
     ),
   ).toBe(true);
+});
+
+describe("Owner work DTO boundary", () => {
+  const task = {
+    id: "task",
+    kind: "task" as const,
+    title: "Review",
+    status: "open",
+    href: "/action-center",
+    priority: "normal" as const,
+    dueAt: null,
+    privateFutureField: "never serialize",
+  };
+  const work = {
+    counts: { tasks: 1, urgent: 0, approvals: 3, notifications: 4 },
+    tasks: [
+      task,
+      { ...task, id: "approval", kind: "approval" as const },
+      { ...task, id: "notification", kind: "notification" as const },
+    ],
+  };
+  it("omits denied work kinds, counts and upstream fields before serialization", () => {
+    expect(projectOwnerWork(work, ownerVisibility(auth))).toEqual({
+      counts: { tasks: 1, urgent: 0 },
+      tasks: [
+        {
+          id: "task",
+          kind: "task",
+          title: "Review",
+          status: "open",
+          href: "/action-center",
+        },
+      ],
+    });
+  });
+  it("emits nothing when work access is denied", () => {
+    expect(
+      projectOwnerWork(work, { ...ownerVisibility(auth), work: false }),
+    ).toBeNull();
+  });
+  it("keeps authorized kinds while bounding the presentation list", () => {
+    const result = projectOwnerWork(
+      {
+        ...work,
+        tasks: Array.from({ length: 9 }, (_, i) => ({
+          ...task,
+          id: String(i),
+        })),
+      },
+      { ...ownerVisibility(auth), approvals: true, notifications: true },
+    );
+    expect(result?.tasks).toHaveLength(6);
+    expect(result?.counts).toEqual(work.counts);
+  });
 });

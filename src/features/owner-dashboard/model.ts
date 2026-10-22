@@ -1,3 +1,4 @@
+import type { HomeTask, OperationalCounts } from "@/features/home/model";
 import {
   evaluateAccess,
   type AuthorizationSnapshot,
@@ -101,4 +102,37 @@ export function hasEffectiveOwnerAssignment(
       new Date(row.effective_from).getTime() <= now &&
       (row.effective_to === null || new Date(row.effective_to).getTime() > now),
   );
+}
+
+/** Allowlist presentation fields even if the upstream service later grows. */
+export function projectOwnerWork(
+  work: { counts: OperationalCounts; tasks: readonly HomeTask[] },
+  visibility: OwnerVisibility,
+) {
+  if (!visibility.work) return null;
+  return {
+    counts: {
+      tasks: work.counts.tasks,
+      urgent: work.counts.urgent,
+      ...(visibility.approvals ? { approvals: work.counts.approvals } : {}),
+      ...(visibility.notifications
+        ? { notifications: work.counts.notifications }
+        : {}),
+    },
+    tasks: work.tasks
+      .filter(
+        (task) =>
+          task.kind === "task" ||
+          (task.kind === "approval" && visibility.approvals) ||
+          (task.kind === "notification" && visibility.notifications),
+      )
+      .slice(0, 6)
+      .map((task) => ({
+        id: task.id,
+        kind: task.kind,
+        title: task.title,
+        status: task.status,
+        href: task.href,
+      })),
+  };
 }

@@ -98,9 +98,9 @@ begin
   return existing.id;
  end if;
  if state_row.revision<>expected_revision then raise exception 'Appearance changed; reload before saving' using errcode='40001'; end if;
- if restore_version is not null and not exists(select 1 from public.school_branding_versions v where v.id=restore_version and v.organization_id=org and v.school_id=school and v.config=config) then raise exception 'Restore source unavailable' using errcode='42501'; end if;
+ if restore_version is not null and not exists(select 1 from public.school_branding_versions v where v.id=restore_version and v.organization_id=org and v.school_id=school and v.config=save_school_branding_draft.config) then raise exception 'Restore source unavailable' using errcode='42501'; end if;
  insert into public.school_branding_versions(organization_id,school_id,version,request_id,config,restored_from,created_by)
-  values(org,school,state_row.revision+1,request_id,config,restore_version,auth.uid()) returning id into version_id;
+  values(org,school,(select coalesce(max(v.version),0)+1 from public.school_branding_versions v where v.organization_id=org and v.school_id=school),request_id,config,restore_version,auth.uid()) returning id into version_id;
  update public.school_branding_state set draft_version_id=version_id,revision=revision+1,updated_by=auth.uid(),updated_at=now() where organization_id=org and school_id=school;
  return version_id;
 end $$;
@@ -119,6 +119,9 @@ begin
  if state_row.published_version_id=target_version then return target_version; end if;
  if state_row.revision<>expected_revision or state_row.draft_version_id<>target_version then raise exception 'Draft changed; reload' using errcode='40001'; end if;
  update public.school_branding_state set published_version_id=target_version,revision=revision+1,updated_by=auth.uid(),updated_at=now() where organization_id=org and school_id=school;
+ insert into public.audit_events(organization_id,school_id,actor_user_id,action,entity_type,entity_id,metadata)
+ values(org,school,auth.uid(),'branding.published','school_branding_versions',target_version,
+  jsonb_build_object('previousVersionId',state_row.published_version_id,'publishedVersionId',target_version));
  return target_version;
 end $$;
 revoke all on function public.publish_school_branding(uuid,uuid,uuid,bigint) from public,anon;

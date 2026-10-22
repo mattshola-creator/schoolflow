@@ -27,9 +27,9 @@ export async function requireBrandingContext() {
     .eq("scope", "organization")
     .eq("status", "active")
     .eq("roles.key", "organization_owner");
+  if (roles.error) throw new Error("Branding authority lookup failed");
   const now = Date.now();
   if (
-    roles.error ||
     !roles.data?.some(
       (r) =>
         Date.parse(r.effective_from) <= now &&

@@ -1,7 +1,10 @@
+import { AuthorizationError } from "@/lib/authorization";
+import { BrandingSubscriptionError } from "@/features/branding/context";
+import { StatePanel } from "@/components/ui/state-panel";
 import { notFound } from "next/navigation";
-import { requireBrandingContext } from "@/features/branding/context";
 import { BrandingStudio } from "@/features/branding/studio";
 import "@/features/showroom/visualizations.css";
+import { brandingSession, loadBranding } from "@/features/branding/persistence";
 export default async function BrandingPage() {
   if (
     process.env.SCHOOLFLOW_SHELL_REVIEW !== "true" ||
@@ -9,6 +12,29 @@ export default async function BrandingPage() {
       "https://afqykqlxecpzspjoyegc.supabase.co"
   )
     notFound();
-  const context = await requireBrandingContext();
-  return <BrandingStudio schoolName={context.schoolName} plan={context.plan} />;
+  const context = await brandingSession().catch((error: unknown) => {
+    if (
+      error instanceof AuthorizationError ||
+      error instanceof BrandingSubscriptionError
+    )
+      return null;
+    throw error;
+  });
+  if (!context)
+    return (
+      <StatePanel
+        kind="unauthorized"
+        title="Branding access unavailable"
+        description="Choose an authorized school and an active subscription. School publishing requires effective Organization Owner authority."
+      />
+    );
+  const snapshot = await loadBranding(context);
+  return (
+    <BrandingStudio
+      key={context.schoolId}
+      schoolName={context.schoolName}
+      plan={context.plan}
+      initialSnapshot={snapshot}
+    />
+  );
 }

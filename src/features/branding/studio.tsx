@@ -14,6 +14,7 @@ import {
   type BrandingAppearance,
 } from "./model";
 import styles from "./studio.module.css";
+import type { BrandingSnapshot } from "./persistence";
 const initial: BrandingAppearance = {
   themeId: "emerald",
   preset: "executive",
@@ -24,16 +25,31 @@ const initial: BrandingAppearance = {
 export function BrandingStudio({
   schoolName,
   plan,
+  initialSnapshot,
 }: {
   schoolName: string;
   plan: ShowroomPlan;
+  initialSnapshot: BrandingSnapshot;
 }) {
-  const [appearance, setAppearance] = useState(initial),
+  const [appearance, setAppearance] = useState<BrandingAppearance>(
+      initialSnapshot.effective,
+    ),
     [width, setWidth] = useState(1440),
     [notice, setNotice] = useState(""),
     [image, setImage] = useState<string | null>(null),
     [busy, setBusy] = useState(false),
     [sourceFile, setSourceFile] = useState<File | null>(null);
+  const [snapshot, setSnapshot] = useState(initialSnapshot);
+  const [previewVersion, setPreviewVersion] = useState(
+    initialSnapshot.published_version_id,
+  );
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+  const [assetUnavailable, setAssetUnavailable] = useState(false);
+  const [assetLoading, setAssetLoading] = useState(
+    Boolean(
+      initialSnapshot.published_version_id && customBackgroundPermitted(plan),
+    ),
+  );
   const theme = resolveShowroomTheme(appearance.themeId);
   const permitted = themePermitted(theme.id, plan);
   useEffect(
@@ -71,6 +87,126 @@ export function BrandingStudio({
       setBusy(false);
     }
   }
+  async function persist(
+    operation: "save" | "publish" | "restore",
+    versionId?: string,
+  ) {
+    setBusy(true);
+    setNotice("Applying authorized school appearance…");
+    try {
+      let assetId: string | null = selectedAsset;
+      if (operation === "save" && sourceFile) {
+        const form = new FormData();
+        form.set("image", sourceFile);
+        form.set("schoolId", snapshot.schoolId);
+        if (appearance.crop) form.set("crop", JSON.stringify(appearance.crop));
+        const uploaded = await fetch("/api/branding/assets", {
+          method: "POST",
+          body: form,
+        });
+        const result = await uploaded.json();
+        if (!uploaded.ok) throw new Error(result.error ?? "Upload unavailable");
+        assetId = result.assetId;
+      }
+      const { crop: _crop, ...config } = appearance;
+      void _crop;
+      const body =
+        operation === "save"
+          ? {
+              operation,
+              schoolId: snapshot.schoolId,
+              revision: snapshot.revision,
+              requestId: crypto.randomUUID(),
+              config,
+              assetId,
+            }
+          : {
+              operation,
+              schoolId: snapshot.schoolId,
+              revision: snapshot.revision,
+              versionId,
+              ...(operation === "restore"
+                ? { requestId: crypto.randomUUID() }
+                : {}),
+            };
+      const response = await fetch("/api/branding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.error ?? "Appearance operation failed");
+      setSnapshot(result);
+      const nextVersion =
+        operation === "publish"
+          ? result.published_version_id
+          : result.draft_version_id;
+      if (
+        (operation === "restore" || !sourceFile) &&
+        customBackgroundPermitted(plan) &&
+        nextVersion !== previewVersion
+      )
+        setAssetLoading(true);
+      setPreviewVersion(
+        operation === "publish"
+          ? result.published_version_id
+          : result.draft_version_id,
+      );
+      if (operation === "restore") {
+        const restored = result.history.find(
+          (v: { id: string }) => v.id === result.draft_version_id,
+        );
+        if (restored) setAppearance(restored.config);
+        setSourceFile(null);
+        setImage(null);
+      }
+      setNotice(
+        operation === "publish"
+          ? "School appearance published. Refresh restores the published selection."
+          : operation === "restore"
+            ? "A new draft version was created from history. Publish it when ready."
+            : "School draft saved. Publishing remains a separate action.",
+      );
+    } catch (error) {
+      setNotice(
+        error instanceof Error ? error.message : "Appearance unavailable",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  useEffect(() => {
+    if (!previewVersion || !customBackgroundPermitted(plan) || sourceFile)
+      return;
+    const controller = new AbortController();
+    void fetch(
+      `/api/branding/assets?schoolId=${encodeURIComponent(snapshot.schoolId)}&versionId=${encodeURIComponent(previewVersion)}`,
+      { signal: controller.signal, cache: "no-store" },
+    )
+      .then(async (response) => {
+        if (!response.ok) {
+          setAssetUnavailable(true);
+          setNotice(
+            "Private background unavailable. Restore server access or explicitly remove the background before saving.",
+          );
+          return;
+        }
+        setAssetUnavailable(false);
+        if (response.ok) {
+          const result = await response.json();
+          setImage(result.url);
+          setSelectedAsset(result.assetId);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setAssetUnavailable(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setAssetLoading(false);
+      });
+    return () => controller.abort();
+  }, [previewVersion, snapshot.schoolId, plan, sourceFile]);
   return (
     <main
       className={`${styles.studio} sf-visualization-stage`}
@@ -85,9 +221,11 @@ export function BrandingStudio({
         to preview.
       </p>
       <div className={styles.notice}>
-        QA integration: shared drafts, publishing, history and
-        personal-preference persistence are awaiting the separate migration
-        security gate. Current controls change this preview only.
+        QA-only school appearance. Drafts and publication are server-authorized.
+        Charts remain fictional. Publishing here does not deploy production.{" "}
+        {snapshot.premiumFallback
+          ? "Your current plan uses an accessible core fallback; prior versions remain in history."
+          : ""}
       </div>
       <div className={styles.gallery} aria-label="Twelve curated themes">
         {showroomThemes.map((item) => (
@@ -307,17 +445,27 @@ export function BrandingStudio({
           onClick={() => {
             validatedAppearance(appearance, plan);
             setNotice(
-              "Preview selection validated against your effective theme access. Shared saving remains gated.",
+              "Preview selection validated against your effective theme access. Saving and publishing recheck current server permissions.",
             );
           }}
         >
           Validate preview selection
         </button>
-        <button className={styles.tile} disabled>
-          Save shared draft — migration pending
+        <button
+          className={styles.tile}
+          disabled={busy || !permitted || assetUnavailable || assetLoading}
+          onClick={() => void persist("save")}
+        >
+          Save shared draft
         </button>
-        <button className={styles.tile} disabled>
-          Publish — migration pending
+        <button
+          className={styles.tile}
+          disabled={busy || !snapshot.draft_version_id}
+          onClick={() =>
+            void persist("publish", snapshot.draft_version_id ?? undefined)
+          }
+        >
+          Publish saved draft
         </button>
         <button
           className={styles.tile}
@@ -325,6 +473,10 @@ export function BrandingStudio({
             setAppearance(initial);
             setImage(null);
             setSourceFile(null);
+            setSelectedAsset(null);
+            setPreviewVersion(null);
+            setAssetUnavailable(false);
+            setAssetLoading(false);
             setNotice(
               "Local preview reset. Shared school appearance is unchanged.",
             );
@@ -333,6 +485,30 @@ export function BrandingStudio({
           Reset preview
         </button>
       </div>
+      <section aria-label="Appearance version history">
+        <h2 className="text-xl font-semibold">Version history</h2>
+        <p>Restoring creates a new draft. Published history is retained.</p>
+        {snapshot.history.length === 0 ? (
+          <p>No saved versions yet.</p>
+        ) : (
+          <ul>
+            {snapshot.history.map((v) => (
+              <li key={v.id}>
+                Version {v.version} ·{" "}
+                {resolveShowroomTheme(v.config.themeId).name}{" "}
+                {v.id === snapshot.published_version_id ? "· Published" : ""}{" "}
+                <button
+                  className={styles.tile}
+                  disabled={busy || !themePermitted(v.config.themeId, plan)}
+                  onClick={() => void persist("restore", v.id)}
+                >
+                  Restore as new draft
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <p role="status" aria-live="polite">
         {notice}
       </p>

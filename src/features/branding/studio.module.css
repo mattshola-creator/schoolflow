@@ -65,8 +65,10 @@
 }
 .hero {
   padding: 28px;
-  background: linear-gradient(120deg, var(--sf-nav), var(--sf-primary));
-  color: var(--sf-on-primary);
+  background:
+    linear-gradient(rgb(0 0 0 / 0.65), rgb(0 0 0 / 0.65)),
+    linear-gradient(120deg, var(--sf-nav), var(--sf-primary));
+  color: #fff;
   position: relative;
   background-size: cover;
 }

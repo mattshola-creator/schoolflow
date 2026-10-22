@@ -52,3 +52,25 @@ it("does not let core theme access imply custom image access", () => {
   expect(customBackgroundPermitted("growth")).toBe(false);
   expect(customBackgroundPermitted("professional")).toBe(true);
 });
+
+// The Studio header overlays its full gradient with 65% black before white text.
+it("keeps Studio gradient header text readable across all curated themes", async () => {
+  const { contrastRatio } = await import("@/features/appearance/themes");
+  for (const theme of showroomThemes) {
+    for (let step = 0; step <= 20; step++) {
+      const mix = step / 20;
+      const color =
+        "#" +
+        [1, 3, 5]
+          .map((offset) => {
+            const left = parseInt(theme.nav.slice(offset, offset + 2), 16);
+            const right = parseInt(theme.primary.slice(offset, offset + 2), 16);
+            return Math.round((left * (1 - mix) + right * mix) * 0.35)
+              .toString(16)
+              .padStart(2, "0");
+          })
+          .join("");
+      expect(contrastRatio("#FFFFFF", color)).toBeGreaterThanOrEqual(4.5);
+    }
+  }
+});

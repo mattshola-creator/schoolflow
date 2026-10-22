@@ -35,5 +35,6 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - run: pnpm showroom:build
       - name: Reject high or critical dependency vulnerabilities
         run: pnpm audit --audit-level=high

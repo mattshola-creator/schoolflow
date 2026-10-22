@@ -38,7 +38,7 @@ export function ContextRibbon({
   return (
     <section
       aria-label="Current SchoolFlow context"
-      className="border-tenant-accent/15 bg-tenant-accent-soft/70 rounded-xl border px-3 py-2.5 shadow-sm sm:px-4"
+      className="sf-shell-context border-tenant-accent/15 bg-tenant-accent-soft/70 rounded-xl border px-3 py-2.5 shadow-sm sm:px-4"
     >
       <div className="hidden min-w-0 items-center gap-2 md:flex">
         <div className="bg-tenant-accent grid size-9 shrink-0 place-items-center rounded-lg text-white">
@@ -48,7 +48,7 @@ export function ContextRibbon({
           <p className="text-tenant-accent-strong text-[0.65rem] font-bold tracking-[0.16em] uppercase">
             Active context
           </p>
-          <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-sm font-semibold text-slate-800">
+          <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-sm font-semibold text-[color:var(--shell-ink,#1e293b)]">
             <span className="truncate">{active.organizationName}</span>
             <ChevronRight
               aria-hidden="true"
@@ -56,7 +56,7 @@ export function ContextRibbon({
             />
             <School
               aria-hidden="true"
-              className="size-3.5 shrink-0 text-slate-500"
+              className="size-3.5 shrink-0 text-[color:var(--shell-muted,#64748b)]"
             />
             <span className="truncate">{schoolLabel}</span>
             <span className="hidden items-center gap-1.5 lg:flex">
@@ -66,14 +66,14 @@ export function ContextRibbon({
               />
               <CalendarDays
                 aria-hidden="true"
-                className="size-3.5 text-slate-500"
+                className="size-3.5 text-[color:var(--shell-muted,#64748b)]"
               />
               <span>{sessionLabel}</span>
               <span className="text-slate-400">·</span>
               <span>{periodLabel}</span>
             </span>
           </div>
-          <p className="mt-0.5 truncate text-xs text-slate-600 lg:hidden">
+          <p className="mt-0.5 truncate text-xs text-[color:var(--shell-muted,#475569)] lg:hidden">
             {sessionLabel}
             <span aria-hidden="true"> · </span>
             {periodLabel}
@@ -91,7 +91,7 @@ export function ContextRibbon({
               id="shell-context"
               name="context"
               defaultValue={activeValue}
-              className="border-tenant-accent/25 min-h-10 max-w-52 rounded-lg border bg-white px-3 text-sm font-medium text-slate-700"
+              className="border-tenant-accent/25 min-h-10 max-w-52 rounded-lg border bg-white px-3 text-sm font-medium text-[color:var(--shell-ink,#334155)]"
             >
               {options.map((option) => (
                 <option
@@ -116,44 +116,50 @@ export function ContextRibbon({
             <School aria-hidden="true" className="size-4" />
           </div>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-semibold text-slate-900">
+            <span className="block truncate text-sm font-semibold text-[color:var(--shell-ink,#0f172a)]">
               {schoolLabel}
             </span>
-            <span className="block truncate text-xs text-slate-600">
+            <span className="block truncate text-xs text-[color:var(--shell-muted,#475569)]">
               {sessionLabel} · {periodLabel}
             </span>
           </span>
           <span className="sr-only">Show complete SchoolFlow context</span>
           <ChevronDown
             aria-hidden="true"
-            className="size-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+            className="size-4 shrink-0 text-[color:var(--shell-muted,#64748b)] transition-transform group-open:rotate-180 motion-reduce:transition-none"
           />
         </summary>
         <dl className="border-tenant-accent/15 mt-2 grid gap-2 rounded-lg border bg-white/80 p-3 text-sm">
           <div>
-            <dt className="text-xs font-semibold text-slate-500">
+            <dt className="text-xs font-semibold text-[color:var(--shell-muted,#64748b)]">
               Organization
             </dt>
-            <dd className="mt-0.5 font-semibold break-words text-slate-900">
+            <dd className="mt-0.5 font-semibold break-words text-[color:var(--shell-ink,#0f172a)]">
               {active.organizationName}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold text-slate-500">School</dt>
-            <dd className="mt-0.5 font-semibold break-words text-slate-900">
+            <dt className="text-xs font-semibold text-[color:var(--shell-muted,#64748b)]">
+              School
+            </dt>
+            <dd className="mt-0.5 font-semibold break-words text-[color:var(--shell-ink,#0f172a)]">
               {schoolLabel}
             </dd>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <dt className="text-xs font-semibold text-slate-500">Session</dt>
-              <dd className="mt-0.5 font-medium text-slate-800">
+              <dt className="text-xs font-semibold text-[color:var(--shell-muted,#64748b)]">
+                Session
+              </dt>
+              <dd className="mt-0.5 font-medium text-[color:var(--shell-ink,#1e293b)]">
                 {sessionLabel}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold text-slate-500">Term</dt>
-              <dd className="mt-0.5 font-medium text-slate-800">
+              <dt className="text-xs font-semibold text-[color:var(--shell-muted,#64748b)]">
+                Term
+              </dt>
+              <dd className="mt-0.5 font-medium text-[color:var(--shell-ink,#1e293b)]">
                 {periodLabel}
               </dd>
             </div>

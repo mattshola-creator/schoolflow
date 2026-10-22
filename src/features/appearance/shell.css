@@ -1,0 +1,147 @@
+/* Opt-in chrome only. Existing domain content keeps its original tokens. */
+.sf-themed-shell {
+  background: var(--shell-canvas);
+}
+.sf-themed-shell .sf-shell-header,
+.sf-themed-shell .sf-shell-ribbon {
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-shell-header {
+  border-top: 3px solid var(--shell-primary);
+}
+.sf-themed-shell .sf-shell-header [class*="text-muted-foreground"] {
+  color: var(--shell-muted);
+}
+.sf-themed-shell .sf-shell-header details > div,
+.sf-themed-shell .sf-shell-theme-picker select {
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-shell-theme-picker {
+  flex-shrink: 1;
+}
+.sf-themed-shell .sf-shell-sidebar,
+.sf-themed-shell .sf-shell-mobile-navigation {
+  background: var(--shell-nav);
+  color: var(--shell-nav-ink);
+  --shell-ink: var(--shell-nav-ink);
+  --shell-muted: var(--shell-nav-muted);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell:not([data-appearance="classic-light"]) .sf-shell-sidebar {
+  background: linear-gradient(160deg, #073d2b, #062d21);
+}
+.sf-themed-shell [data-shell-navigation] a {
+  color: var(--shell-nav-ink);
+}
+.sf-themed-shell [data-shell-navigation] a[aria-current="page"],
+.sf-themed-shell [data-shell-navigation] a:hover {
+  background: var(--shell-nav-selected);
+  color: var(--shell-nav-ink);
+}
+.sf-themed-shell [data-shell-navigation] svg,
+.sf-themed-shell [data-shell-navigation] h2,
+.sf-themed-shell [data-shell-navigation] li {
+  color: var(--shell-nav-muted);
+}
+.sf-themed-shell [data-shell-navigation] a[aria-current="page"] svg {
+  color: var(--shell-nav-ink);
+}
+.sf-themed-shell .sf-shell-desktop-navigation button {
+  color: var(--shell-nav-ink);
+}
+.sf-themed-shell .sf-shell-desktop-navigation button:hover {
+  background: var(--shell-nav-selected);
+}
+.sf-themed-shell .sf-shell-mobile-navigation [class*="bg-surface-subtle"] {
+  background: var(--shell-nav-selected);
+}
+.sf-themed-shell .sf-shell-context {
+  color: var(--shell-ink);
+  background: var(--shell-canvas);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-shell-context dl,
+.sf-themed-shell .sf-shell-context select {
+  color: var(--shell-ink);
+  background: var(--shell-surface);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-shell-context select {
+  font-size: 1rem;
+}
+.sf-themed-shell .sf-shell-context button {
+  color: var(--shell-ink);
+  background: var(--shell-surface);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-shell-context [class*="text-tenant-accent-strong"] {
+  color: var(--shell-muted);
+}
+.sf-themed-shell .sf-shell-header :focus-visible,
+.sf-themed-shell .sf-shell-ribbon :focus-visible {
+  outline: 3px solid var(--shell-focus);
+  outline-offset: 2px;
+}
+.sf-themed-shell .sf-shell-sidebar :focus-visible,
+.sf-themed-shell .sf-shell-mobile-navigation :focus-visible {
+  outline: 3px solid var(--shell-nav-focus);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sf-themed-shell *,
+  .sf-themed-shell *::before,
+  .sf-themed-shell *::after {
+    transition: none;
+    animation: none;
+  }
+}
+
+.sf-themed-shell .sf-shell-mobile-navigation button {
+  color: var(--shell-nav-ink);
+}
+.sf-themed-shell .sf-shell-mobile-navigation [class*="text-slate-400"] {
+  color: var(--shell-nav-muted);
+}
+.sf-themed-shell:not([data-appearance="classic-light"])
+  [data-shell-navigation]
+  h2 {
+  color: #d6ae62;
+}
+
+.sf-themed-shell .sf-shell-context > div {
+  flex-wrap: wrap;
+}
+.sf-themed-shell .sf-shell-context > div > .flex-1 {
+  flex-basis: calc(100% - 3rem);
+}
+.sf-themed-shell .sf-shell-context .truncate {
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.sf-themed-shell .sf-shell-context .flex-1 > .flex {
+  flex-wrap: wrap;
+}
+.sf-themed-shell .sf-shell-context form {
+  width: 100%;
+}
+.sf-themed-shell .sf-shell-context select {
+  min-height: 44px;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1;
+}
+.sf-themed-shell .sf-shell-context button {
+  min-height: 44px;
+}
+.sf-themed-shell .sf-shell-header a:hover,
+.sf-themed-shell .sf-shell-header summary:hover {
+  background: var(--shell-canvas);
+}
+.sf-themed-shell .sf-shell-mobile-navigation button:hover {
+  background: var(--shell-nav-selected);
+}

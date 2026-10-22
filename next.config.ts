@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
+import { isShellReviewBuild } from "./src/features/appearance/review-build";
 
 const nextConfig: NextConfig = {
+  env: {
+    SCHOOLFLOW_SHELL_REVIEW: String(
+      isShellReviewBuild(
+        process.env.CONTEXT,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+      ),
+    ),
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   async headers() {

@@ -23,6 +23,7 @@ type FrameProps = {
   children: ReactNode;
   state?: DataState;
   className?: string;
+  dataKind?: "demo" | "authorized";
 };
 
 export function ChartFrame({
@@ -34,6 +35,7 @@ export function ChartFrame({
   children,
   state = "ready",
   className = "",
+  dataKind = "demo",
 }: FrameProps) {
   const titleId = useId();
   const details = useRef<HTMLDetailsElement>(null);
@@ -44,7 +46,9 @@ export function ChartFrame({
           <p className="sf-kicker">{period}</p>
           <h3 id={titleId}>{title}</h3>
         </div>
-        <span className="sf-chart-badge">Demo data</span>
+        <span className="sf-chart-badge">
+          {dataKind === "demo" ? "Demo data" : "Authorized school records"}
+        </span>
       </header>
       <p className="sf-chart-description">{description}</p>
       {state === "error" ? (
@@ -70,7 +74,10 @@ export function ChartFrame({
             >
               <table>
                 <caption>
-                  {title} · {period} · fictional values
+                  {title} · {period} ·{" "}
+                  {dataKind === "demo"
+                    ? "fictional values"
+                    : "authorized school records"}
                 </caption>
                 <thead>
                   <tr>
@@ -106,6 +113,7 @@ export function ChartFrame({
 }
 
 type CommonProps = {
+  dataKind?: "demo" | "authorized";
   title: string;
   description: string;
   period: string;

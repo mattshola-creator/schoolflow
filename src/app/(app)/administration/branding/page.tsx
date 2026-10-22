@@ -30,11 +30,19 @@ export default async function BrandingPage() {
     );
   const snapshot = await loadBranding(context);
   return (
-    <BrandingStudio
-      key={context.schoolId}
-      schoolName={context.schoolName}
-      plan={context.plan}
-      initialSnapshot={snapshot}
-    />
+    <>
+      <p role="status">
+        Private Storage credential:{" "}
+        {process.env.SUPABASE_SERVICE_ROLE_KEY
+          ? "present; operational verification pending"
+          : "not configured"}
+      </p>
+      <BrandingStudio
+        key={context.schoolId}
+        schoolName={context.schoolName}
+        plan={context.plan}
+        initialSnapshot={snapshot}
+      />
+    </>
   );
 }

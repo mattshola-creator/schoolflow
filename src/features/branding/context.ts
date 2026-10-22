@@ -2,7 +2,8 @@ import "server-only";
 import { requireCapability, AuthorizationError } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
-import type { ShowroomPlan } from "@/features/showroom/catalog";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { readGalleryAccess } from "./entitlements";
 export class BrandingSubscriptionError extends Error {}
 export async function requireBrandingContext() {
   const authorization = await requireCapability({
@@ -37,32 +38,20 @@ export async function requireBrandingContext() {
     )
   )
     throw new AuthorizationError("permission_denied");
-  const instant = new Date().toISOString();
-  const subscriptions = await supabase
-    .from("organization_plans")
-    .select("status,plans!inner(key,is_active)")
-    .eq("organization_id", active.organizationId)
-    .in("status", ["active", "trialing"])
-    .lte("starts_at", instant)
-    .or(`ends_at.is.null,ends_at.gt.${instant}`)
-    .eq("plans.is_active", true)
-    .limit(2);
-  if (subscriptions.error) throw new Error("Subscription lookup failed");
-  if (subscriptions.data?.length !== 1)
+  const client = supabase as unknown as SupabaseClient;
+  const plan = await readGalleryAccess(
+    async (name, args) => client.rpc(name, args),
+    active.organizationId,
+    active.schoolId,
+  );
+  if (!plan)
     throw new BrandingSubscriptionError(
-      "An unambiguous effective subscription is required",
-    );
-  const subscription = subscriptions.data[0];
-  const key =
-    subscription.status === "trialing" ? "starter" : subscription.plans.key;
-  if (!["starter", "growth", "professional", "enterprise"].includes(key))
-    throw new BrandingSubscriptionError(
-      "Subscription has no approved theme mapping",
+      "An effective gallery entitlement is required",
     );
   return {
     schoolId: active.schoolId,
     organizationId: active.organizationId,
     schoolName: active.schoolName ?? "Selected school",
-    plan: key as ShowroomPlan,
+    plan,
   };
 }

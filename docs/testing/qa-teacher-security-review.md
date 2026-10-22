@@ -11,3 +11,5 @@ The application now distinguishes an RLS-hidden/absent batch from a query failur
 Validation so far: rolled-back full RPC invocation; actual Owner creation with canonical linkage; sequential retries returned the same profile. Attempted parallel MCP SQL calls were serialized (transaction timestamps did not overlap), so concurrency remains OPEN. Require a direct QA multi-connection runner for genuine overlap, plus cross-tenant, conflicting-input, dates and actor/audit assertions. Do not substitute Promise.all submission for overlap proof.
 
 Before release: complete assigned draft/save/submit and unauthorized workflow tests, exact-head hosted CI, advisor review, independent secret scan and unsuppressed dependency audit. PX6 remains HOLD. Review-only rollback SQL restores former behavior and must never run automatically: it would reopen the read defect. Prefer a reviewed forward fix for any regression.
+
+Repository filenames match the versions recorded by QA's migration executor: `20261022145641` and `20261022150019`. The CLI-created draft timestamps were reconciled to those actual applied versions; the functions were not re-applied during reconciliation.

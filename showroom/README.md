@@ -22,7 +22,7 @@ The candidate includes noindex headers and robots exclusion. Its same-origin fra
 - Formatting, ESLint, strict TypeScript, operational production build and standalone static build passed locally.
 - Independent tracked-source privileged-secret scan passed; static artifact isolation scan passed.
 - Token tests check body/muted/action contrast across twelve designs. These are bounded token checks, not a claim of complete WCAG certification.
-- Local browser verification exercised mobile frame rendering and premium Studio draft/publish simulation. Hosted screenshots and hosted CI must be verified separately.
+- Local browser verification exercised 320/360px public frame rendering, premium Studio draft/publish/append-only restore, and mobile navigation keyboard open/Escape/return-focus. Hosted screenshots and hosted CI must be verified separately.
 - Dependency audit remains **failed**: high-severity `braces@3.0.3`, GHSA-vfj7-8cjw-p6xm. The dependency path is `eslint-config-next > @next/eslint-plugin-next > fast-glob > micromatch > braces`. Registry/advisory inspection reports no published patched braces version. No override, exclusion or suppression was introduced. The dev-tool finding remains a release-review item; static deployment does not install this dependency at runtime.
 
 ## Safe public launch and rollback

@@ -182,7 +182,7 @@ export function DemoDashboard({
                   <p>{metric.definition}</p>
                   <Sparkline
                     values={metric.trend}
-                    label={`${metric.label}, four illustrative observations`}
+                    label={`${metric.label} · ${metric.definition}, four illustrative observations`}
                   />
                 </div>
               </article>

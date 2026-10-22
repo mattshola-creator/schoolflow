@@ -174,13 +174,13 @@ export function demoMetrics(role: ShowroomRole): readonly DemoMetric[] {
         label: "Verified receipts",
         value: "₦4.82m",
         definition: "5–30 Oct · NGN · fictional verified receipts",
-        trend: [95, 115, 142, 130],
+        trend: [950000, 1150000, 1420000, 1300000],
       },
       {
         label: "Current outstanding",
         value: "₦2.16m",
         definition: "Current NGN balance · not window-limited",
-        trend: [300, 270, 240, 216],
+        trend: [3000000, 2700000, 2400000, 2160000],
       },
       {
         label: "Awaiting verification",

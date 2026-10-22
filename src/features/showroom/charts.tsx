@@ -213,7 +213,14 @@ export function TrendChart({
               >
                 {unit === "percent"
                   ? `${fraction * 100}%`
-                  : formatChartValue(maximum * fraction, unit)}
+                  : unit === "NGN"
+                    ? new Intl.NumberFormat("en-NG", {
+                        style: "currency",
+                        currency: "NGN",
+                        notation: "compact",
+                        maximumFractionDigits: 1,
+                      }).format((maximum * fraction) / 100)
+                    : formatChartValue(maximum * fraction, unit)}
               </text>
             </g>
           ))}

@@ -26,7 +26,7 @@ create table public.school_branding_assets(
 -- Rows attest immutable, fully processed bytes. Only the trusted processor inserts.
 -- User-controlled metadata or object existence alone is not an attestation.
 alter table public.school_branding_assets enable row level security;
-revoke all on public.school_branding_assets from public,anon,authenticated;
+revoke all on public.school_branding_assets from public,anon,authenticated,service_role;
 grant select,insert on public.school_branding_assets to service_role;
 
 create table public.school_branding_version_assets(
@@ -36,7 +36,8 @@ create table public.school_branding_version_assets(
  foreign key(asset_id,organization_id,school_id) references public.school_branding_assets(id,organization_id,school_id)
 );
 alter table public.school_branding_version_assets enable row level security;
-revoke all on public.school_branding_version_assets from public,anon,authenticated;
+revoke all on public.school_branding_version_assets from public,anon,authenticated,service_role;
+grant select on public.school_branding_version_assets to service_role;
 -- No direct client writes or reads. The authenticated RPC binds a processed asset
 -- only to a newly created draft. Existing or published versions are immutable.
 create function public.save_school_branding_asset_draft(org uuid,school uuid,expected_revision bigint,request_id uuid,config jsonb,asset uuid,restore_version uuid)

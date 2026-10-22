@@ -27,3 +27,5 @@ The draft is independently reviewable and stacked on the accepted showroom compo
 ## Premium Custom Design Studio — preserved roadmap
 
 Keep custom image selection, validation, crop/focal point, safe overlays, contrast preview, desktop/mobile preview, draft/publish and versioned restore in the roadmap. Only allow vetted raster formats; enforce byte/dimension/decode limits, strip metadata, re-encode and reject active SVG/HTML/CSS/JavaScript. Final numeric limits need a separately reviewed upload specification. Server persistence, Storage policies, per-tenant ownership, entitlement checks and publishing authority remain gated; no upload endpoint or storage-policy change is implemented here.
+
+The protected QA site's branch allowlist retains its existing QA branch and adds the accepted showroom baseline as an additional preview base, so this stacked PR can receive a Deploy Preview. The QA primary branch, operational production site, environment variables and access protection are unchanged. The route still requires the QA-bound deploy-preview marker plus all live identity and permission checks.

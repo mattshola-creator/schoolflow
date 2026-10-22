@@ -8,6 +8,7 @@ import { loadFinanceDashboard } from "@/features/finance/service";
 import { loadOperationalHome } from "@/features/home/service";
 import {
   assertOwnerSchool,
+  hasEffectiveOwnerAssignment,
   ownerVisibility,
   projectOwnerSummary,
   type OwnerSummary,
@@ -33,15 +34,7 @@ export async function loadOwnerDashboard() {
     .eq("scope", "organization")
     .eq("status", "active")
     .eq("roles.key", "organization_owner");
-  const now = Date.now();
-  if (
-    error ||
-    !assignments?.some(
-      (a) =>
-        new Date(a.effective_from).getTime() <= now &&
-        (!a.effective_to || new Date(a.effective_to).getTime() > now),
-    )
-  )
+  if (error || !hasEffectiveOwnerAssignment(assignments ?? []))
     throw new AuthorizationError("permission_denied");
   const academic = await loadAcademicContext(
     active.organizationId,

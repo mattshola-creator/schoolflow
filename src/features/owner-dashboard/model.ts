@@ -90,3 +90,15 @@ export function projectOwnerSummary(
     dto.publicationVersions = school.results.publishedBatches;
   return dto;
 }
+
+/** The caller must supply only identity/organization-bound owner assignments. */
+export function hasEffectiveOwnerAssignment(
+  rows: readonly { effective_from: string; effective_to: string | null }[],
+  now = Date.now(),
+) {
+  return rows.some(
+    (row) =>
+      new Date(row.effective_from).getTime() <= now &&
+      (row.effective_to === null || new Date(row.effective_to).getTime() > now),
+  );
+}

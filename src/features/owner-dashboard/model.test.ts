@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   assertOwnerSchool,
+  hasEffectiveOwnerAssignment,
   ownerVisibility,
   projectOwnerSummary,
 } from "./model";
@@ -114,4 +115,22 @@ describe("Owner school DTO boundary", () => {
       projectOwnerSummary(school, "foreign", ownerVisibility(auth)),
     ).toThrow("Unexpected reporting school");
   });
+});
+
+it("rejects future, expired and malformed owner assignment windows", () => {
+  const now = Date.parse("2026-10-22T12:00:00Z");
+  expect(hasEffectiveOwnerAssignment([], now)).toBe(false);
+  for (const row of [
+    { effective_from: "2027-01-01", effective_to: null },
+    { effective_from: "2020-01-01", effective_to: "2026-10-22T12:00:00Z" },
+    { effective_from: "invalid", effective_to: null },
+    { effective_from: "2020-01-01", effective_to: "invalid" },
+  ])
+    expect(hasEffectiveOwnerAssignment([row], now)).toBe(false);
+  expect(
+    hasEffectiveOwnerAssignment(
+      [{ effective_from: "2020-01-01", effective_to: null }],
+      now,
+    ),
+  ).toBe(true);
 });

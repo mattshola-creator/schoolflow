@@ -155,3 +155,21 @@ describe("visualization meaning and accessibility", () => {
     expect(screen.queryByText("Foreign school")).not.toBeInTheDocument();
   });
 });
+
+it("labels reused authorized data without representing it as fictional", () => {
+  render(
+    <ProgressCard
+      {...common}
+      dataKind="authorized"
+      numerator={9}
+      denominator={10}
+    />,
+  );
+  expect(screen.getByText("Authorized school records")).toBeInTheDocument();
+  expect(screen.queryByText("Demo data")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText("Explore data & accessible table"));
+  expect(screen.getByRole("table")).toHaveTextContent(
+    "authorized school records",
+  );
+  expect(screen.getByRole("table")).not.toHaveTextContent("fictional values");
+});

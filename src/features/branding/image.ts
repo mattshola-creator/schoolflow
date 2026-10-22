@@ -14,6 +14,20 @@ export async function optimizeBackground(
     throw new Error("Background must be at most 5 MB");
   if (!Object.hasOwn(formats, mime))
     throw new Error("Only JPG, PNG and WebP are supported");
+  // Reject active/vector/container formats before invoking any decoder.
+  const magic =
+    mime === "image/png"
+      ? bytes.length >= 8 &&
+        [137, 80, 78, 71, 13, 10, 26, 10].every((v, i) => bytes[i] === v)
+      : mime === "image/jpeg"
+        ? bytes.length >= 3 &&
+          bytes[0] === 255 &&
+          bytes[1] === 216 &&
+          bytes[2] === 255
+        : bytes.length >= 12 &&
+          String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" &&
+          String.fromCharCode(...bytes.slice(8, 12)) === "WEBP";
+  if (!magic) throw new Error("Invalid raster signature");
   const decoder = sharp(bytes, {
     failOn: "error",
     limitInputPixels: 4096 * 4096,

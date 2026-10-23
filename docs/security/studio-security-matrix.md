@@ -1,3 +1,5 @@
+> Update 22 October 2026: founder authorized validation and QA-only application. Corrected SQL passed 33 disposable assertions and QA rolled-back Owner/teacher checks. Actual QA migrations are 20261022204324 and 20261022204346. See ../testing/studio-disposable-validation-2026-10-22.md. Earlier proposal wording below is historical; live UI/Storage API acceptance remains open.
+
 # Branding & Experience Studio: implementation and gated persistence
 
 The code is an authenticated QA-only implementation slice, not a claim that persistence is live. It reuses all twelve original designs/tokens/textures, existing charts and existing identity/authorization/plan tables. Existing Starter/Growth/Professional/Enterprise keys were inspected. Trial access is capped at core themes. No plan, price, feature entitlement or subscription record was changed.
@@ -12,7 +14,7 @@ The proposal has NOT been executed, syntax/dependency checked in a disposable da
 
 Propose a separate private `schoolflow-branding` bucket, never the school document bucket. No authenticated raw Storage INSERT/UPDATE/DELETE policy. A protected processing endpoint must validate actual caller, current school, effective owner role, module/feature and Professional/Enterprise subscription before any server Storage operation. Validate streamed request byte cap, 5 MB file cap, MIME versus decoded format, single-frame raster, decoded pixel cap, oriented source dimensions 1280×720 through 4096×4096, normalized crop, full decode, metadata stripping and WebP re-encoding. Only processed bytes may be stored under server-generated organization/school/asset UUID paths. No public URLs or arbitrary external URL backgrounds.
 
-Exact bucket/asset registration SQL is deliberately NOT included in this first approval package. It requires a separate attested asset lifecycle design, orphan cleanup policy and signed-download authorization before applying Storage policies or enabling image publication. The current image endpoint returns private no-store normalized preview bytes only, and requires an entitled real subscription; trial cannot spoof its way into image processing.
+The exact companion bucket/asset SQL is now in `studio-private-assets-proposal.sql`, with the processing/signing/retention contract in `studio-asset-release-contract.md`. Both are review-only and unapplied. Together they specify the separately gated asset lifecycle; endpoint implementation and disposable-database/denial verification remain required before applying Storage policies or enabling image publication. The current image endpoint returns private no-store normalized preview bytes only, and requires an entitled real subscription; trial cannot spoof its way into image processing.
 
 ## Mandatory test matrix
 

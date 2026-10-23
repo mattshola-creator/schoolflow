@@ -5,9 +5,10 @@ import { evaluateAccess } from "@/features/authorization/evaluator";
 import type { TenantOption } from "@/features/tenancy/context";
 import { hasEffectiveOwnerAssignment } from "./model";
 
+// next.config.ts compiles this marker only for an exact QA deploy-preview build.
+// CONTEXT is build metadata and is not a standard Functions runtime variable.
 export function ownerEntryEnabled() {
   return (
-    process.env.CONTEXT === "deploy-preview" &&
     process.env.SCHOOLFLOW_SHELL_REVIEW === "true" &&
     process.env.NEXT_PUBLIC_SUPABASE_URL ===
       "https://afqykqlxecpzspjoyegc.supabase.co"

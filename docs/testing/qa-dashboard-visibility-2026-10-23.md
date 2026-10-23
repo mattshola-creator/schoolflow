@@ -27,3 +27,11 @@ Local targeted 37 tests/5files passed, plus TypeScript; exact hosted full checks
 Retest actual QA login→Owner, refresh, preserved sign-in, explicit legacy escape and permitted context switching at the revision-matched protected deploy. Do not sign out the only Owner session to manufacture logout evidence. Requested320/360/768/1440 viewport tests remain blocked unless supported genuine viewport control exists.
 
 Storage credential must be entered by the founder through protected Netlify controls, QA Deploy Previews Functions only, secret enabled. Do not enumerate or export values. Teacher own-identity acceptance, genuine overlapping Studio/Finance transactions, private Storage/signing/expiry/restore, full plan-denial matrix, security review and unsuppressed braces finding remain release gates. Preserve all QA records and production unchanged.
+
+## Runtime guard continuation
+
+The first entry repair redundantly required process.env.CONTEXT at server runtime. Netlify documents CONTEXT as build metadata; its serverless environment reference lists only URL, SITE_NAME and SITE_ID as standard runtime read-only variables. The compiled SCHOOLFLOW_SHELL_REVIEW marker already validates deploy-preview plus exact QA project in next.config.ts. Entry now consumes that marker and repeats the exact QA project check without relying on runtime build metadata. Identity, effective Owner assignment, permission, entitlement and explicit school checks remain unchanged. No new environment variable, secret, grant or schema is introduced.
+
+Added a regression for absent runtime CONTEXT and disabled/absent compiled markers. Eleven targeted entry/build-marker tests and targeted lint passed locally. Live authentication remains blocked after repeated secure request timeout; this is not a live login acceptance pass.
+
+Primary references: https://docs.netlify.com/build/configure-builds/environment-variables/ and https://docs.netlify.com/build/functions/environment-variables/.

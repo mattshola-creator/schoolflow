@@ -31,7 +31,6 @@ function client(
   return { from: vi.fn().mockReturnValue(q), q };
 }
 beforeEach(() => {
-  vi.stubEnv("CONTEXT", "deploy-preview");
   vi.stubEnv("SCHOOLFLOW_SHELL_REVIEW", "true");
   vi.stubEnv(
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -40,6 +39,17 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe("QA Owner login destination", () => {
+  it("works when the server has no build-only CONTEXT variable", async () => {
+    vi.stubEnv("CONTEXT", undefined);
+    expect(
+      await shouldOpenOwnerDashboard(
+        client() as never,
+        "u",
+        active as never,
+        auth,
+      ),
+    ).toBe(true);
+  });
   it("requires an identity-bound effective organization Owner assignment", async () => {
     const c = client();
     expect(
@@ -55,10 +65,10 @@ describe("QA Owner login destination", () => {
     expect(c.q.eq).toHaveBeenCalledWith("roles.key", "organization_owner");
     expect(c.q.eq).toHaveBeenCalledWith("scope", "organization");
   });
-  it.each(["production", "branch-deploy"])(
-    "does not activate in %s",
-    async (context) => {
-      vi.stubEnv("CONTEXT", context);
+  it.each(["false", undefined])(
+    "does not activate without the compiled QA marker (%s)",
+    async (marker) => {
+      vi.stubEnv("SCHOOLFLOW_SHELL_REVIEW", marker);
       const c = client();
       expect(
         await shouldOpenOwnerDashboard(c as never, "u", active as never, auth),

@@ -10,6 +10,12 @@ import { loadAcademicContext } from "@/lib/academic-context";
 import { loadEffectiveAuthorization } from "@/lib/authorization";
 import { loadTenantContext } from "@/lib/tenant-context";
 import { logout, switchContext } from "./actions";
+import {
+  shouldOpenOwnerDashboard,
+  ownerEntryEnabled,
+} from "@/features/owner-dashboard/entry";
+import { loadOwnerAppearance } from "@/features/owner-dashboard/appearance";
+import { experienceLinks } from "@/features/administration/experience-links";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +24,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await requireUser();
+  const { user, supabase } = await requireUser();
   const [authorization, tenant] = await Promise.all([
     loadEffectiveAuthorization(),
     loadTenantContext(),
@@ -43,6 +49,24 @@ export default async function AppLayout({
     label: item.label,
     group: item.group,
   }));
+  const owner = await shouldOpenOwnerDashboard(
+    supabase,
+    user.id,
+    tenant.active,
+    authorization,
+  );
+  navigationItems.push(
+    ...experienceLinks(authorization, owner, ownerEntryEnabled()),
+  );
+  const appearance =
+    owner && tenant.active?.schoolId
+      ? await loadOwnerAppearance(
+          supabase,
+          user.id,
+          tenant.active.organizationId,
+          tenant.active.schoolId,
+        )
+      : null;
   const unavailableItems = workspace.unavailable.map((item) => ({
     label: item.label,
     reason: describeAccessReason(item.reason),
@@ -52,6 +76,9 @@ export default async function AppLayout({
     <>
       <SkipLink />
       <ApplicationShell
+        key={`${tenant.active?.organizationId}:${tenant.active?.schoolId}:${appearance?.themeId}`}
+        enableAppearance={Boolean(appearance)}
+        schoolThemeId={appearance?.themeId}
         items={navigationItems}
         searchHref={
           navigationItems.some((item) => item.href === "/management")

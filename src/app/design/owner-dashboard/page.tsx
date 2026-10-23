@@ -12,6 +12,7 @@ import { loadOwnerDashboard } from "@/features/owner-dashboard/service";
 import { OwnerDashboard } from "@/features/owner-dashboard/view";
 import "@/features/showroom/visualizations.css";
 import { logout, switchContext } from "@/app/(app)/actions";
+import { experienceLinks } from "@/features/administration/experience-links";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,7 @@ export default async function OwnerDashboardReviewPage({
     label: item.label,
     group: item.group,
   }));
+  items.push(...experienceLinks(authorization, true, true));
   return (
     <>
       <SkipLink />

@@ -1,3 +1,5 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { loadOwnerAppearance } from "./appearance";
 import "server-only";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
@@ -37,6 +39,12 @@ export async function loadOwnerDashboard() {
     .eq("roles.key", "organization_owner");
   if (error || !hasEffectiveOwnerAssignment(assignments ?? []))
     throw new AuthorizationError("permission_denied");
+  const appearance = await loadOwnerAppearance(
+    supabase as unknown as SupabaseClient,
+    user.id,
+    active.organizationId,
+    active.schoolId,
+  );
   const academic = await loadAcademicContext(
     active.organizationId,
     active.schoolId,
@@ -88,6 +96,7 @@ export async function loadOwnerDashboard() {
   // Construct only permitted presentation fields. Never return clients, authorization snapshots, raw records or alternate schools.
   const f = finance.value;
   return {
+    appearance,
     userEmail: user.email,
     tenant,
     authorization,

@@ -6,6 +6,8 @@ import {
   defaultAppearanceTheme,
   isAppearanceTheme,
 } from "@/features/appearance/themes";
+import { publishedShellThemeStyle } from "@/features/appearance/published-shell-theme";
+import { resolveShowroomTheme } from "@/features/showroom/catalog";
 import { shellThemeStyle } from "@/features/appearance/shell-theme";
 import { useEffect, useState, type ReactNode } from "react";
 import {
@@ -25,6 +27,7 @@ import {
 type ApplicationShellProps = {
   children: ReactNode;
   enableAppearance?: boolean;
+  schoolThemeId?: string;
   contextRibbon: ReactNode;
   helpHref?: string;
   homeHref?: string;
@@ -39,6 +42,7 @@ type ApplicationShellProps = {
 export function ApplicationShell({
   children,
   enableAppearance = false,
+  schoolThemeId,
   contextRibbon,
   helpHref = "/experience-preview#guidance",
   homeHref = "/dashboard",
@@ -49,7 +53,9 @@ export function ApplicationShell({
   unavailableItems,
   userEmail,
 }: ApplicationShellProps) {
-  const [appearance, setAppearance] = useState(defaultAppearanceTheme);
+  const [appearance, setAppearance] = useState<string>(
+    schoolThemeId ? "school" : defaultAppearanceTheme,
+  );
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -66,8 +72,24 @@ export function ApplicationShell({
   return (
     <div
       className={`bg-background min-h-screen ${enableAppearance ? "sf-themed-shell" : ""}`}
-      style={enableAppearance ? shellThemeStyle(appearance) : undefined}
-      data-appearance={enableAppearance ? appearance : undefined}
+      style={
+        enableAppearance
+          ? appearance === "school" && schoolThemeId
+            ? publishedShellThemeStyle(schoolThemeId)
+            : shellThemeStyle(
+                isAppearanceTheme(appearance)
+                  ? appearance
+                  : defaultAppearanceTheme,
+              )
+          : undefined
+      }
+      data-appearance={
+        enableAppearance
+          ? appearance === "school"
+            ? schoolThemeId
+            : appearance
+          : undefined
+      }
     >
       <header className="sf-shell-header border-border bg-surface/95 sticky top-0 z-30 border-b backdrop-blur">
         <div className="flex min-h-16 items-center gap-3 px-3 sm:px-5">
@@ -210,10 +232,19 @@ export function ApplicationShell({
                   className="min-h-11 max-w-full rounded-lg border px-2 text-base"
                   value={appearance}
                   onChange={(event) => {
-                    if (isAppearanceTheme(event.target.value))
+                    if (
+                      (event.target.value === "school" && schoolThemeId) ||
+                      isAppearanceTheme(event.target.value)
+                    )
                       setAppearance(event.target.value);
                   }}
                 >
+                  {schoolThemeId ? (
+                    <option value="school">
+                      School appearance ·{" "}
+                      {resolveShowroomTheme(schoolThemeId).name}
+                    </option>
+                  ) : null}
                   {Object.entries(appearanceThemes).map(([id, theme]) => (
                     <option key={id} value={id}>
                       {theme.name}

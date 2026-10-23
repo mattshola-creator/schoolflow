@@ -23,12 +23,18 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
   const { summary, visibility } = data;
   return (
     <main
-      id="main-content"
+      aria-label="Organization Owner dashboard"
       className="min-w-0 space-y-6 py-4"
       style={{ color: "var(--shell-ink,#17211d)" }}
     >
-      <header className="rounded-2xl bg-gradient-to-br from-[#073D2B] to-[#087C57] p-6 text-white sm:p-8">
-        <p className="text-sm font-medium text-[#E6D2A8]">
+      <header
+        className="rounded-2xl p-6 sm:p-8"
+        style={{
+          background: "var(--shell-nav,#073D2B)",
+          color: "var(--shell-nav-ink,white)",
+        }}
+      >
+        <p className="text-sm font-medium">
           Organization Owner · selected school
         </p>
         <h1 className="mt-2 text-3xl font-semibold break-words">
@@ -43,7 +49,7 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
       </header>
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <Link
-          href="/dashboard"
+          href="/dashboard?appearance=legacy"
           className="min-h-11 rounded-lg border px-4 py-3 underline"
         >
           Use legacy dashboard

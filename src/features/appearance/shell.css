@@ -32,7 +32,11 @@
   border-color: var(--shell-border);
 }
 .sf-themed-shell:not([data-appearance="classic-light"]) .sf-shell-sidebar {
-  background: linear-gradient(160deg, #073d2b, #062d21);
+  background: linear-gradient(
+    160deg,
+    var(--shell-nav),
+    color-mix(in srgb, var(--shell-nav) 85%, black)
+  );
 }
 .sf-themed-shell [data-shell-navigation] a {
   color: var(--shell-nav-ink);

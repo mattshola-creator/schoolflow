@@ -28,7 +28,7 @@ export default async function OwnerDashboardReviewPage({
     process.env.NODE_ENV !== "development"
   )
     notFound();
-  const { authorization, tenant, academic, userEmail, dto } =
+  const { authorization, tenant, academic, userEmail, dto, appearance } =
     await loadOwnerDashboard().catch((error) => {
       if (
         error instanceof AuthorizationError ||
@@ -47,6 +47,8 @@ export default async function OwnerDashboardReviewPage({
     <>
       <SkipLink />
       <ApplicationShell
+        key={`${authorization.organizationId}:${authorization.schoolId}:${appearance?.themeId}`}
+        schoolThemeId={appearance?.themeId}
         enableAppearance={query.appearance !== "legacy"}
         items={items}
         unavailableItems={workspace.unavailable.map((item) => ({
@@ -74,6 +76,12 @@ export default async function OwnerDashboardReviewPage({
           />
         }
       >
+        {appearance?.fallback ? (
+          <p role="status">
+            An appearance is no longer included in the current subscription. An
+            eligible appearance is being used; version history is retained.
+          </p>
+        ) : null}
         <OwnerDashboard data={dto} />
       </ApplicationShell>
     </>

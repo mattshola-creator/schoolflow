@@ -4,17 +4,17 @@ This branch combines approved implementation milestones for QA acceptance only. 
 
 ## Source revisions
 
-| PR | Exact head | Integration |
-| --- | --- | --- |
-| #119 | 373be181061874fab2f851a759bdf6c3fb193355 | Included |
-| #120 | 4f9f83643c0c8defc3f95ff20c15dc07b28ae5ba | Inherited visual foundation |
-| #121 | dabd0ebf89ecf746d846abc70924434e618c459e | Inherited visual foundation |
-| #122 | 1e0ca278826d6612a3c96eb6652d44f2137a6362 | Inherited visual foundation |
-| #123 | ea32b85999a441fffcc08c9fdf07bb70665d932a | Included |
-| #124 | d7ccf89cdbc03f7639ecfa38be33154ee0ea2549 | Included |
-| #125 | 7ca669e29a0ab5d6c40998724c097db904564be0 | Included |
+| PR   | Exact head                               | Integration                                                |
+| ---- | ---------------------------------------- | ---------------------------------------------------------- |
+| #119 | 373be181061874fab2f851a759bdf6c3fb193355 | Included                                                   |
+| #120 | 4f9f83643c0c8defc3f95ff20c15dc07b28ae5ba | Inherited visual foundation                                |
+| #121 | dabd0ebf89ecf746d846abc70924434e618c459e | Inherited visual foundation                                |
+| #122 | 1e0ca278826d6612a3c96eb6652d44f2137a6362 | Inherited visual foundation                                |
+| #123 | ea32b85999a441fffcc08c9fdf07bb70665d932a | Included                                                   |
+| #124 | d7ccf89cdbc03f7639ecfa38be33154ee0ea2549 | Included                                                   |
+| #125 | 7ca669e29a0ab5d6c40998724c097db904564be0 | Included                                                   |
 | #126 | 8c0b23490347ddcbaa657e89d57f410771f75d68 | Supported patches already in #125; head retained as parent |
-| #127 | b5faa5561bf43aab61af579ccb6c70580be61f55 | Included |
+| #127 | b5faa5561bf43aab61af579ccb6c70580be61f55 | Included                                                   |
 
 The first parent is #125. Its shared-shell, twelve-theme gallery, dependency patches and Studio integration remain intact. Additional integration parents preserve #124, #126, #123 and #127 history. #124 also carries #119's latest source history. #119's two score-sheet denial-handling files are explicitly included because #125 forked one commit earlier.
 
@@ -36,20 +36,20 @@ This branch includes QA identity provisioning, synthetic-fixture tooling, QA-onl
 
 ## Acceptance matrix at branch creation
 
-| Gate | Verification status |
-| --- | --- |
-| Integration source/dependency review | Completed; hosted checks pending |
-| Earlier #125 Owner draft/publish/refresh/history | Verified on its own revision; not a combined-revision pass |
-| Combined Owner dashboard/shell/context | Open |
-| Teacher assigned draft/save/submit/restrictions | Open |
-| Private Storage processed uploads/signing/expiry | Blocked pending securely saved QA Functions credential |
-| Restore-as-new-version | Prior fail-closed response; combined live test open |
-| Starter/Growth/Professional/expired/downgrade | Full live matrix open |
-| Genuine Studio/Finance concurrent transactions | Open; serialized connector calls are not evidence of overlap |
-| Responsive 320/360/768/1440 | Blocked unless browser gains supported viewport control |
-| Security definer/leaked-password review | Open |
-| Dependency audit | Existing high braces finding unsuppressed; release HOLD |
-| Exact combined tests/build/independent secret scan | Pending hosted CI |
+| Gate                                               | Verification status                                          |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| Integration source/dependency review               | Completed; hosted checks pending                             |
+| Earlier #125 Owner draft/publish/refresh/history   | Verified on its own revision; not a combined-revision pass   |
+| Combined Owner dashboard/shell/context             | Open                                                         |
+| Teacher assigned draft/save/submit/restrictions    | Open                                                         |
+| Private Storage processed uploads/signing/expiry   | Blocked pending securely saved QA Functions credential       |
+| Restore-as-new-version                             | Prior fail-closed response; combined live test open          |
+| Starter/Growth/Professional/expired/downgrade      | Full live matrix open                                        |
+| Genuine Studio/Finance concurrent transactions     | Open; serialized connector calls are not evidence of overlap |
+| Responsive 320/360/768/1440                        | Blocked unless browser gains supported viewport control      |
+| Security definer/leaked-password review            | Open                                                         |
+| Dependency audit                                   | Existing high braces finding unsuppressed; release HOLD      |
+| Exact combined tests/build/independent secret scan | Pending hosted CI                                            |
 
 ## Deployment and recovery
 

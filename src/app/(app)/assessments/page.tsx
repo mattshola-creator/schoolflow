@@ -461,6 +461,18 @@ export default async function AssessmentsPage({
               </select>
             </label>
           </div>
+          <label className={`${label} mt-4`}>
+            Teaching assignment ID (optional)
+            <input
+              className={fieldClass}
+              name="teachingAssignmentId"
+              placeholder="Existing teaching assignment UUID"
+            />
+            <span className="text-sm font-normal">
+              Use the existing Teaching assignment for this session, class and
+              subject. Assignment scope is verified on the server.
+            </span>
+          </label>
           <div className="mt-4">
             <Button type="submit">Create score sheet</Button>
           </div>

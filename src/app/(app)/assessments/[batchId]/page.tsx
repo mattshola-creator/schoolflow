@@ -52,8 +52,8 @@ export default async function ScoreSheetPage({
     <main className="py-10 sm:py-12">
       <PageHeader
         eyebrow="Score sheet"
-        title={`${workspace.batch.subjects.name} · ${workspace.batch.class_levels.name}${workspace.batch.class_arms ? ` ${workspace.batch.class_arms.name}` : ""}`}
-        description={`${workspace.batch.academic_sessions.name} · ${workspace.batch.academic_periods.name} · ${workspace.batch.assessment_schemes.name}`}
+        title={`${workspace.batch.subjects?.name ?? "Subject label unavailable"} · ${workspace.batch.class_levels?.name ?? "Class label unavailable"}${workspace.batch.class_arms ? ` ${workspace.batch.class_arms.name}` : ""}`}
+        description={`${workspace.batch.academic_sessions?.name ?? "Session label unavailable"} · ${workspace.batch.academic_periods?.name ?? "Period label unavailable"} · ${workspace.batch.assessment_schemes.name}`}
         actions={
           <ButtonLink href="/assessments" variant="secondary">
             Back

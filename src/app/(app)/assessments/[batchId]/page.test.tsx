@@ -49,4 +49,45 @@ describe("assessment score sheet access handling", () => {
 
     await expect(renderPage()).rejects.toBe(error);
   });
+  it("renders authorized scores when academic label embeds are hidden by RLS", async () => {
+    const workspace = {
+      batch: {
+        status: "published",
+        subjects: null,
+        class_levels: null,
+        academic_sessions: null,
+        academic_periods: null,
+        class_arms: null,
+        assessment_schemes: {
+          name: "QA scheme",
+          assessment_components: [
+            { id: "component", name: "Exam", maximum_score: 100, sequence: 1 },
+          ],
+        },
+      },
+      students: [
+        {
+          student_id: "student",
+          student_profiles: [
+            {
+              student_number: "QA-1",
+              people: { first_name: "Synthetic", last_name: "Learner" },
+            },
+          ],
+        },
+      ],
+      scores: [{ student_id: "student", component_id: "component", score: 72 }],
+      results: [],
+    } as unknown as Awaited<ReturnType<typeof loadScoreSheet>>;
+    vi.mocked(loadScoreSheet).mockResolvedValue(workspace);
+    const html = renderToStaticMarkup(await renderPage());
+    for (const label of ["Subject", "Class", "Session", "Period"])
+      expect(html).toContain(`${label} label unavailable`);
+    expect(html).toContain("Synthetic");
+    expect(html).toContain("Exam");
+    expect(html).toContain("72");
+    expect(html).not.toContain("Assessment access unavailable");
+    expect(html).not.toContain("No active students");
+    expect(html).not.toContain("<form");
+  });
 });

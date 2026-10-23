@@ -1,4 +1,4 @@
-import { requireCapability } from "@/lib/authorization";
+import { AuthorizationError, requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import type {
@@ -193,6 +193,28 @@ export async function activateScheme(id: string) {
 
 export async function createResultBatch(input: BatchInput) {
   const c = await requireAssessmentContext("academics.scores.enter");
+  if (input.teachingAssignmentId) {
+    const assignment = await c.supabase
+      .from("teaching_assignments")
+      .select("id,assignment_type,subject_id,class_arm_id")
+      .eq("id", input.teachingAssignmentId)
+      .eq("organization_id", c.active.organizationId)
+      .eq("school_id", c.active.schoolId!)
+      .eq("session_id", input.sessionId)
+      .eq("class_level_id", input.classLevelId)
+      .eq("status", "active")
+      .maybeSingle();
+    if (assignment.error)
+      throw new Error("Teaching assignment could not be checked");
+    if (
+      !assignment.data ||
+      (assignment.data.assignment_type !== "class_teacher" &&
+        assignment.data.subject_id !== input.subjectId) ||
+      (assignment.data.class_arm_id !== null &&
+        assignment.data.class_arm_id !== (input.classArmId ?? null))
+    )
+      throw new AuthorizationError("permission_denied");
+  }
   const { error } = await c.supabase.from("result_batches").insert({
     organization_id: c.active.organizationId,
     school_id: c.active.schoolId!,
@@ -226,9 +248,11 @@ export async function loadScoreSheet(batchId: string) {
       "*,assessment_schemes(name,total_mark,pass_mark,assessment_components(id,code,name,maximum_score,weight_percent,sequence)),subjects(name),academic_sessions(name),academic_periods(name),class_levels(name),class_arms(name)",
     )
     .eq("id", batchId)
-    .single();
-  if (batch.error || !batch.data)
-    throw new Error("Score sheet could not be loaded");
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (batch.error) throw new Error("Score sheet could not be loaded");
+  if (!batch.data) throw new AuthorizationError("permission_denied");
   let membershipQuery = context.supabase
     .from("class_memberships")
     .select("student_id")

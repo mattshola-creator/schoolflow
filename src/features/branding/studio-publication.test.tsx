@@ -33,16 +33,14 @@ describe("published shell refresh", () => {
   it("refreshes the authenticated server shell only after successful publication", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          json: async () => ({
-            ...snapshot,
-            revision: 2,
-            published_version_id: snapshot.draft_version_id,
-          }),
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          ...snapshot,
+          revision: 2,
+          published_version_id: snapshot.draft_version_id,
         }),
+      }),
     );
     render(
       <BrandingStudio
@@ -60,12 +58,10 @@ describe("published shell refresh", () => {
   it("does not refresh or claim publication when the server denies it", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({
-          ok: false,
-          json: async () => ({ error: "Permission denied" }),
-        }),
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: async () => ({ error: "Permission denied" }),
+      }),
     );
     render(
       <BrandingStudio

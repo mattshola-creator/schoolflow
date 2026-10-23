@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   showroomThemes,
   resolveShowroomTheme,
@@ -31,6 +32,7 @@ export function BrandingStudio({
   plan: ShowroomPlan;
   initialSnapshot: BrandingSnapshot;
 }) {
+  const router = useRouter();
   const [appearance, setAppearance] = useState<BrandingAppearance>(
       initialSnapshot.effective,
     ),
@@ -138,6 +140,7 @@ export function BrandingStudio({
       if (!response.ok)
         throw new Error(result.error ?? "Appearance operation failed");
       setSnapshot(result);
+      if (operation === "publish") router.refresh();
       const nextVersion =
         operation === "publish"
           ? result.published_version_id

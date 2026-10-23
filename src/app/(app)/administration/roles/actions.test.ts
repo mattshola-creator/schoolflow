@@ -56,6 +56,25 @@ function setup(results: unknown[]) {
   return c;
 }
 describe("bounded school role actions", () => {
+  it("reassignment appends a row instead of rewriting ended history", async () => {
+    const c = setup([
+      { data: { id: rid, key: "teacher", is_system: false } },
+      { data: { id: "m" } },
+      { data: { id: "m" } },
+      { data: [{ permissions: { key: "academics.scores.view" } }] },
+      { data: [{ id: rid, status: "ended" }] },
+      { data: [], error: null },
+    ]);
+    await changeRole(form());
+    expect(
+      c.calls.flatMap((c) => c.operations).some(([m]) => m === "update"),
+    ).toBe(false);
+    expect(
+      c.calls
+        .flatMap((c) => c.operations)
+        .find(([m]) => m === "insert")?.[1][0],
+    ).toMatchObject({ status: "active" });
+  });
   function revokeForm() {
     const f = new FormData();
     f.set("operation", "revoke");

@@ -73,16 +73,17 @@ export async function changeRole(form: FormData) {
       }
       const existing = await supabase
         .from("role_assignments")
-        .select("id")
+        .select("id,status")
         .eq("organization_id", active.organizationId)
         .eq("school_id", active.schoolId!)
         .eq("scope", "school")
         .eq("user_id", value.userId)
         .eq("role_id", value.roleId)
-        .eq("status", "active")
-        .limit(1);
+        .limit(200);
       if (existing.error) throw new Error("Lookup failed");
-      if (!existing.data?.length) {
+      if ((existing.data?.length ?? 0) >= 200)
+        throw new Error("Assignment history requires review");
+      if (!existing.data?.some((row) => row.status === "active")) {
         const digest = createHash("sha256")
           .update(
             [
@@ -90,6 +91,7 @@ export async function changeRole(form: FormData) {
               active.schoolId,
               value.userId,
               value.roleId,
+              String(existing.data?.length ?? 0),
             ].join(":"),
           )
           .digest("hex")
@@ -111,37 +113,19 @@ export async function changeRole(form: FormData) {
           status: "active",
         });
         if (result.error?.code === "23505") {
-          const retry = await supabase
+          const concurrent = await supabase
             .from("role_assignments")
-            .update({
-              status: "active",
-              effective_from: new Date().toISOString(),
-              effective_to: null,
-            })
+            .select("id")
             .eq("id", assignmentId)
             .eq("organization_id", active.organizationId)
             .eq("school_id", active.schoolId!)
             .eq("user_id", value.userId)
             .eq("role_id", value.roleId)
             .eq("scope", "school")
-            .eq("status", "ended")
-            .select("id");
-          if (retry.error) throw new Error("Assignment denied");
-          if (!retry.data?.length) {
-            const concurrent = await supabase
-              .from("role_assignments")
-              .select("id")
-              .eq("id", assignmentId)
-              .eq("organization_id", active.organizationId)
-              .eq("school_id", active.schoolId!)
-              .eq("user_id", value.userId)
-              .eq("role_id", value.roleId)
-              .eq("scope", "school")
-              .eq("status", "active")
-              .maybeSingle();
-            if (concurrent.error || !concurrent.data)
-              throw new Error("Assignment denied");
-          }
+            .eq("status", "active")
+            .maybeSingle();
+          if (concurrent.error || !concurrent.data)
+            throw new Error("Assignment denied");
         } else if (result.error) throw new Error("Assignment denied");
       }
       message = "School role assigned";

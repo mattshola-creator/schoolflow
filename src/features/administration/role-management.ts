@@ -1,5 +1,5 @@
 import "server-only";
-import { requireCapability } from "@/lib/authorization";
+import { requireCapability, AuthorizationError } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import { ownerEntryEnabled } from "@/features/owner-dashboard/entry";
@@ -19,7 +19,7 @@ export async function roleWorkspace(permission = "role.view") {
     active.organizationId !== auth.organizationId ||
     active.schoolId !== auth.schoolId
   )
-    throw new Error("Select an authorized school");
+    throw new AuthorizationError("invalid_context");
   return { auth, supabase, user, active };
 }
 export async function loadRoleManagement() {

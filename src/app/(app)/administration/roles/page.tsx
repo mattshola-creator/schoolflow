@@ -2,6 +2,10 @@ import { loadRoleManagement } from "@/features/administration/role-management";
 import { shortMemberReference } from "@/features/administration/model";
 import { changeRole } from "./actions";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { AuthorizationError } from "@/lib/authorization";
+import { StatePanel } from "@/components/ui/state-panel";
+import { ownerEntryEnabled } from "@/features/owner-dashboard/entry";
 const audiences = [
   "School Owner",
   "Principal",
@@ -18,7 +22,19 @@ export default async function RolesPage({
 }: {
   searchParams: Promise<{ message?: string }>;
 }) {
-  const data = await loadRoleManagement();
+  if (!ownerEntryEnabled()) notFound();
+  const data = await loadRoleManagement().catch((error: unknown) => {
+    if (error instanceof AuthorizationError) return null;
+    throw error;
+  });
+  if (!data)
+    return (
+      <StatePanel
+        kind="unauthorized"
+        title="Role access unavailable"
+        description="Select an authorized school and an account with role viewing permission."
+      />
+    );
   const query = await searchParams;
   const assignable = data.roles.filter(
     (r) => !r.is_system && r.key !== "organization_owner",

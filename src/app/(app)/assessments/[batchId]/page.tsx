@@ -4,6 +4,10 @@ import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { loadScoreSheet } from "@/features/assessments/service";
+import {
+  assessmentWorkflowLabel,
+  unavailableResultLabel,
+} from "@/features/assessments/presentation";
 import { saveAssessmentScore } from "../actions";
 
 export default async function ScoreSheetPage({
@@ -60,6 +64,16 @@ export default async function ScoreSheetPage({
           </ButtonLink>
         }
       />
+      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+        <div>
+          <dt className="font-semibold">Score-sheet workflow</dt>
+          <dd>{assessmentWorkflowLabel(workspace.batch.status)}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold">Assigned teacher</dt>
+          <dd className="break-words">{workspace.teacherLabel}</dd>
+        </div>
+      </dl>
       {notice.error || notice.message ? (
         <p
           role={notice.error ? "alert" : "status"}
@@ -95,7 +109,7 @@ export default async function ScoreSheetPage({
                     </span>
                   ) : (
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-                      Draft
+                      {unavailableResultLabel(workspace.batch.status)}
                     </span>
                   )}
                 </div>
@@ -264,7 +278,7 @@ export default async function ScoreSheetPage({
                           </span>
                         </>
                       ) : (
-                        "Draft"
+                        unavailableResultLabel(workspace.batch.status)
                       )}
                     </td>
                   </tr>

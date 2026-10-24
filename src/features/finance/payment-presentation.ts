@@ -49,3 +49,20 @@ export function paymentAllocationLabel(
     ? "Fully allocated"
     : "Partially allocated";
 }
+
+export function paymentRegisterStatus(value?: string) {
+  return ["recorded", "verified", "rejected", "reversed"].find(
+    (status) => status === value,
+  );
+}
+export function canIndependentlyVerifyPayment(
+  payment: { status: string; recorded_by: string },
+  actorId: string,
+  permitted: boolean,
+) {
+  return (
+    permitted &&
+    payment.status === "recorded" &&
+    payment.recorded_by !== actorId
+  );
+}

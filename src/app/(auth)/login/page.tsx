@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthCard, buttonClass, fieldClass } from "@/components/auth-card";
+import { loginWorkspaces } from "@/features/workspaces/entry";
 import { login } from "./actions";
 export default async function LoginPage({
   searchParams,
@@ -47,7 +48,22 @@ export default async function LoginPage({
             required
           />
         </label>
-        <button className={buttonClass}>Sign in</button>
+        <label className="block text-sm font-medium text-slate-700">
+          Open workspace
+          <select name="workspace" className={fieldClass} defaultValue="auto">
+            {loginWorkspaces.map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <p className="text-sm text-slate-600">
+          One account, your granted access. Your school and permissions are
+          checked after sign-in. Platform administration requires separate
+          platform authority.
+        </p>
+        <button className={buttonClass}>Sign in securely</button>
       </form>
       <div className="mt-6 flex justify-between text-sm">
         <Link

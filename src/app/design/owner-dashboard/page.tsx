@@ -1,0 +1,95 @@
+import { QaRevision } from "@/components/qa-revision";
+import { OwnerContextError } from "@/features/owner-dashboard/model";
+import { AuthorizationError } from "@/lib/authorization";
+import { notFound } from "next/navigation";
+import { ApplicationShell } from "@/components/application-shell";
+import { ContextRibbon } from "@/components/context-ribbon";
+import { SkipLink } from "@/components/ui/skip-link";
+import {
+  buildWorkspaceAccess,
+  describeAccessReason,
+} from "@/features/authorization/navigation";
+import { loadOwnerDashboard } from "@/features/owner-dashboard/service";
+import { OwnerDashboard } from "@/features/owner-dashboard/view";
+import "@/features/showroom/visualizations.css";
+import { logout, switchContext } from "@/app/(app)/actions";
+import { experienceLinks } from "@/features/administration/experience-links";
+
+export const dynamic = "force-dynamic";
+
+export default async function OwnerDashboardReviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ appearance?: string }>;
+}) {
+  const query = await searchParams;
+  if (
+    (process.env.SCHOOLFLOW_SHELL_REVIEW !== "true" ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL !==
+        "https://afqykqlxecpzspjoyegc.supabase.co") &&
+    process.env.NODE_ENV !== "development"
+  )
+    notFound();
+  const { authorization, tenant, academic, userEmail, dto, appearance } =
+    await loadOwnerDashboard().catch((error) => {
+      if (
+        error instanceof AuthorizationError ||
+        error instanceof OwnerContextError
+      )
+        notFound();
+      throw error;
+    });
+  const workspace = buildWorkspaceAccess(authorization);
+  const items = workspace.available.map((item) => ({
+    href: item.href ?? `/capabilities/${item.module}`,
+    label: item.label,
+    group: item.group,
+  }));
+  items.push(...experienceLinks(authorization, true, true));
+  return (
+    <>
+      <SkipLink />
+      <ApplicationShell
+        key={`${authorization.organizationId}:${authorization.schoolId}:${appearance?.themeId}`}
+        schoolThemeId={appearance?.themeId}
+        enableAppearance={query.appearance !== "legacy"}
+        items={items}
+        unavailableItems={workspace.unavailable.map((item) => ({
+          label: item.label,
+          reason: describeAccessReason(item.reason),
+        }))}
+        userEmail={userEmail}
+        signOutAction={logout}
+        searchHref={
+          items.some((item) => item.href === "/management")
+            ? "/management#workspace-search"
+            : undefined
+        }
+        notificationHref={
+          items.some((item) => item.href === "/action-center")
+            ? "/action-center"
+            : undefined
+        }
+        contextRibbon={
+          <>
+            <QaRevision />
+            <ContextRibbon
+              active={tenant.active}
+              academic={academic}
+              options={tenant.options}
+              switchAction={switchContext}
+            />
+          </>
+        }
+      >
+        {appearance?.fallback ? (
+          <p role="status">
+            An appearance is no longer included in the current subscription. An
+            eligible appearance is being used; version history is retained.
+          </p>
+        ) : null}
+        <OwnerDashboard data={dto} />
+      </ApplicationShell>
+    </>
+  );
+}

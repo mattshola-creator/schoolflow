@@ -1,4 +1,5 @@
 "use server";
+import { parseWorkspace } from "@/features/workspaces/entry";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema } from "@/features/identity/schemas";
@@ -9,5 +10,5 @@ export async function login(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) redirect("/login?error=Email+or+password+is+incorrect");
-  redirect("/dashboard");
+  redirect(`/dashboard?workspace=${parseWorkspace(formData.get("workspace"))}`);
 }

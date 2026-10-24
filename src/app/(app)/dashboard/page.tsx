@@ -1,3 +1,7 @@
+import { workspaceDestination } from "@/features/workspaces/entry";
+import { ownerEntryEnabled } from "@/features/owner-dashboard/entry";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { shouldOpenOwnerDashboard } from "@/features/owner-dashboard/entry";
 import {
   OperationalSummary,
   PriorityWork,
@@ -15,7 +19,12 @@ import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import { redirect } from "next/navigation";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ appearance?: string; workspace?: string }>;
+}) {
+  const query = await searchParams;
   const { supabase, user } = await requireUser();
   const { data: memberships } = await supabase
     .from("organization_memberships")
@@ -43,6 +52,26 @@ export default async function DashboardPage() {
     loadEffectiveAuthorization(),
   ]);
   if (!active || !authorization) redirect("/onboarding");
+  if (ownerEntryEnabled() && query.workspace && query.workspace !== "auto") {
+    if (query.workspace === "family") {
+      const contexts = await loadPortalContext();
+      if (contexts.length) redirect("/portal");
+      redirect("/workspaces");
+    }
+    const destination = workspaceDestination(query.workspace, authorization);
+    if (destination) redirect(destination);
+    if (query.workspace !== "owner") redirect("/workspaces");
+  }
+  if (
+    await shouldOpenOwnerDashboard(
+      supabase as unknown as SupabaseClient,
+      user.id,
+      active,
+      authorization,
+      query.appearance === "legacy",
+    )
+  )
+    redirect("/design/owner-dashboard");
   const workspace = buildWorkspaceAccess(authorization);
   const home = await loadOperationalHome(active, authorization);
   const scopeLabel =

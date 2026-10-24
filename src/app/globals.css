@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../features/appearance/shell.css";
 
 :root {
   --background: #f5f7f7;

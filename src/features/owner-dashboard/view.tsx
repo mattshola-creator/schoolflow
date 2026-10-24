@@ -4,7 +4,7 @@ import type { OwnerDashboardDTO } from "./service";
 import { ProgressCard } from "@/features/showroom/charts";
 import { attendanceRate } from "@/features/reporting/metrics";
 
-const panel = "min-w-0 rounded-2xl border p-5";
+const panel = "min-w-0 rounded-2xl border p-5 shadow-sm sm:p-6";
 const surface = {
   background: "var(--shell-surface,white)",
   color: "var(--shell-ink,#17211d)",
@@ -28,7 +28,7 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
       style={{ color: "var(--shell-ink,#17211d)" }}
     >
       <header
-        className="rounded-2xl p-6 sm:p-8"
+        className="rounded-3xl p-6 shadow-sm sm:p-8"
         style={{
           background: "var(--shell-nav,#073D2B)",
           color: "var(--shell-nav-ink,white)",
@@ -44,29 +44,58 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
           {data.organizationName} · {data.sessionName} · {data.periodName}
         </p>
         <p className="mt-2 text-sm">
-          Authorized school records. No cross-school comparisons.
+          Your school’s priorities, people and operations in one place.
         </p>
       </header>
-      <div className="flex flex-wrap items-center gap-3 text-sm">
+      <details className="rounded-xl border p-3 text-sm">
+        <summary className="cursor-pointer font-medium">
+          Appearance & display options
+        </summary>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+          <Link
+            href="/dashboard?appearance=legacy"
+            className="min-h-11 rounded-lg border px-4 py-3 underline"
+          >
+            Use legacy dashboard
+          </Link>
+          <Link
+            href="?appearance=legacy"
+            className="min-h-11 rounded-lg border px-4 py-3 underline"
+          >
+            Disable appearance opt-in
+          </Link>
+          <Link
+            href="?appearance=premium"
+            className="min-h-11 rounded-lg border px-4 py-3 underline"
+          >
+            Enable appearance
+          </Link>
+        </div>
+      </details>
+      <nav aria-label="Owner quick actions" className="flex flex-wrap gap-3">
         <Link
-          href="/dashboard?appearance=legacy"
-          className="min-h-11 rounded-lg border px-4 py-3 underline"
+          href="/workspaces"
+          className="min-h-11 rounded-xl border px-4 py-3 font-medium"
         >
-          Use legacy dashboard
+          My workspaces
         </Link>
-        <Link
-          href="?appearance=legacy"
-          className="min-h-11 rounded-lg border px-4 py-3 underline"
-        >
-          Disable appearance opt-in
-        </Link>
-        <Link
-          href="?appearance=premium"
-          className="min-h-11 rounded-lg border px-4 py-3 underline"
-        >
-          Enable appearance
-        </Link>
-      </div>
+        {visibility.finance ? (
+          <Link
+            href="/finance/overview"
+            className="min-h-11 rounded-xl border px-4 py-3 font-medium"
+          >
+            Finance overview
+          </Link>
+        ) : null}
+        {visibility.work ? (
+          <Link
+            href="/action-center"
+            className="min-h-11 rounded-xl border px-4 py-3 font-medium"
+          >
+            Review my work
+          </Link>
+        ) : null}
+      </nav>
       {data.reportingError ? (
         <p role="alert">
           School reporting could not be loaded. No zero values are inferred.

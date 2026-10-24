@@ -1,3 +1,4 @@
+import { QaRevision } from "@/components/qa-revision";
 import { ApplicationShell } from "@/components/application-shell";
 import { ContextRibbon } from "@/components/context-ribbon";
 import { SkipLink } from "@/components/ui/skip-link";
@@ -94,12 +95,15 @@ export default async function AppLayout({
         userEmail={user.email}
         signOutAction={logout}
         contextRibbon={
-          <ContextRibbon
-            active={tenant.active}
-            academic={academic}
-            options={tenant.options}
-            switchAction={switchContext}
-          />
+          <>
+            <QaRevision />
+            <ContextRibbon
+              active={tenant.active}
+              academic={academic}
+              options={tenant.options}
+              switchAction={switchContext}
+            />
+          </>
         }
       >
         {children}

@@ -1,3 +1,4 @@
+import { workspaceDestination } from "@/features/workspaces/entry";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
@@ -50,6 +51,24 @@ export default async function WorkspacesPage() {
           </li>
         ))}
       </ul>
+      <h2 className="text-lg font-semibold">Working dashboards</h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {[
+          ["leadership", "Principal / School leadership"],
+          ["finance", "Bursar / Finance"],
+        ].map(([key, label]) => {
+          const href = workspaceDestination(key, auth);
+          return href ? (
+            <Link
+              key={key}
+              href={href}
+              className="min-h-14 rounded-2xl border p-5 font-semibold"
+            >
+              {label} →
+            </Link>
+          ) : null;
+        })}
+      </div>
       <h2 className="text-lg font-semibold">Authorized workspaces</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {links.map((l) => (

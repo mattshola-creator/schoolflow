@@ -1,3 +1,4 @@
+import { QaRevision } from "@/components/qa-revision";
 import { OwnerContextError } from "@/features/owner-dashboard/model";
 import { AuthorizationError } from "@/lib/authorization";
 import { notFound } from "next/navigation";
@@ -70,12 +71,15 @@ export default async function OwnerDashboardReviewPage({
             : undefined
         }
         contextRibbon={
-          <ContextRibbon
-            active={tenant.active}
-            academic={academic}
-            options={tenant.options}
-            switchAction={switchContext}
-          />
+          <>
+            <QaRevision />
+            <ContextRibbon
+              active={tenant.active}
+              academic={academic}
+              options={tenant.options}
+              switchAction={switchContext}
+            />
+          </>
         }
       >
         {appearance?.fallback ? (

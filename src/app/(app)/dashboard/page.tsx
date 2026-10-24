@@ -1,3 +1,5 @@
+import { workspaceDestination } from "@/features/workspaces/entry";
+import { ownerEntryEnabled } from "@/features/owner-dashboard/entry";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { shouldOpenOwnerDashboard } from "@/features/owner-dashboard/entry";
 import {
@@ -20,7 +22,7 @@ import { redirect } from "next/navigation";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ appearance?: string }>;
+  searchParams: Promise<{ appearance?: string; workspace?: string }>;
 }) {
   const query = await searchParams;
   const { supabase, user } = await requireUser();
@@ -50,6 +52,16 @@ export default async function DashboardPage({
     loadEffectiveAuthorization(),
   ]);
   if (!active || !authorization) redirect("/onboarding");
+  if (ownerEntryEnabled() && query.workspace && query.workspace !== "auto") {
+    if (query.workspace === "family") {
+      const contexts = await loadPortalContext();
+      if (contexts.length) redirect("/portal");
+      redirect("/workspaces");
+    }
+    const destination = workspaceDestination(query.workspace, authorization);
+    if (destination) redirect(destination);
+    if (query.workspace !== "owner") redirect("/workspaces");
+  }
   if (
     await shouldOpenOwnerDashboard(
       supabase as unknown as SupabaseClient,

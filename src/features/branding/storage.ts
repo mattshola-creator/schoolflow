@@ -6,6 +6,7 @@ import { z } from "zod";
 import type { BrandingSession } from "./persistence";
 import { BrandingOperationError } from "./persistence";
 import { customBackgroundPermitted } from "./model";
+import { storageFailureCategory } from "./storage-diagnostics";
 const bucket = "schoolflow-branding";
 function processor() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -75,8 +76,35 @@ export async function restoreAsset(
     .eq("school_id", session.schoolId)
     .eq("version_id", versionId)
     .maybeSingle();
-  if (result.error) throw new BrandingOperationError("lookup");
+  if (result.error)
+    throw new BrandingOperationError(
+      storageFailureCategory({
+        code: result.error.code,
+        status: result.status,
+      }),
+    );
   return result.data ? z.uuid().parse(result.data.asset_id) : null;
+}
+// Called only after the page establishes Owner authority and an exact QA context.
+// A successful empty lookup proves Data API/schema/SELECT access without returning bindings.
+export async function storageHealth(session: BrandingSession) {
+  try {
+    await restoreAsset(session, "00000000-0000-4000-8000-000000000000");
+    return "data_api_verified";
+  } catch (error) {
+    if (
+      error instanceof BrandingOperationError &&
+      [
+        "storage_configuration",
+        "storage_authentication",
+        "storage_privilege",
+        "storage_schema",
+        "storage_data_api",
+      ].includes(error.code)
+    )
+      return error.code;
+    return "storage_unavailable";
+  }
 }
 export async function signedBackground(
   session: BrandingSession,

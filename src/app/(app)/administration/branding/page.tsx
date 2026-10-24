@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { BrandingStudio } from "@/features/branding/studio";
 import "@/features/showroom/visualizations.css";
 import { brandingSession, loadBranding } from "@/features/branding/persistence";
+import { storageHealth } from "@/features/branding/storage";
 export default async function BrandingPage() {
   if (
     process.env.SCHOOLFLOW_SHELL_REVIEW !== "true" ||
@@ -29,14 +30,10 @@ export default async function BrandingPage() {
       />
     );
   const snapshot = await loadBranding(context);
+  const health = await storageHealth(context);
   return (
     <>
-      <p role="status">
-        Private Storage credential:{" "}
-        {process.env.SUPABASE_SERVICE_ROLE_KEY
-          ? "present; operational verification pending"
-          : "not configured"}
-      </p>
+      <p role="status">Private Storage diagnostic: {health}</p>
       <BrandingStudio
         key={context.schoolId}
         schoolName={context.schoolName}

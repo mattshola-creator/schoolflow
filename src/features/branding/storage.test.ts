@@ -5,7 +5,12 @@ vi.mock("@/lib/auth", () => ({ requireUser: vi.fn() }));
 vi.mock("./context", () => ({ requireBrandingContext: vi.fn() }));
 const admin = vi.hoisted(() => vi.fn());
 vi.mock("@supabase/supabase-js", () => ({ createClient: admin }));
-import { registerBackground, signedBackground } from "./storage";
+import {
+  registerBackground,
+  signedBackground,
+  restoreAsset,
+  storageHealth,
+} from "./storage";
 import type { BrandingSession } from "./persistence";
 const rpc = vi.fn();
 const from = vi.fn();
@@ -25,6 +30,43 @@ beforeEach(() => {
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "");
 });
 afterEach(() => vi.unstubAllEnvs());
+function bindingLookup(result: unknown) {
+  vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "synthetic-test-placeholder");
+  const q = {
+    select: vi.fn(),
+    eq: vi.fn(),
+    maybeSingle: vi.fn().mockResolvedValue(result),
+  };
+  q.select.mockReturnValue(q);
+  q.eq.mockReturnValue(q);
+  admin.mockReturnValue({ from: vi.fn().mockReturnValue(q) });
+  return q;
+}
+it("confirms image-free versions only after a successful tenant-scoped binding lookup", async () => {
+  const q = bindingLookup({ data: null, error: null, status: 200 });
+  await expect(restoreAsset(session, session.userId)).resolves.toBeNull();
+  expect(q.eq.mock.calls).toEqual([
+    ["organization_id", session.organizationId],
+    ["school_id", session.schoolId],
+    ["version_id", session.userId],
+  ]);
+});
+it("does not reinterpret credential rejection as an image-free version", async () => {
+  bindingLookup({
+    data: null,
+    error: { code: "PGRST301", message: "must never escape" },
+    status: 401,
+  });
+  await expect(restoreAsset(session, session.userId)).rejects.toMatchObject({
+    code: "storage_authentication",
+    message: "Branding operation unavailable.",
+  });
+  await expect(storageHealth(session)).resolves.toBe("storage_authentication");
+});
+it("health proves service Data API SELECT access without returning bindings", async () => {
+  bindingLookup({ data: null, error: null, status: 200 });
+  await expect(storageHealth(session)).resolves.toBe("data_api_verified");
+});
 it("denies revoked publishing authority before privileged Storage access", async () => {
   rpc.mockResolvedValue({ data: false });
   await expect(

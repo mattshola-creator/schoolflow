@@ -72,7 +72,16 @@ export function FinanceWorkspaceNav({
               <Link
                 href={section.href}
                 aria-current={current ? "page" : undefined}
-                className={`inline-flex min-h-11 items-center rounded-xl border px-4 text-sm font-semibold whitespace-nowrap transition-colors ${current ? "border-tenant-accent bg-tenant-accent text-white" : "border-border bg-surface text-slate-700 hover:bg-slate-50"}`}
+                className="inline-flex min-h-11 items-center rounded-xl border px-4 text-sm font-semibold whitespace-nowrap transition-shadow hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+                style={{
+                  background: current
+                    ? "var(--shell-primary,#087c57)"
+                    : "var(--shell-surface,white)",
+                  color: current
+                    ? "var(--shell-primary-ink,white)"
+                    : "var(--shell-ink,#17211d)",
+                  borderColor: "var(--shell-border,#d8e0dc)",
+                }}
               >
                 {section.label}
               </Link>

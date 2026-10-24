@@ -1,3 +1,4 @@
+import { ExecutiveMetric } from "@/components/operational/premium";
 import Link from "next/link";
 import {
   WorkspaceHeader,
@@ -116,20 +117,20 @@ export default async function FinanceOverviewPage() {
           aria-label="Finance summary"
         >
           {cards.map((card) => (
-            <Link
-              style={workspaceSurface}
-              className={`${panel} focus-visible:outline-tenant-accent transition-shadow hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2`}
-              href={card.href}
+            <ExecutiveMetric
               key={card.label}
+              title={card.label}
+              value={card.value}
+              href={card.href}
+              linkLabel="Open workspace"
             >
-              <p className="text-sm opacity-80">{card.label}</p>
-              <p className="mt-2 text-2xl font-semibold tracking-tight break-words">
-                {card.value}
+              <p>
+                {card.label.includes("last 30 days")
+                  ? `Activity since ${w.windowStart}.`
+                  : "Current school-scoped records."}{" "}
+                Currency totals are displayed separately.
               </p>
-              <span className="text-tenant-accent mt-3 inline-block text-sm font-semibold">
-                Open workspace →
-              </span>
-            </Link>
+            </ExecutiveMetric>
           ))}
         </section>
       ) : (

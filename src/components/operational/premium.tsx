@@ -46,6 +46,7 @@ export function ExecutiveMetric({
       {href && linkLabel ? (
         <Link
           href={href}
+          style={{ color: "var(--shell-ink,#17211d)" }}
           className="mt-3 inline-flex min-h-11 items-center gap-2 font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           {linkLabel}

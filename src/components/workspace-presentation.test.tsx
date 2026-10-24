@@ -39,6 +39,11 @@ describe("premium operational workspace presentation", () => {
         />
       </>,
     );
+    expect(
+      screen
+        .getByRole("link", { name: "Open workspace" })
+        .getAttribute("style"),
+    ).toContain("--shell-ink");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "Selected school",
     );

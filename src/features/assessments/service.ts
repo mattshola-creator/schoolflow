@@ -1,3 +1,4 @@
+import { scoreSaveErrorCategory } from "./score-save-error";
 import { AuthorizationError, requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
@@ -237,7 +238,17 @@ export async function saveScore(input: ScoreInput) {
     target_component_id: input.componentId,
     target_score: input.score,
   });
-  if (error) throw new Error("Score could not be saved");
+  if (error) {
+    const qa =
+      process.env.SCHOOLFLOW_SHELL_REVIEW === "true" &&
+      process.env.NEXT_PUBLIC_SUPABASE_URL ===
+        "https://afqykqlxecpzspjoyegc.supabase.co";
+    throw new Error(
+      qa
+        ? `Score could not be saved (${scoreSaveErrorCategory(error)})`
+        : "Score could not be saved",
+    );
+  }
 }
 
 export async function loadScoreSheet(batchId: string) {

@@ -1,0 +1,15 @@
+# Live role acceptance continuation — 24 October 2026
+
+Actual Owner session on protected PR128 at270051ed05687b42a6801bf4b3cc7c102067cc28. Exact deploy6adce6ed4f2ed8cfc229a417 independently READY. Hosted CI408/409 SUCCESS. Existing stable QA had older69ed7ccb65bcf68ddf2cfe9d57bf7bc36e544b2a. Forward-published the already-built270051ed candidate only to schoolflow-demo-qa; project published-deploy metadata now matches6adce6ed4f2ed8cfc229a417. Team SSO protection remains ALL; immutable deploy context/configuration unchanged. Operational production application untouched.
+
+Owner's actual authorized QA form prepared Principal and Bursar fixed identities/invitations successfully, no outbound email. Private links never printed or exported. Invitations have not been accepted. Existing stable-host identity was actual qa-assessment-teacher, not Principal; this mismatch was caught before any invitation acceptance. Named tabs are not profiles. Host-specific sessions preserve Owner on preview and Teacher on stable; actual identity was rechecked. Never count an opened sign-in link as successful identity change.
+
+Teacher actual authenticated routing to Assessment at270051ed PASSED. Existing five-permission role correctly lacks broad Teaching access. Owner created one nonduplicate synthetic Mathematics subject assignment for the existing teacher, Primary3 Blue, existing session, start2026-10-24; read-only database evidence confirms actual Owner created_by. Owner then created a Mathematics draft through the existing Assessment form, linked to that assignment. Existing published English versions retained.
+
+Teacher sees only the new assigned draft and opens its12-student roster/component. First synthetic78 score SAVE FAILED with generic Score could not be saved; no score row persisted. Draft is unlocked. No submission pass claimed. Teacher labels are unavailable because metadata lookup policies do not admit this restricted role; no RLS/grants were broadened to hide it.
+
+Safe QA-only score-save diagnostic maps fixed error categories, never upstream messages, credentials, JWTs or payloads. Existing exact QA project/compiled review marker required; normal environment message unchanged. Unexpected failures remain distinct from authorization denial. Diagnostic instrumentation is not a completed functional repair.
+
+Automatic review rejected a rolled-back privileged write reproduction with manually set identity claims. It was not executed and must not be retried via an indirect path. Continue diagnosis only via actual authenticated application requests and read-only inspection. Read-only lock check passed; log queries have not yet exposed a matching failure. No spoofed write/audit actors or security bypasses.
+
+Remaining: actual save root category, Teacher save/submit/locks/denials/audit; Principal/Bursar own-identity invitation acceptance; private image eligible fixture, true transaction overlap, mobile and remaining security review. Production unchanged; PR128 draft/unmerged. Preserve Owner/Teacher and private prepared-link tabs as handoffs; do not capture link fields in screenshots or DOM output.

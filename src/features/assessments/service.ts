@@ -11,6 +11,7 @@ import type { z } from "zod";
 import type { resultBatchSchema } from "./schemas";
 import { assembleScoreSheetStudents } from "./score-sheet-roster";
 import { assignedTeacherLabel } from "./presentation";
+import { readScoreSheetContext } from "./score-sheet-context";
 
 type BatchInput = z.infer<typeof resultBatchSchema>;
 
@@ -254,7 +255,7 @@ export async function loadScoreSheet(batchId: string) {
   const batch = await context.supabase
     .from("result_batches")
     .select(
-      "*,assessment_schemes(name,total_mark,pass_mark,assessment_components(id,code,name,maximum_score,weight_percent,sequence)),subjects(name),academic_sessions(name),academic_periods(name),class_levels(name),class_arms(name)",
+      "*,assessment_schemes(name,total_mark,pass_mark,assessment_components(id,code,name,maximum_score,weight_percent,sequence))",
     )
     .eq("id", batchId)
     .eq("organization_id", context.active.organizationId)
@@ -296,49 +297,31 @@ export async function loadScoreSheet(batchId: string) {
   ]);
   if (profiles.error || scores.error || results.error)
     throw new Error("Score sheet details could not be loaded");
-  // These are ordinary authenticated reads. An authorized batch does not grant
-  // access to the staff directory, and hidden records must remain hidden.
-  let teacherPerson: { first_name: string; last_name: string } | null = null;
-  if (batch.data.teaching_assignment_id) {
-    const assignment = await context.supabase
-      .from("teaching_assignments")
-      .select("staff_assignment_id")
-      .eq("id", batch.data.teaching_assignment_id)
-      .eq("organization_id", context.active.organizationId)
-      .eq("school_id", context.active.schoolId!)
-      .maybeSingle();
-    if (assignment.error)
-      throw new Error("Assigned teacher could not be loaded");
-    if (assignment.data) {
-      const staffAssignment = await context.supabase
-        .from("staff_assignments")
-        .select("staff_profile_id")
-        .eq("id", assignment.data.staff_assignment_id)
-        .eq("organization_id", context.active.organizationId)
-        .eq("school_id", context.active.schoolId!)
-        .maybeSingle();
-      if (staffAssignment.error)
-        throw new Error("Assigned teacher could not be loaded");
-      if (staffAssignment.data) {
-        const staff = await context.supabase
-          .from("staff_profiles")
-          .select("people(first_name,last_name)")
-          .eq("id", staffAssignment.data.staff_profile_id)
-          .eq("organization_id", context.active.organizationId)
-          .maybeSingle();
-        if (staff.error)
-          throw new Error("Assigned teacher could not be loaded");
-        teacherPerson = staff.data?.people ?? null;
-      }
-    }
-  }
+  const labels = await readScoreSheetContext(
+    (name, args) => context.supabase.rpc(name, args),
+    {
+      target_batch_id: batchId,
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+    },
+  );
   return {
     ...context,
-    batch: batch.data,
-    teacherLabel: assignedTeacherLabel(
-      Boolean(batch.data.teaching_assignment_id),
-      teacherPerson,
-    ),
+    batch: {
+      ...batch.data,
+      subjects:
+        labels.subjectName === null ? null : { name: labels.subjectName },
+      academic_sessions:
+        labels.sessionName === null ? null : { name: labels.sessionName },
+      academic_periods:
+        labels.periodName === null ? null : { name: labels.periodName },
+      class_levels:
+        labels.className === null ? null : { name: labels.className },
+      class_arms: labels.armName === null ? null : { name: labels.armName },
+    },
+    teacherLabel:
+      labels.assignedTeacherName ??
+      assignedTeacherLabel(Boolean(batch.data.teaching_assignment_id), null),
     students: assembleScoreSheetStudents(
       memberships.data ?? [],
       profiles.data ?? [],

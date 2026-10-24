@@ -7366,6 +7366,14 @@ export type Database = {
         Args: { target_idempotency_key: string; target_structure_id: string };
         Returns: string;
       };
+      get_assessment_score_sheet_context: {
+        Args: {
+          target_batch_id: string;
+          target_organization_id: string;
+          target_school_id: string;
+        };
+        Returns: Json;
+      };
       get_my_authorization: {
         Args: { target_organization_id: string; target_school_id?: string };
         Returns: Json;

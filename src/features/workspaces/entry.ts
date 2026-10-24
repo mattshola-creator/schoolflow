@@ -51,5 +51,16 @@ export function workspaceDestination(
   if (!auth.schoolId || typeof value !== "string" || !(value in destinations))
     return null;
   const target = destinations[value as keyof typeof destinations];
-  return evaluateAccess(auth, target).allowed ? target.href : null;
+  if (evaluateAccess(auth, target).allowed) return target.href;
+  // Score-entry-only teachers need no school-wide teaching/setup grant.
+  if (
+    value === "teaching" &&
+    evaluateAccess(auth, {
+      module: "academics",
+      permission: "academics.scores.view",
+      feature: "academics.score_entry",
+    }).allowed
+  )
+    return "/assessments";
+  return null;
 }

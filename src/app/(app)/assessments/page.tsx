@@ -1,5 +1,8 @@
 import { AuthorizationError } from "@/lib/authorization";
-import { parseBatchStatus } from "@/features/workspaces/assessment-queue";
+import {
+  parseBatchStatus,
+  canPresentBatchTransition,
+} from "@/features/workspaces/assessment-queue";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -614,7 +617,8 @@ export default async function AssessmentsPage({
                     </ButtonLink>
                   ) : null}
                   {correctionControl(b)}
-                  {next ? (
+                  {next &&
+                  canPresentBatchTransition(next, workspace.authorization) ? (
                     <form action={advanceResultBatch}>
                       <input type="hidden" name="batchId" value={b.id} />
                       <input type="hidden" name="status" value={next} />
@@ -629,7 +633,9 @@ export default async function AssessmentsPage({
           })}
           {!visibleBatches.length ? (
             <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
-              No score sheets yet.
+              {workspace.batches.length
+                ? "No score sheets match the selected filters."
+                : "No score sheets yet."}
             </p>
           ) : null}
         </div>
@@ -674,7 +680,11 @@ export default async function AssessmentsPage({
                           </ButtonLink>
                         ) : null}
                         {correctionControl(b)}
-                        {next ? (
+                        {next &&
+                        canPresentBatchTransition(
+                          next,
+                          workspace.authorization,
+                        ) ? (
                           <form action={advanceResultBatch}>
                             <input type="hidden" name="batchId" value={b.id} />
                             <input type="hidden" name="status" value={next} />
@@ -692,7 +702,11 @@ export default async function AssessmentsPage({
           </table>
         </div>
         {!visibleBatches.length ? (
-          <p className="mt-4 text-sm text-slate-600">No score sheets yet.</p>
+          <p className="mt-4 text-sm text-slate-600">
+            {workspace.batches.length
+              ? "No score sheets match the selected filters."
+              : "No score sheets yet."}
+          </p>
         ) : null}
       </section>
     </main>

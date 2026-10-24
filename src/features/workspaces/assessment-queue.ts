@@ -36,3 +36,26 @@ export function projectAssessmentQueue(
     count: scoped.filter((batch) => batch.status === status).length,
   }));
 }
+
+export function canPresentBatchTransition(
+  status: "submitted" | "reviewed" | "approved" | "published",
+  auth: AuthorizationSnapshot,
+) {
+  const permission = {
+    submitted: "academics.scores.submit",
+    reviewed: "academics.results.review",
+    approved: "academics.results.approve",
+    published: "academics.results.publish",
+  }[status];
+  return (
+    Boolean(auth.schoolId) &&
+    evaluateAccess(auth, {
+      module: "academics",
+      permission,
+      feature:
+        status === "submitted"
+          ? "academics.score_entry"
+          : "academics.result_workflow",
+    }).allowed
+  );
+}

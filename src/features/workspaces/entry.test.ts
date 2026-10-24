@@ -30,3 +30,28 @@ it("a platform or Owner selection never grants authority", () => {
   expect(workspaceDestination("owner", auth)).toBeNull();
   expect(workspaceDestination("leadership", auth)).toBeNull();
 });
+
+it("routes score-only teachers to existing assignment-scoped Assessment without granting teaching access", () => {
+  const teacher: AuthorizationSnapshot = {
+    organizationId: "org",
+    schoolId: "school",
+    permissions: ["academics.scores.view"],
+    modules: [{ key: "academics", enabled: true, entitled: true }],
+    features: [
+      { key: "academics.score_entry", module: "academics", enabled: true },
+    ],
+  };
+  expect(workspaceDestination("teaching", teacher)).toBe("/assessments");
+  expect(
+    workspaceDestination("teaching", { ...teacher, permissions: [] }),
+  ).toBeNull();
+  expect(
+    workspaceDestination("teaching", { ...teacher, features: [] }),
+  ).toBeNull();
+  expect(
+    workspaceDestination("teaching", { ...teacher, schoolId: null }),
+  ).toBeNull();
+  expect(
+    workspaceDestination("teaching", { ...teacher, modules: [] }),
+  ).toBeNull();
+});

@@ -56,6 +56,8 @@ export default async function WorkspacesPage() {
         {[
           ["leadership", "Principal / School leadership"],
           ["finance", "Bursar / Finance"],
+          ["teaching", "Teacher / permitted academic work"],
+          ["admissions", "Admissions"],
         ].map(([key, label]) => {
           const href = workspaceDestination(key, auth);
           return href ? (

@@ -1,4 +1,8 @@
 import Link from "next/link";
+import {
+  ExecutiveHeader,
+  ExecutiveMetric,
+} from "@/components/operational/premium";
 import type { CSSProperties } from "react";
 import type { OwnerDashboardDTO } from "./service";
 import { ProgressCard } from "@/features/showroom/charts";
@@ -27,26 +31,15 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
       className="min-w-0 space-y-6 py-4"
       style={{ color: "var(--shell-ink,#17211d)" }}
     >
-      <header
-        className="rounded-3xl p-6 shadow-sm sm:p-8"
-        style={{
-          background: "var(--shell-nav,#073D2B)",
-          color: "var(--shell-nav-ink,white)",
-        }}
+      <ExecutiveHeader
+        eyebrow="Organization Owner · selected school"
+        title={`${data.schoolName} overview`}
+        context={`${data.organizationName} · ${data.sessionName} · ${data.periodName}`}
       >
-        <p className="text-sm font-medium">
-          Organization Owner · selected school
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold break-words">
-          {data.schoolName} overview
-        </h1>
-        <p className="mt-3 break-words">
-          {data.organizationName} · {data.sessionName} · {data.periodName}
-        </p>
-        <p className="mt-2 text-sm">
+        <p className="text-sm leading-6">
           Your school’s priorities, people and operations in one place.
         </p>
-      </header>
+      </ExecutiveHeader>
       <details className="rounded-xl border p-3 text-sm">
         <summary className="cursor-pointer font-medium">
           Appearance & display options
@@ -106,54 +99,55 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
         aria-label="Permitted school summaries"
       >
         {summary.activeEnrollments !== undefined ? (
-          <article className={panel} style={surface}>
-            <h2>Active enrollments</h2>
-            <p className="my-2 text-3xl font-semibold">
-              {summary.activeEnrollments.toLocaleString()}
-            </p>
-            <p className="text-sm">
+          <ExecutiveMetric
+            title="Active enrollments"
+            value={summary.activeEnrollments.toLocaleString()}
+          >
+            <p>
               Active enrollment rows · {data.sessionName}. Not unique learners.
             </p>
-          </article>
+          </ExecutiveMetric>
         ) : null}
         {summary.attendance ? (
-          <article className={panel} style={surface}>
-            <h2>Recorded attendance</h2>
-            <p className="my-2 text-3xl font-semibold">
-              {attendanceRate(
-                summary.attendance.presentIncludingLate,
-                summary.attendance.recordedMarks,
-              )}
-            </p>
-            <p className="text-sm">
+          <ExecutiveMetric
+            title="Recorded attendance"
+            value={attendanceRate(
+              summary.attendance.presentIncludingLate,
+              summary.attendance.recordedMarks,
+            )}
+          >
+            <p>
               Present plus late: {summary.attendance.presentIncludingLate} /{" "}
               {summary.attendance.recordedMarks} recorded marks.
             </p>
-            <p className="mt-2 text-sm">
-              {data.reportingWindow?.from} through {data.reportingWindow?.to},
-              inclusive · {data.sessionName}. Date/session scoped, not
-              period-filtered.
-            </p>
-          </article>
+            <details className="mt-2">
+              <summary className="min-h-11 cursor-pointer py-2 underline underline-offset-4 focus-visible:outline-2">
+                Period & metric definition
+              </summary>
+              <p>
+                {data.reportingWindow?.from} through {data.reportingWindow?.to},
+                inclusive · {data.sessionName}. Date/session scoped, not
+                period-filtered. Missing marks do not count as absences.
+              </p>
+            </details>
+          </ExecutiveMetric>
         ) : null}
         {summary.publicationVersions !== undefined ? (
-          <article className={panel} style={surface}>
-            <h2>Published batch versions</h2>
-            <p className="my-2 text-3xl font-semibold">
-              {summary.publicationVersions.toLocaleString()}
-            </p>
-            <p className="text-sm">
+          <ExecutiveMetric
+            title="Published batch versions"
+            value={summary.publicationVersions.toLocaleString()}
+            href="/assessments"
+            linkLabel="Open Assessment"
+          >
+            <p>
               Publication rows, including historical versions ·{" "}
               {data.sessionName} · {data.periodName}. Not unique learners or
               current batch count.
             </p>
-            <Link className="mt-3 inline-block underline" href="/assessments">
-              Open Assessment
-            </Link>
-          </article>
+          </ExecutiveMetric>
         ) : null}
       </section>
-      <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+      <div className="grid min-w-0 items-start gap-5 xl:grid-cols-2">
         {summary.attendance ? (
           <div style={chartStyle}>
             <ProgressCard

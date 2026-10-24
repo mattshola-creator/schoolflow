@@ -1,0 +1,13 @@
+# Pilot identity provisioning continuation — 24 October 2026
+
+Baseline893b3529600d137af06f9526c7de76086079649a / protected deploy6adca64ca3df51462dfabeac; PR128 draft/unmerged. QA-only Principal/Bursar definitions from approved PR131 proposal remain exact13/4 keys, currently0 assignments. Existing teacher/recorder/verifier identities each retain their original active school role. No duplicate identities are needed for those roles.
+
+Adds fixed principal_review and bursar_recorder presets to the existing QA identity mechanism, existing invitation form/action and QA-only Edge function. Fixed synthetic addresses are qa-principal-review@schoolflow.test and qa-bursar-recorder@schoolflow.test. Permission sets match already-approved definitions exactly; description/name metadata match the created roles. No arbitrary target email, arbitrary permission list, platform authority, RLS/grant/schema or entitlement changes.
+
+Both server action and Edge handler require the actor to hold the entire preset permission subset, in addition to existing role.manage/membership.manage/membership.view, active context, Foundation entitlement/feature, exact QA project/origin and matching organization/school. Edge verify_jwt remains true; auth.getUser verifies the actor before privileged Auth operations. Existing exact-role/grant checks, app_metadata identity marker, conflict detection, idempotent existing-account reuse and single-use invitation acceptance remain. No real outbound email is sent. A preset cannot itself accept an invitation or grant a logged-in visitor a role.
+
+Remote Edge version4 source matched the repository before edits. Deployment and authenticated acceptance must be recorded after verification. Preserve version4 files for rollback; do not disable JWT verification. Provisioning must run through a genuinely authenticated authorized Owner session; do not spoof the Owner actor or extract browser tokens.
+
+Live own-identity acceptance is still OPEN until actual invitations are accepted under the respective identities. Browser has no surviving tabs at current inspection. Named tab sessions do not create isolated profiles. Preserve previous acceptance evidence; do not count automated mocks as live role verification. Teacher full Teaching/attendance access is not added by these presets; existing five-permission teacher remains Assessment-scoped.
+
+Remaining independent gates: eligible active Professional/Enterprise private-image fixture, Finance/Studio true transaction overlap with a verified multi-connection runner, requested mobile viewports, full definer review and leaked-password protection remediation. Current automated dependency audit is unsuppressed; historical braces advisory remains documented. Production unchanged.

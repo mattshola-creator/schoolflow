@@ -117,3 +117,35 @@ describe("QA identity Edge authorization boundary", () => {
     expect(mocks.createClient).toHaveBeenCalledTimes(1);
   });
 });
+
+it.each(["principal_review", "bursar_recorder"])(
+  "requires real user authentication for approved pilot %s",
+  async (rolePreset) => {
+    expect((await handler(request({ rolePreset }))).status).toBe(401);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  },
+);
+it("refuses pilot delegation outside the authenticated actor's permission subset", async () => {
+  mocks.getUser.mockResolvedValue({
+    data: { user: { id: "33333333-3333-4333-8333-333333333333" } },
+    error: null,
+  });
+  mocks.rpc.mockResolvedValue({
+    data: {
+      permissions: ["role.manage", "membership.manage", "membership.view"],
+      modules: [{ key: "foundation", enabled: true, entitled: true }],
+      features: [
+        {
+          key: "foundation.authorization_inspection",
+          module: "foundation",
+          enabled: true,
+        },
+      ],
+    },
+    error: null,
+  });
+  expect(
+    (await handler(request({ rolePreset: "principal_review" }))).status,
+  ).toBe(403);
+  expect(mocks.createClient).toHaveBeenCalledTimes(1);
+});

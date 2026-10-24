@@ -145,3 +145,32 @@ describe("QA role provisioning safeguards", () => {
     );
   });
 });
+
+it("keeps approved pilot presets exact and financially separated", () => {
+  expect(qaRolePresets.principal_review.permissions).toEqual([
+    "organization.view",
+    "school.view",
+    "students.view",
+    "attendance.view",
+    "academics.view",
+    "academics.scores.view",
+    "academics.results.view",
+    "academics.results.review",
+    "reporting.dashboard.view",
+    "reporting.school.view",
+    "reporting.academic.view",
+    "reporting.attendance.view",
+    "shared.tasks.view",
+  ]);
+  expect(qaRolePresets.bursar_recorder.permissions).toEqual(
+    qaRolePresets.payment_recorder.permissions,
+  );
+  expect(
+    qaRolePresets.principal_review.permissions.some((key) =>
+      key.startsWith("finance."),
+    ),
+  ).toBe(false);
+  expect(qaRolePresets.bursar_recorder.syntheticEmail).not.toBe(
+    qaRolePresets.payment_recorder.syntheticEmail,
+  );
+});

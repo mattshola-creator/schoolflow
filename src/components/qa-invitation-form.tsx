@@ -85,6 +85,12 @@ export function QaInvitationForm({
                 <option value="payment_recorder">
                   Cedarbridge payment recorder
                 </option>
+                <option value="principal_review">
+                  Cedarbridge Principal review pilot
+                </option>
+                <option value="bursar_recorder">
+                  Cedarbridge Bursar recorder pilot
+                </option>
                 <option value="assessment_teacher">
                   Cedarbridge Assessment teacher
                 </option>

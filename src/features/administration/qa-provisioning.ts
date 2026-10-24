@@ -2,6 +2,45 @@ export const QA_SUPABASE_PROJECT_REF = "afqykqlxecpzspjoyegc";
 export const QA_APP_ORIGIN = "https://schoolflow-demo-qa.netlify.app";
 
 export const qaRolePresets = {
+  principal_review: {
+    key: "qa_principal_review",
+    name: "QA Principal Review",
+    description:
+      "Founder-approved PR131 QA pilot. School-scoped assignments only; not production.",
+    syntheticEmail: "qa-principal-review@schoolflow.test",
+    fullName: "QA Principal Review",
+    organizationSlug: "cedarbridge-learning-group",
+    permissions: [
+      "organization.view",
+      "school.view",
+      "students.view",
+      "attendance.view",
+      "academics.view",
+      "academics.scores.view",
+      "academics.results.view",
+      "academics.results.review",
+      "reporting.dashboard.view",
+      "reporting.school.view",
+      "reporting.academic.view",
+      "reporting.attendance.view",
+      "shared.tasks.view",
+    ],
+  },
+  bursar_recorder: {
+    key: "qa_bursar_recorder",
+    name: "QA Bursar Recorder",
+    description:
+      "Founder-approved PR131 QA pilot. School-scoped assignments only; not production.",
+    syntheticEmail: "qa-bursar-recorder@schoolflow.test",
+    fullName: "QA Bursar Recorder",
+    organizationSlug: "cedarbridge-learning-group",
+    permissions: [
+      "finance.view",
+      "finance.billing.view",
+      "finance.payments.view",
+      "finance.payments.record",
+    ],
+  },
   payment_recorder: {
     key: "qa_payment_recorder",
     name: "QA Payment Recorder",

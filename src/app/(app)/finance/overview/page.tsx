@@ -71,7 +71,7 @@ export default async function FinanceOverviewPage() {
       ? {
           label: "Payments awaiting independent verification",
           count: w.pendingPayments,
-          href: "/finance/payments",
+          href: "/finance/payments?status=recorded#payment-register",
         }
       : null,
     w.visibility.expenses
@@ -166,7 +166,7 @@ export default async function FinanceOverviewPage() {
                   className="focus-visible:outline-tenant-accent flex min-h-14 items-center justify-between gap-4 py-3 focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   <span className="font-medium">{task.label}</span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold tabular-nums">
+                  <span className="rounded-full border px-3 py-1 text-sm font-semibold tabular-nums">
                     {task.count}
                   </span>
                 </Link>

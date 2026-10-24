@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { evaluateAccess } from "@/features/authorization/evaluator";
+import { loadAssessmentWorkspace } from "@/features/assessments/service";
+import { projectAssessmentQueue } from "@/features/workspaces/assessment-queue";
 import { notFound } from "next/navigation";
 import { ownerEntryEnabled } from "@/features/owner-dashboard/entry";
 import { requireCapability, AuthorizationError } from "@/lib/authorization";
@@ -74,6 +77,21 @@ export default async function LeadershipPage() {
     await loadOperationalHome(active, auth),
     ownerVisibility(auth),
   );
+  const canReadAssessment = evaluateAccess(auth, {
+    module: "academics",
+    permission: "academics.scores.view",
+    feature: "academics.score_entry",
+  }).allowed;
+  const assessment = canReadAssessment ? await loadAssessmentWorkspace() : null;
+  if (
+    assessment &&
+    (assessment.active.organizationId !== active.organizationId ||
+      assessment.active.schoolId !== active.schoolId)
+  )
+    throw new Error("Leadership Assessment scope changed");
+  const queue = assessment
+    ? projectAssessmentQueue(assessment.batches, academic, auth)
+    : null;
   return (
     <main className="min-w-0 space-y-6 py-4">
       <WorkspaceHeader
@@ -134,6 +152,38 @@ export default async function LeadershipPage() {
           numerator={summary.attendance.presentIncludingLate}
           denominator={summary.attendance.recordedMarks}
         />
+      ) : null}
+      {queue ? (
+        <section aria-labelledby="assessment-progress" className="space-y-3">
+          <h2 id="assessment-progress" className="text-xl font-semibold">
+            Assessment workflow
+          </h2>
+          <p className="text-sm">
+            Result batches in {academic.sessionName ?? "all sessions"} ·{" "}
+            {academic.periodName ?? "all periods"}. Counts include versioned
+            batches; not unique learners. Review and publication actions retain
+            their own permissions.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {queue.map((item) => (
+              <WorkspaceCard
+                key={item.status}
+                title={
+                  item.status === "submitted"
+                    ? "Awaiting review"
+                    : item.status === "reviewed"
+                      ? "Awaiting approval"
+                      : item.status === "approved"
+                        ? "Awaiting publication"
+                        : `${item.status[0].toUpperCase()}${item.status.slice(1)} batches`
+                }
+                value={item.count.toLocaleString()}
+                description="Open the matching result workflow."
+                href={`/assessments?status=${item.status}${academic.sessionId ? `&session=${encodeURIComponent(academic.sessionId)}` : ""}${academic.periodId ? `&period=${encodeURIComponent(academic.periodId)}` : ""}#result-workflow`}
+              />
+            ))}
+          </div>
+        </section>
       ) : null}
       {work ? (
         <section className="rounded-2xl border p-5">

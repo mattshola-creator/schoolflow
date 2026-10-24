@@ -6,6 +6,8 @@ import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
 import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
 import { loadCollectionsWorkspace } from "@/features/finance/service";
 import {
+  paymentRegisterStatus,
+  canIndependentlyVerifyPayment,
   paymentAllocationLabel,
   paymentStatusLabel,
   sumMoneyAmounts,
@@ -30,7 +32,7 @@ const money = (amount: number | string, currency: string) =>
 export default async function PaymentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; status?: string }>;
 }) {
   const notice = await searchParams;
   const result = await loadCollectionsWorkspace()
@@ -39,6 +41,10 @@ export default async function PaymentsPage({
   const w = result.workspace;
   if (!w)
     return <FinanceUnavailableState area="Collections" error={result.error} />;
+  const registerStatus = paymentRegisterStatus(notice.status);
+  const registerPayments = w.payments.filter(
+    (payment) => !registerStatus || payment.status === registerStatus,
+  );
   const studentName = (s: (typeof w.students)[number]) =>
     `${s.student_profiles.student_number} · ${s.student_profiles.people.first_name} ${s.student_profiles.people.last_name}`;
   const balances = new Map(
@@ -274,10 +280,38 @@ export default async function PaymentsPage({
         </section>
       ) : null}
       <section className="mt-7">
-        <h2 className="text-xl font-semibold">Payment register</h2>
+        <h2 id="payment-register" className="text-xl font-semibold">
+          Payment register
+        </h2>
+        <form method="get" className="my-4 flex flex-wrap items-end gap-3">
+          <label className="grid gap-2 text-sm font-medium">
+            Payment status
+            <select
+              className={fieldClass}
+              name="status"
+              defaultValue={registerStatus ?? ""}
+            >
+              <option value="">All statuses</option>
+              {["recorded", "verified", "rejected", "reversed"].map(
+                (status) => (
+                  <option key={status} value={status}>
+                    {paymentStatusLabel(status)}
+                  </option>
+                ),
+              )}
+            </select>
+          </label>
+          <Button type="submit">Filter loaded payments</Button>
+        </form>
+        <p className="text-sm">
+          {registerPayments.length} matching payments among the latest{" "}
+          {w.payments.length} loaded records (maximum 100). This list is not the
+          school-wide queue count. Independent verification requires another
+          authorized actor.
+        </p>
         <div className="mt-4 grid gap-4">
-          {w.payments.length ? (
-            w.payments.map((p) => {
+          {registerPayments.length ? (
+            registerPayments.map((p) => {
               const allocatedAmount = sumMoneyAmounts(
                 allocationsByPayment.get(p.id) ?? [],
               );
@@ -316,7 +350,7 @@ export default async function PaymentsPage({
                       {new Date(p.paid_at).toLocaleString("en-NG")}
                     </time>
                   </div>
-                  {canVerify && p.status === "recorded" ? (
+                  {canIndependentlyVerifyPayment(p, w.user.id, canVerify) ? (
                     <form
                       action={verifyPayment}
                       className="mt-4 flex flex-wrap items-end gap-3"

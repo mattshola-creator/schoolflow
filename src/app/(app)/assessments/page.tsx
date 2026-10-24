@@ -1,3 +1,5 @@
+import { AuthorizationError } from "@/lib/authorization";
+import { parseBatchStatus } from "@/features/workspaces/assessment-queue";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -18,10 +20,19 @@ const label = "grid gap-1.5 text-sm font-medium text-slate-700";
 export default async function AssessmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    message?: string;
+    status?: string;
+    session?: string;
+    period?: string;
+  }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadAssessmentWorkspace().catch(() => null);
+  const workspace = await loadAssessmentWorkspace().catch((error: unknown) => {
+    if (error instanceof AuthorizationError) return null;
+    throw error;
+  });
   if (!workspace)
     return (
       <main className="py-16">
@@ -34,6 +45,25 @@ export default async function AssessmentsPage({
         </p>
       </main>
     );
+  const batchStatus = parseBatchStatus(notice.status);
+  const batchSession = workspace.sessions.some(
+    (item) => item.id === notice.session,
+  )
+    ? notice.session
+    : undefined;
+  const batchPeriod = workspace.periods.some(
+    (item) =>
+      item.id === notice.period &&
+      (!batchSession || item.session_id === batchSession),
+  )
+    ? notice.period
+    : undefined;
+  const visibleBatches = workspace.batches.filter(
+    (batch) =>
+      (!batchStatus || batch.status === batchStatus) &&
+      (!batchSession || batch.session_id === batchSession) &&
+      (!batchPeriod || batch.period_id === batchPeriod),
+  );
   const canConfigure = workspace.authorization.permissions.includes(
     "academics.assessments.configure",
   );
@@ -479,9 +509,77 @@ export default async function AssessmentsPage({
         </form>
       ) : null}
       <section className={`${panel} mt-6`}>
-        <h2 className="text-lg font-semibold">Result workflow</h2>
+        <h2 id="result-workflow" className="text-lg font-semibold">
+          Result workflow
+        </h2>
+        <form method="get" className="my-4 flex flex-wrap items-end gap-3">
+          <label className={label}>
+            Workflow status
+            <select
+              name="status"
+              defaultValue={batchStatus ?? ""}
+              className={fieldClass}
+            >
+              <option value="">All statuses</option>
+              {[
+                "draft",
+                "reopened",
+                "submitted",
+                "reviewed",
+                "approved",
+                "published",
+              ].map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={label}>
+            Session
+            <select
+              name="session"
+              defaultValue={batchSession ?? ""}
+              className={fieldClass}
+            >
+              <option value="">All sessions</option>
+              {workspace.sessions.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={label}>
+            Period
+            <select
+              name="period"
+              defaultValue={batchPeriod ?? ""}
+              className={fieldClass}
+            >
+              <option value="">All periods</option>
+              {workspace.periods
+                .filter(
+                  (item) => !batchSession || item.session_id === batchSession,
+                )
+                .map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <Button type="submit">Filter result workflow</Button>
+          <ButtonLink href="/assessments#result-workflow" variant="secondary">
+            Clear filters
+          </ButtonLink>
+        </form>
+        <p className="text-sm">
+          {visibleBatches.length} matching batches. Filters affect this list
+          only; each action is authorized on the server.
+        </p>
         <div className="mt-4 grid gap-3 md:hidden">
-          {workspace.batches.map((b) => {
+          {visibleBatches.map((b) => {
             const next = nextStatus[b.status as keyof typeof nextStatus];
             return (
               <article key={b.id} className="rounded-lg border p-4">
@@ -529,7 +627,7 @@ export default async function AssessmentsPage({
               </article>
             );
           })}
-          {!workspace.batches.length ? (
+          {!visibleBatches.length ? (
             <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
               No score sheets yet.
             </p>
@@ -547,7 +645,7 @@ export default async function AssessmentsPage({
               </tr>
             </thead>
             <tbody>
-              {workspace.batches.map((b) => {
+              {visibleBatches.map((b) => {
                 const next = nextStatus[b.status as keyof typeof nextStatus];
                 return (
                   <tr key={b.id} className="border-b last:border-0">
@@ -593,7 +691,7 @@ export default async function AssessmentsPage({
             </tbody>
           </table>
         </div>
-        {!workspace.batches.length ? (
+        {!visibleBatches.length ? (
           <p className="mt-4 text-sm text-slate-600">No score sheets yet.</p>
         ) : null}
       </section>

@@ -1,5 +1,9 @@
 import { expect, it } from "vitest";
-import { scoreSaveErrorCategory } from "./score-save-error";
+import {
+  scoreSaveErrorCategory,
+  QaScoreSaveError,
+  scoreSaveFailureMessage,
+} from "./score-save-error";
 it("distinguishes fixed authorization, lock, validation and RPC categories", () => {
   expect(
     scoreSaveErrorCategory({
@@ -30,4 +34,13 @@ it("does not expose untrusted errors or recast unexpected failures as authorizat
   expect(
     scoreSaveErrorCategory({ code: "42501", message: "private payload" }),
   ).toBe("database_permission_denied");
+});
+
+it("only forwards fixed QA diagnostic errors through the server action", () => {
+  expect(
+    scoreSaveFailureMessage(new QaScoreSaveError("rpc_contract_unavailable")),
+  ).toBe("Score could not be saved (rpc_contract_unavailable)");
+  expect(scoreSaveFailureMessage(new Error("private upstream payload"))).toBe(
+    "Score could not be saved",
+  );
 });

@@ -18,3 +18,14 @@ export function scoreSaveErrorCategory(error: {
     return "session_rejected";
   return "unexpected_database_failure";
 }
+
+export class QaScoreSaveError extends Error {
+  constructor(readonly category: ReturnType<typeof scoreSaveErrorCategory>) {
+    super("Score could not be saved");
+  }
+}
+export function scoreSaveFailureMessage(error: unknown) {
+  return error instanceof QaScoreSaveError
+    ? `Score could not be saved (${error.category})`
+    : "Score could not be saved";
+}

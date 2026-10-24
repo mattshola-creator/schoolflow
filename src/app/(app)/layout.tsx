@@ -1,3 +1,4 @@
+import { evaluateAccess } from "@/features/authorization/evaluator";
 import { QaRevision } from "@/components/qa-revision";
 import { ApplicationShell } from "@/components/application-shell";
 import { ContextRibbon } from "@/components/context-ribbon";
@@ -56,6 +57,20 @@ export default async function AppLayout({
     tenant.active,
     authorization,
   );
+  if (
+    ownerEntryEnabled() &&
+    authorization &&
+    evaluateAccess(authorization, {
+      module: "academics",
+      permission: "academics.scores.view",
+      feature: "academics.score_entry",
+    }).allowed
+  )
+    navigationItems.push({
+      href: "/workspace/teacher",
+      label: "Teacher workspace",
+      group: "Home",
+    });
   navigationItems.push(
     ...experienceLinks(authorization, owner, ownerEntryEnabled()),
   );
@@ -78,7 +93,18 @@ export default async function AppLayout({
       <SkipLink />
       <ApplicationShell
         key={`${tenant.active?.organizationId}:${tenant.active?.schoolId}:${appearance?.themeId}`}
-        enableAppearance={Boolean(appearance)}
+        enableAppearance={
+          Boolean(appearance) ||
+          Boolean(
+            ownerEntryEnabled() &&
+            authorization &&
+            evaluateAccess(authorization, {
+              module: "academics",
+              permission: "academics.scores.view",
+              feature: "academics.score_entry",
+            }).allowed,
+          )
+        }
         schoolThemeId={appearance?.themeId}
         items={navigationItems}
         searchHref={

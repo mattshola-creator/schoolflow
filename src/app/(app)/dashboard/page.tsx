@@ -72,6 +72,13 @@ export default async function DashboardPage({
     )
   )
     redirect("/design/owner-dashboard");
+  if (
+    ownerEntryEnabled() &&
+    query.appearance !== "legacy" &&
+    authorization.permissions.includes("academics.scores.enter") &&
+    workspaceDestination("teaching", authorization) === "/workspace/teacher"
+  )
+    redirect("/workspace/teacher");
   const workspace = buildWorkspaceAccess(authorization);
   const home = await loadOperationalHome(active, authorization);
   const scopeLabel =

@@ -1,3 +1,4 @@
+import "@/features/teacher-workspace/academic.css";
 import { ClipboardCheck } from "lucide-react";
 import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
@@ -106,7 +107,7 @@ export default async function AttendancePage({
   );
 
   return (
-    <main className="py-10 sm:py-12">
+    <main className="sf-academic-workspace min-w-0 py-5 sm:py-7">
       <PageHeader
         eyebrow="Student attendance"
         title={`Attendance at ${workspace.active.schoolName}`}

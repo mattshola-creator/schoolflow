@@ -41,7 +41,7 @@ it("routes score-only teachers to existing assignment-scoped Assessment without 
       { key: "academics.score_entry", module: "academics", enabled: true },
     ],
   };
-  expect(workspaceDestination("teaching", teacher)).toBe("/assessments");
+  expect(workspaceDestination("teaching", teacher)).toBe("/workspace/teacher");
   expect(
     workspaceDestination("teaching", { ...teacher, permissions: [] }),
   ).toBeNull();

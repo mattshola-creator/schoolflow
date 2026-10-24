@@ -1,3 +1,4 @@
+import "@/features/teacher-workspace/academic.css";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -46,7 +47,7 @@ export default async function LessonsPage({
   };
 
   return (
-    <main className="py-10 sm:py-12">
+    <main className="sf-academic-workspace min-w-0 py-5 sm:py-7">
       <PageHeader
         eyebrow="Teaching management"
         title={`Lessons at ${workspace.active.schoolName}`}

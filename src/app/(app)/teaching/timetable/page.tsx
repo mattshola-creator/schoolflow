@@ -67,6 +67,7 @@ export default async function TimetablePage({
       : currentSchoolWeekday();
   const selectedSession =
     workspace.sessions.find((item) => item.id === notice.session) ??
+    workspace.sessions.find((item) => item.status === "current") ??
     workspace.sessions[0];
   const visiblePeriods = workspace.periods.filter(
     (period) => !selectedSession || period.session_id === selectedSession.id,

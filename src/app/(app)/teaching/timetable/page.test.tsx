@@ -100,3 +100,29 @@ it("keeps an actual authorization denial unavailable", async () => {
     screen.getByRole("heading", { name: "Timetable is not available" }),
   ).toBeInTheDocument();
 });
+
+it.each([
+  [undefined, "current"],
+  ["foreign", "current"],
+  ["planned", "planned"],
+])(
+  "selects current session by default while preserving valid requested scope %s",
+  async (requested, expected) => {
+    loadTimetableWorkspace.mockResolvedValueOnce({
+      ...workspace,
+      sessions: [
+        { id: "planned", name: "Future session", status: "planned" },
+        { id: "current", name: "Current session", status: "current" },
+      ],
+    });
+    render(
+      await TimetablePage({
+        searchParams: Promise.resolve({ session: requested }),
+      }),
+    );
+    expect(
+      screen.getByRole("combobox", { name: "Academic session" }),
+    ).toHaveValue(expected);
+    cleanup();
+  },
+);

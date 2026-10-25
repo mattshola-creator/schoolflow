@@ -25,3 +25,13 @@ Private premium-image fixture, genuine Finance/Studio overlap, academic locks an
 ## Recovery
 
 Revert the application-only error-handling slice if needed. No database recovery is required. Keep the QA integration PR draft/unmerged and production unchanged. Preserve the12submitted scores and original actor.
+
+## Subsequent operational evidence
+
+On the diagnostic QA revision, an authorized Owner created one controlled lesson draft dated within the active teaching assignment, refreshed it, submitted it and recorded one linked delivery. Database checks confirmed one plan, one delivery, matching school/assignment binding and actual Owner actors. The earlier failed draft used a different date; its exact cause is not established and no causal repair is claimed from diagnostics alone.
+
+A selected legacy timetable period failed application UUID validation. Validation was retained; the Owner created one clearly labeled, nonoverlapping QA period through the normal form and successfully allocated it to the existing assignment without conflict acknowledgement. One allocation and Owner attribution were verified. Existing periods and records were preserved.
+
+The timetable page defaulted to the newest planned session, hiding current-session allocations after save redirects. The follow-up selects an explicit valid requested session first, then the current session, then the prior fallback. Regressions cover default/invalid scope and an explicit planned-session request. Daily navigation displayed the authorized assignment after selecting the correct session.
+
+Four matching audit events identify the actual Owner for these controlled activities. These are Owner-authority workflow checks, not Teacher own-identity acceptance. Teacher permissions, the12submitted scores, pilot invitations and production remain unchanged. Teacher-positive attendance, timetable, lesson and lock tests remain open pending an approved assignment-scoped access contract and an appropriate authenticated identity. No broad grants or entitlement changes were made.

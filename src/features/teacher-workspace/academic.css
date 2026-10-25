@@ -41,3 +41,6 @@
   outline: 2px solid var(--shell-focus, #147a56);
   outline-offset: 2px;
 }
+.sf-academic-workspace .text-brand {
+  color: var(--shell-primary, #087c57);
+}

@@ -13,6 +13,7 @@ vi.mock("@/features/attendance/service", () => ({
 }));
 
 import AttendancePage from "./page";
+import { AuthorizationError } from "@/lib/authorization";
 
 describe("student attendance page", () => {
   afterEach(cleanup);
@@ -59,7 +60,9 @@ describe("student attendance page", () => {
   });
 
   it("fails closed when the feature or context is unavailable", async () => {
-    loadStudentAttendanceWorkspace.mockRejectedValueOnce(new Error("disabled"));
+    loadStudentAttendanceWorkspace.mockRejectedValueOnce(
+      new AuthorizationError("permission_denied"),
+    );
     render(
       await AttendancePage({
         searchParams: Promise.resolve({ date: "2026-09-28" }),
@@ -149,4 +152,13 @@ describe("student attendance page", () => {
       screen.queryByLabelText("Attendance corrections"),
     ).not.toBeInTheDocument();
   });
+});
+
+it("does not disguise an unexpected attendance loader failure as a denial", async () => {
+  loadStudentAttendanceWorkspace.mockRejectedValueOnce(
+    new Error("unexpected backend failure"),
+  );
+  await expect(
+    AttendancePage({ searchParams: Promise.resolve({}) }),
+  ).rejects.toThrow("unexpected backend failure");
 });

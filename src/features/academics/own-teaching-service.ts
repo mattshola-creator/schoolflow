@@ -1,4 +1,5 @@
-// Restricted, unactivated review candidate. No route imports this module.
+import { evaluateAccess } from "@/features/authorization/evaluator";
+// Assignment-scoped operations use the authenticated client and approved V2 RLS.
 import { z } from "zod";
 import { AuthorizationError } from "@/lib/authorization";
 import { requireTeachingContext } from "./teaching-service";
@@ -57,7 +58,9 @@ export async function loadOwnTeachingWorkspace() {
       .eq("status", "active"),
     ctx.supabase
       .from("lesson_plans")
-      .select("id,teaching_assignment_id,lesson_date,topic,status")
+      .select(
+        "id,session_id,academic_period_id,teaching_assignment_id,lesson_date,topic,objectives,content_outline,teaching_resources,status",
+      )
       .eq("organization_id", ctx.active.organizationId)
       .eq("school_id", ctx.active.schoolId!)
       .eq("created_by", ctx.user.id),
@@ -72,8 +75,87 @@ export async function loadOwnTeachingWorkspace() {
   ]);
   for (const result of results)
     if (result.error) throw new LessonOperationError(result.error.code);
+  const assignments = results[0].data ?? [];
+  const sessionIds = [...new Set(assignments.map((a) => a.session_id))];
+  const metadata = await Promise.all([
+    ctx.supabase
+      .from("academic_sessions")
+      .select("id,name,status")
+      .eq("organization_id", ctx.active.organizationId)
+      .eq("school_id", ctx.active.schoolId!)
+      .in("id", sessionIds),
+    ctx.supabase
+      .from("academic_periods")
+      .select("id,session_id,name,status")
+      .eq("organization_id", ctx.active.organizationId)
+      .eq("school_id", ctx.active.schoolId!)
+      .in("session_id", sessionIds),
+    ctx.supabase
+      .from("class_levels")
+      .select("id,name")
+      .eq("organization_id", ctx.active.organizationId)
+      .eq("school_id", ctx.active.schoolId!)
+      .in(
+        "id",
+        assignments.map((a) => a.class_level_id),
+      ),
+    ctx.supabase
+      .from("class_arms")
+      .select("id,name")
+      .eq("organization_id", ctx.active.organizationId)
+      .eq("school_id", ctx.active.schoolId!)
+      .in(
+        "id",
+        assignments.flatMap((a) => (a.class_arm_id ? [a.class_arm_id] : [])),
+      ),
+    ctx.supabase
+      .from("subjects")
+      .select("id,name")
+      .eq("organization_id", ctx.active.organizationId)
+      .eq("school_id", ctx.active.schoolId!)
+      .in(
+        "id",
+        assignments.flatMap((a) => (a.subject_id ? [a.subject_id] : [])),
+      ),
+  ]);
+  for (const result of metadata)
+    if (result.error) throw new LessonOperationError(result.error.code);
+  const profile = await ctx.supabase
+    .from("profiles")
+    .select("person_id")
+    .eq("id", ctx.user.id)
+    .maybeSingle();
+  if (profile.error) throw new LessonOperationError(profile.error.code);
+  const person = profile.data?.person_id
+    ? await ctx.supabase
+        .from("people")
+        .select("first_name,last_name")
+        .eq("id", profile.data.person_id)
+        .maybeSingle()
+    : null;
+  if (person?.error) throw new LessonOperationError(person.error.code);
   return {
-    assignments: results[0].data ?? [],
+    canRecordAttendance:
+      evaluateAccess(ctx.authorization, {
+        permission: "attendance.student.record",
+        module: "attendance",
+        feature: "attendance.student_registers",
+      }).allowed &&
+      evaluateAccess(ctx.authorization, {
+        permission: "attendance.view",
+        module: "attendance",
+        feature: "attendance.student_registers",
+      }).allowed,
+    teacherName: person?.data
+      ? `${person.data.first_name} ${person.data.last_name}`
+      : null,
+    schoolName: ctx.active.schoolName,
+    sessions: metadata[0].data ?? [],
+    periodsMetadata: metadata[1].data ?? [],
+    levels: metadata[2].data ?? [],
+    arms: metadata[3].data ?? [],
+    subjects: metadata[4].data ?? [],
+    assignments,
     entries: results[1].data ?? [],
     periods: results[2].data ?? [],
     plans: results[3].data ?? [],
@@ -166,5 +248,36 @@ export async function recordOwnLessonDelivery(input: unknown) {
     .single();
   if (result.error) throw new LessonOperationError(result.error.code);
   if (!result.data) throw new Error("The lesson delivery was not saved");
+  return result.data.id;
+}
+
+export async function updateOwnLessonPlan(input: unknown) {
+  const parsed = assignedPlan.extend({ id: z.string().uuid() }).parse(input);
+  const { ctx } = await resolveOwnAssignment(
+    parsed.teachingAssignmentId,
+    parsed.sessionId,
+  );
+  const result = await ctx.supabase
+    .from("lesson_plans")
+    .update({
+      lesson_date: parsed.lessonDate,
+      topic: parsed.topic,
+      objectives: parsed.objectives,
+      content_outline: parsed.contentOutline,
+      teaching_resources: parsed.teachingResources ?? null,
+      updated_by: ctx.user.id,
+    })
+    .eq("id", parsed.id)
+    .eq("organization_id", ctx.active.organizationId)
+    .eq("school_id", ctx.active.schoolId!)
+    .eq("created_by", ctx.user.id)
+    .eq("status", "draft")
+    .eq("teaching_assignment_id", parsed.teachingAssignmentId)
+    .eq("session_id", parsed.sessionId)
+    .eq("academic_period_id", parsed.academicPeriodId)
+    .select("id")
+    .single();
+  if (result.error) throw new LessonOperationError(result.error.code);
+  if (!result.data) throw new Error("The lesson plan was not saved");
   return result.data.id;
 }

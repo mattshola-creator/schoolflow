@@ -5,7 +5,20 @@ import {
 export function teacherWorkAreas(auth: AuthorizationSnapshot) {
   const can = (permission: string, module: string, feature?: string) =>
     evaluateAccess(auth, { permission, module, feature }).allowed;
+  const own = can(
+    "academics.teaching.own",
+    "academics",
+    "academics.teaching_management",
+  );
   return [
+    own
+      ? {
+          title: "My timetable & lessons",
+          href: "/teaching/own",
+          description:
+            "Your assigned timetable, lesson drafts and delivery history.",
+        }
+      : null,
     can("academics.scores.view", "academics", "academics.score_entry")
       ? {
           title: "Assessment score sheets",

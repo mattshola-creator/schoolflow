@@ -8,6 +8,7 @@ const { requireTeachingContext, from, rows, calls } = vi.hoisted(() => ({
 vi.mock("./teaching-service", () => ({ requireTeachingContext }));
 import {
   createOwnLessonPlan,
+  updateOwnLessonPlan,
   submitOwnLessonPlan,
   recordOwnLessonDelivery,
   loadOwnTeachingWorkspace,
@@ -28,7 +29,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   from.mockImplementation((table) => {
     const query: Record<string, unknown> = {};
-    for (const name of ["select", "eq", "insert", "update"])
+    for (const name of ["select", "eq", "insert", "update", "in"])
       query[name] = vi.fn((...args) => {
         calls.push({ table, name, args });
         return query;
@@ -41,6 +42,7 @@ beforeEach(() => {
   });
   requireTeachingContext.mockResolvedValue({
     supabase: { from },
+    authorization: { permissions: [], modules: [], features: [] },
     active: { organizationId: "authorized-org", schoolId: "authorized-school" },
     user: { id: "actual-actor" },
   });
@@ -136,5 +138,57 @@ it("propagates workspace database errors rather than empty acceptance", async ()
   );
   await expect(loadOwnTeachingWorkspace()).rejects.toMatchObject({
     category: "unexpected_failure",
+  });
+});
+
+it("edits only own draft contents, leaving assignment and academic scope immutable", async () => {
+  rows.push(assignment, { data: { id }, error: null });
+  await updateOwnLessonPlan({ ...input, id, created_by: "forged" });
+  expect(calls).toContainEqual({
+    table: "lesson_plans",
+    name: "eq",
+    args: ["created_by", "actual-actor"],
+  });
+  expect(calls).toContainEqual({
+    table: "lesson_plans",
+    name: "eq",
+    args: ["academic_period_id", id],
+  });
+  const update = calls.find(
+    (x) => (x as { name: string }).name === "update",
+  ) as { args: Record<string, unknown>[] };
+  expect(update.args[0]).not.toHaveProperty("teaching_assignment_id");
+  expect(update.args[0]).not.toHaveProperty("academic_period_id");
+  expect(update.args[0].updated_by).toBe("actual-actor");
+});
+it("does not claim a missing or submitted draft was edited", async () => {
+  rows.push(assignment, { data: null, error: null });
+  await expect(updateOwnLessonPlan({ ...input, id })).rejects.toThrow(
+    "not saved",
+  );
+});
+it("denies expired or revoked capability before loading workspace data", async () => {
+  requireTeachingContext.mockRejectedValueOnce(new Error("permission denied"));
+  await expect(loadOwnTeachingWorkspace()).rejects.toThrow("permission denied");
+  expect(from).not.toHaveBeenCalled();
+});
+it("loads only assignment-referenced metadata and canonical own identity", async () => {
+  rows.push(
+    { data: [{ ...assignment.data, session_id: id }], error: null },
+    ...Array.from({ length: 9 }, () => ({ data: [], error: null })),
+    { data: { person_id: id }, error: null },
+    { data: { first_name: "Pilot", last_name: "Teacher" }, error: null },
+  );
+  const w = await loadOwnTeachingWorkspace();
+  expect(w.teacherName).toBe("Pilot Teacher");
+  expect(calls).toContainEqual({
+    table: "academic_sessions",
+    name: "in",
+    args: ["id", [id]],
+  });
+  expect(calls).toContainEqual({
+    table: "profiles",
+    name: "eq",
+    args: ["id", "actual-actor"],
   });
 });

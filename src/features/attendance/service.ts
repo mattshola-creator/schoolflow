@@ -1,3 +1,4 @@
+import { AuthorizationError } from "@/lib/authorization";
 import { requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
@@ -354,6 +355,8 @@ export async function loadStudentAttendanceWorkspace(attendanceDate: string) {
       target_attendance_date: attendanceDate,
     }),
   ]);
+  if (settings.error?.code === "42501" || scopes.error?.code === "42501")
+    throw new AuthorizationError("permission_denied");
   if (settings.error || scopes.error)
     throw new Error("Student attendance could not be loaded");
   return {
@@ -384,6 +387,8 @@ export async function loadStudentAttendanceRoster(input: {
       target_register_type: input.registerType,
     },
   );
+  if (error?.code === "42501")
+    throw new AuthorizationError("permission_denied");
   if (error) throw new Error("Student attendance roster could not be loaded");
   return { ...context, roster: data ?? [] };
 }

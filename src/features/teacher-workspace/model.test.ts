@@ -60,3 +60,27 @@ describe("Teacher presentation boundary", () => {
     });
   });
 });
+
+it("offers own operations without management navigation only with its entitlement", () => {
+  const operational = {
+    ...teacher,
+    permissions: [...teacher.permissions, "academics.teaching.own"],
+    features: [
+      ...teacher.features,
+      {
+        key: "academics.teaching_management",
+        module: "academics",
+        enabled: true,
+      },
+    ],
+  };
+  const paths = teacherWorkAreas(operational).map((x) => x.href);
+  expect(paths).toContain("/teaching/own");
+  expect(paths).not.toContain("/teaching/timetable");
+  expect(paths).not.toContain("/teaching/lessons");
+  expect(
+    teacherWorkAreas({ ...operational, features: teacher.features }).map(
+      (x) => x.href,
+    ),
+  ).not.toContain("/teaching/own");
+});

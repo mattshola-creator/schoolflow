@@ -1,3 +1,4 @@
+import { unavailableOnAuthorizationDenial } from "@/features/academics/workspace-errors";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, ClipboardCheck } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
@@ -27,7 +28,9 @@ export default async function TeachingClassPage({
   params: Promise<{ assignmentId: string }>;
 }) {
   const { assignmentId } = await params;
-  const workspace = await loadTeachingAssignmentWorkspace().catch(() => null);
+  const workspace = await loadTeachingAssignmentWorkspace().catch(
+    unavailableOnAuthorizationDenial,
+  );
   const assignment = workspace?.assignments.find(
     (item) => item.id === assignmentId,
   );
@@ -73,10 +76,12 @@ export default async function TeachingClassPage({
   ].some((permission) => permissions.includes(permission));
   const [attendance, lessons] = await Promise.all([
     permissions.includes("attendance.student.record")
-      ? loadStudentAttendanceWorkspace(schoolDate()).catch(() => null)
+      ? loadStudentAttendanceWorkspace(schoolDate()).catch(
+          unavailableOnAuthorizationDenial,
+        )
       : Promise.resolve(null),
     canViewLessons
-      ? loadLessonWorkspace().catch(() => null)
+      ? loadLessonWorkspace().catch(unavailableOnAuthorizationDenial)
       : Promise.resolve(null),
   ]);
   const attendanceScope = attendance?.scopes.find(
@@ -92,7 +97,7 @@ export default async function TeachingClassPage({
         classArmId: attendanceScope.class_arm_id ?? undefined,
         attendanceDate: schoolDate(),
         registerType: "morning",
-      }).catch(() => null)
+      }).catch(unavailableOnAuthorizationDenial)
     : null;
   const plans =
     lessons?.plans.filter(

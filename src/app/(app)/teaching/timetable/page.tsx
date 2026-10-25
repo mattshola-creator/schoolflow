@@ -1,3 +1,4 @@
+import { unavailableOnAuthorizationDenial } from "@/features/academics/workspace-errors";
 import "@/features/teacher-workspace/academic.css";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { fieldClass } from "@/components/auth-card";
@@ -39,7 +40,9 @@ export default async function TimetablePage({
   }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadTimetableWorkspace().catch(() => null);
+  const workspace = await loadTimetableWorkspace().catch(
+    unavailableOnAuthorizationDenial,
+  );
   if (!workspace)
     return (
       <main className="py-16">

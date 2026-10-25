@@ -1,3 +1,4 @@
+import { unavailableOnAuthorizationDenial } from "@/features/academics/workspace-errors";
 import "@/features/teacher-workspace/academic.css";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -19,7 +20,9 @@ export default async function LessonsPage({
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadLessonWorkspace().catch(() => null);
+  const workspace = await loadLessonWorkspace().catch(
+    unavailableOnAuthorizationDenial,
+  );
   if (!workspace)
     return (
       <main className="py-16">

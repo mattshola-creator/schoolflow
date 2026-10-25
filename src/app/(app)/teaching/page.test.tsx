@@ -1,3 +1,4 @@
+import { AuthorizationError } from "@/lib/authorization";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -77,7 +78,7 @@ describe("teaching assignment page", () => {
 
   it("fails closed when teaching management is disabled", async () => {
     loadTeachingAssignmentWorkspace.mockRejectedValueOnce(
-      new Error("disabled"),
+      new AuthorizationError("feature_disabled"),
     );
     render(await TeachingPage({ searchParams: Promise.resolve({}) }));
     expect(

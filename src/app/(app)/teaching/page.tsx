@@ -1,3 +1,4 @@
+import { unavailableOnAuthorizationDenial } from "@/features/academics/workspace-errors";
 import { fieldClass } from "@/components/auth-card";
 import Link from "next/link";
 import {
@@ -24,7 +25,9 @@ export default async function TeachingPage({
   searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadTeachingAssignmentWorkspace().catch(() => null);
+  const workspace = await loadTeachingAssignmentWorkspace().catch(
+    unavailableOnAuthorizationDenial,
+  );
   if (!workspace)
     return (
       <main className="py-16">
@@ -77,11 +80,11 @@ export default async function TeachingPage({
   );
   const [timetable, lessonWorkspace] = await Promise.all([
     canViewTimetable
-      ? loadTimetableWorkspace().catch(() => null)
+      ? loadTimetableWorkspace().catch(unavailableOnAuthorizationDenial)
       : Promise.resolve(null),
     canViewLessons ||
     workspace.authorization.permissions.includes("academics.homework.manage")
-      ? loadLessonWorkspace().catch(() => null)
+      ? loadLessonWorkspace().catch(unavailableOnAuthorizationDenial)
       : Promise.resolve(null),
   ]);
   const today = new Intl.DateTimeFormat("en-CA", {

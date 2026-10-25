@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   BarChart3,
   BookOpenCheck,
@@ -76,6 +76,7 @@ function NavigationLinks({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const navigationId = useId();
   const allItems = [{ href: homeHref, label: "Home", group: "Home" }, ...items];
   const groups = groupOrder
     .map((label) => ({
@@ -84,17 +85,17 @@ function NavigationLinks({
     }))
     .filter((group) => group.items.length);
   return (
-    <nav aria-label="Workspace" className="space-y-4">
+    <nav data-shell-navigation aria-label="Workspace" className="space-y-4">
       {groups.map((group) => {
         const GroupIcon =
           groupIcons[group.label as keyof typeof groupIcons] ?? BookOpenCheck;
         return (
           <section
             key={group.label}
-            aria-labelledby={`nav-${group.label.toLowerCase()}`}
+            aria-labelledby={`${navigationId}-nav-${group.label.toLowerCase()}`}
           >
             <h2
-              id={`nav-${group.label.toLowerCase()}`}
+              id={`${navigationId}-nav-${group.label.toLowerCase()}`}
               className={
                 collapsed
                   ? "sr-only"
@@ -114,11 +115,11 @@ function NavigationLinks({
                     aria-label={collapsed ? item.label : undefined}
                     title={collapsed ? item.label : undefined}
                     onClick={onNavigate}
-                    className={`group flex min-h-11 items-center rounded-xl text-sm font-semibold ${collapsed ? "justify-center px-2" : "gap-3 px-3"} ${current ? "bg-tenant-accent-soft text-tenant-accent-strong shadow-sm" : "text-slate-600 hover:bg-white hover:text-slate-950"}`}
+                    className={`group flex min-h-11 items-center rounded-xl text-sm font-semibold ${collapsed ? "justify-center px-2" : "gap-3 px-3"} ${current ? "bg-tenant-accent-soft text-tenant-accent-strong shadow-sm" : "text-[color:var(--shell-muted,#475569)] hover:bg-white hover:text-[color:var(--shell-ink,#020617)]"}`}
                   >
                     <GroupIcon
                       aria-hidden="true"
-                      className={`size-4 shrink-0 ${current ? "text-tenant-accent" : "text-slate-400 group-hover:text-slate-700"}`}
+                      className={`size-4 shrink-0 ${current ? "text-tenant-accent" : "text-slate-400 group-hover:text-[color:var(--shell-ink,#334155)]"}`}
                     />
                     {collapsed ? null : (
                       <span className="min-w-0 break-words">{item.label}</span>
@@ -131,9 +132,9 @@ function NavigationLinks({
         );
       })}
       {unavailableItems.length && !collapsed ? (
-        <section aria-labelledby="nav-unavailable">
+        <section aria-labelledby={`${navigationId}-nav-unavailable`}>
           <h2
-            id="nav-unavailable"
+            id={`${navigationId}-nav-unavailable`}
             className="px-3 text-[0.65rem] font-bold tracking-[0.16em] text-slate-400 uppercase"
           >
             Unavailable
@@ -208,7 +209,7 @@ export function WorkspaceNavigation({
 
   if (variant === "desktop")
     return (
-      <div className="flex h-full flex-col">
+      <div className="sf-shell-desktop-navigation flex h-full flex-col">
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <NavigationLinks
             collapsed={collapsed}
@@ -267,7 +268,7 @@ export function WorkspaceNavigation({
             aria-describedby={
               userEmail ? "mobile-workspace-navigation-account" : undefined
             }
-            className="absolute inset-y-0 left-0 flex h-dvh max-h-dvh w-[min(21rem,calc(100vw-1rem))] flex-col overflow-hidden bg-white shadow-2xl"
+            className="sf-shell-mobile-navigation absolute inset-y-0 left-0 flex h-dvh max-h-dvh w-[min(21rem,calc(100vw-1rem))] flex-col overflow-hidden bg-white shadow-2xl"
           >
             <div
               data-testid="mobile-navigation-header"
@@ -280,7 +281,7 @@ export function WorkspaceNavigation({
                   </span>
                   <p
                     id="mobile-workspace-navigation-title"
-                    className="min-w-0 font-semibold text-slate-950"
+                    className="min-w-0 font-semibold text-[color:var(--shell-ink,#020617)]"
                   >
                     SchoolFlow
                   </p>
@@ -303,7 +304,7 @@ export function WorkspaceNavigation({
                   <p className="text-[0.65rem] font-bold tracking-[0.12em] text-slate-400 uppercase">
                     Signed in account
                   </p>
-                  <p className="mt-0.5 min-w-0 text-xs leading-5 break-words [word-break:normal] text-slate-600">
+                  <p className="mt-0.5 min-w-0 text-xs leading-5 break-words [word-break:normal] text-[color:var(--shell-muted,#475569)]">
                     {userEmail}
                   </p>
                 </div>

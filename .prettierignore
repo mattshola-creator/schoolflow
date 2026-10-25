@@ -2,3 +2,7 @@
 coverage
 node_modules
 pnpm-lock.yaml
+
+showroom/.next
+showroom/out
+showroom/next-env.d.ts

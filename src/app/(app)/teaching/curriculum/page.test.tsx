@@ -1,3 +1,4 @@
+import { AuthorizationError } from "@/lib/authorization";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -56,7 +57,9 @@ describe("curriculum coverage page", () => {
     ).toBeInTheDocument();
   });
   it("fails closed when disabled", async () => {
-    loadCurriculumWorkspace.mockRejectedValueOnce(new Error("disabled"));
+    loadCurriculumWorkspace.mockRejectedValueOnce(
+      new AuthorizationError("feature_disabled"),
+    );
     render(await CurriculumPage({ searchParams: Promise.resolve({}) }));
     expect(
       screen.getByRole("heading", {

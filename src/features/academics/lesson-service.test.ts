@@ -131,3 +131,28 @@ describe("lesson service", () => {
     );
   });
 });
+
+describe("lesson workspace authorization fallback", () => {
+  it("does not retry or hide an unexpected authentication/data failure", async () => {
+    vi.clearAllMocks();
+    const error = new Error("Source unavailable");
+    requireTeachingContext.mockRejectedValue(error);
+    const { loadLessonWorkspace } = await import("./lesson-service");
+    await expect(loadLessonWorkspace()).rejects.toBe(error);
+    expect(requireTeachingContext).toHaveBeenCalledTimes(1);
+    expect(from).not.toHaveBeenCalled();
+  });
+  it("tries the existing permission alternatives and returns a typed denial", async () => {
+    vi.clearAllMocks();
+    const { AuthorizationError } = await import("@/lib/authorization");
+    requireTeachingContext.mockRejectedValue(
+      new AuthorizationError("permission_denied"),
+    );
+    const { loadLessonWorkspace } = await import("./lesson-service");
+    await expect(loadLessonWorkspace()).rejects.toBeInstanceOf(
+      AuthorizationError,
+    );
+    expect(requireTeachingContext).toHaveBeenCalledTimes(4);
+    expect(from).not.toHaveBeenCalled();
+  });
+});

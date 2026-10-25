@@ -1,3 +1,5 @@
+import { unavailableOnAuthorizationDenial } from "@/features/academics/workspace-errors";
+import "@/features/teacher-workspace/academic.css";
 import { ClipboardCheck } from "lucide-react";
 import { fieldClass } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
@@ -63,7 +65,7 @@ export default async function AttendancePage({
     ? query.data
     : { date: currentDate(), type: "morning" as const, scope: undefined };
   const workspace = await loadStudentAttendanceWorkspace(selected.date).catch(
-    () => null,
+    unavailableOnAuthorizationDenial,
   );
   if (!workspace)
     return (
@@ -96,7 +98,7 @@ export default async function AttendancePage({
         ...parsedScope,
         attendanceDate: selected.date,
         registerType,
-      }).catch(() => null)
+      }).catch(unavailableOnAuthorizationDenial)
     : null;
   const roster = rosterResult?.roster ?? [];
   const existingRegister = roster.find((item) => item.register_id);
@@ -106,7 +108,7 @@ export default async function AttendancePage({
   );
 
   return (
-    <main className="py-10 sm:py-12">
+    <main className="sf-academic-workspace min-w-0 py-5 sm:py-7">
       <PageHeader
         eyebrow="Student attendance"
         title={`Attendance at ${workspace.active.schoolName}`}
@@ -118,7 +120,15 @@ export default async function AttendancePage({
           </div>
         }
       />
-      <Notice error={raw.error} message={raw.message} />
+      <Notice
+        error={
+          raw.error ??
+          (parsedScope && !rosterResult
+            ? "The selected attendance register is unavailable for your current access."
+            : undefined)
+        }
+        message={raw.message}
+      />
 
       <form
         method="get"

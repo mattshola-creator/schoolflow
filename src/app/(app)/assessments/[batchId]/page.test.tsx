@@ -24,7 +24,7 @@ describe("assessment score sheet access handling", () => {
   const renderPage = () =>
     ScoreSheetPage({
       params: Promise.resolve({
-        batchId: "060c826b-ecc1-4e6b-b9f2-406bafe6e2b1",
+        batchId: "00000000-0000-4000-8000-000000000001",
       }),
       searchParams: Promise.resolve({}),
     });
@@ -39,7 +39,7 @@ describe("assessment score sheet access handling", () => {
     vi.mocked(loadScoreSheet).mockRejectedValue(new AuthorizationError(reason));
     const html = renderToStaticMarkup(await renderPage());
     expect(html).toContain("Assessment access unavailable");
-    expect(html).not.toContain("060c826b-ecc1-4e6b-b9f2-406bafe6e2b1");
+    expect(html).not.toContain("00000000-0000-4000-8000-000000000001");
     expect(html).not.toContain("<form");
   });
 
@@ -49,45 +49,62 @@ describe("assessment score sheet access handling", () => {
 
     await expect(renderPage()).rejects.toBe(error);
   });
-  it("renders authorized scores when academic label embeds are hidden by RLS", async () => {
-    const workspace = {
-      batch: {
-        status: "published",
-        subjects: null,
-        class_levels: null,
-        academic_sessions: null,
-        academic_periods: null,
-        class_arms: null,
-        assessment_schemes: {
-          name: "QA scheme",
-          assessment_components: [
-            { id: "component", name: "Exam", maximum_score: 100, sequence: 1 },
-          ],
+  it.each(["submitted", "reviewed", "approved", "published"])(
+    "renders %s without inventing a Draft state when result details are hidden",
+    async (status) => {
+      const workspace = {
+        batch: {
+          status,
+          subjects: null,
+          class_levels: null,
+          academic_sessions: null,
+          academic_periods: null,
+          class_arms: null,
+          assessment_schemes: {
+            name: "QA scheme",
+            assessment_components: [
+              {
+                id: "component",
+                name: "Exam",
+                maximum_score: 100,
+                sequence: 1,
+              },
+            ],
+          },
         },
-      },
-      students: [
-        {
-          student_id: "student",
-          student_profiles: [
-            {
-              student_number: "QA-1",
-              people: { first_name: "Synthetic", last_name: "Learner" },
-            },
-          ],
-        },
-      ],
-      scores: [{ student_id: "student", component_id: "component", score: 72 }],
-      results: [],
-    } as unknown as Awaited<ReturnType<typeof loadScoreSheet>>;
-    vi.mocked(loadScoreSheet).mockResolvedValue(workspace);
-    const html = renderToStaticMarkup(await renderPage());
-    for (const label of ["Subject", "Class", "Session", "Period"])
-      expect(html).toContain(`${label} label unavailable`);
-    expect(html).toContain("Synthetic");
-    expect(html).toContain("Exam");
-    expect(html).toContain("72");
-    expect(html).not.toContain("Assessment access unavailable");
-    expect(html).not.toContain("No active students");
-    expect(html).not.toContain("<form");
-  });
+        teacherLabel: "Assigned teacher details unavailable in this workspace",
+        students: [
+          {
+            student_id: "student",
+            student_profiles: [
+              {
+                student_number: "QA-1",
+                people: { first_name: "Synthetic", last_name: "Learner" },
+              },
+            ],
+          },
+        ],
+        scores: [
+          { student_id: "student", component_id: "component", score: 72 },
+        ],
+        results: [],
+      } as unknown as Awaited<ReturnType<typeof loadScoreSheet>>;
+      vi.mocked(loadScoreSheet).mockResolvedValue(workspace);
+      const html = renderToStaticMarkup(await renderPage());
+      for (const label of ["Subject", "Class", "Session", "Period"])
+        expect(html).toContain(`${label} label unavailable`);
+      expect(html).toContain("Synthetic");
+      expect(html).toContain("Exam");
+      expect(html).toContain("72");
+      expect(html).not.toContain("Assessment access unavailable");
+      expect(html).not.toContain("No active students");
+      expect(html).not.toContain("<form");
+      expect(html).toContain("Score-sheet workflow");
+      expect(html).toContain("Result details unavailable in this workspace");
+      expect(html).toContain(
+        "Assigned teacher details unavailable in this workspace",
+      );
+      expect(html).not.toContain(">Draft<");
+    },
+  );
 });

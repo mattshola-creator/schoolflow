@@ -1,9 +1,14 @@
+import "@/features/teacher-workspace/academic.css";
 import { AuthorizationError } from "@/lib/authorization";
 import { StatePanel } from "@/components/ui/state-panel";
 import { fieldClass } from "@/components/auth-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { loadScoreSheet } from "@/features/assessments/service";
+import {
+  assessmentWorkflowLabel,
+  unavailableResultLabel,
+} from "@/features/assessments/presentation";
 import { saveAssessmentScore } from "../actions";
 
 export default async function ScoreSheetPage({
@@ -20,7 +25,7 @@ export default async function ScoreSheetPage({
   });
   if (!workspace)
     return (
-      <main className="py-10 sm:py-12">
+      <main className="sf-academic-workspace min-w-0 py-5 sm:py-7">
         <h1 className="mb-5 text-3xl font-semibold">
           Assessment access unavailable
         </h1>
@@ -49,7 +54,7 @@ export default async function ScoreSheetPage({
   const editable =
     workspace.batch.status === "draft" || workspace.batch.status === "reopened";
   return (
-    <main className="py-10 sm:py-12">
+    <main className="sf-academic-workspace min-w-0 py-5 sm:py-7">
       <PageHeader
         eyebrow="Score sheet"
         title={`${workspace.batch.subjects?.name ?? "Subject label unavailable"} · ${workspace.batch.class_levels?.name ?? "Class label unavailable"}${workspace.batch.class_arms ? ` ${workspace.batch.class_arms.name}` : ""}`}
@@ -60,6 +65,16 @@ export default async function ScoreSheetPage({
           </ButtonLink>
         }
       />
+      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+        <div>
+          <dt className="font-semibold">Score-sheet workflow</dt>
+          <dd>{assessmentWorkflowLabel(workspace.batch.status)}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold">Assigned teacher</dt>
+          <dd className="break-words">{workspace.teacherLabel}</dd>
+        </div>
+      </dl>
       {notice.error || notice.message ? (
         <p
           role={notice.error ? "alert" : "status"}
@@ -95,7 +110,7 @@ export default async function ScoreSheetPage({
                     </span>
                   ) : (
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-                      Draft
+                      {unavailableResultLabel(workspace.batch.status)}
                     </span>
                   )}
                 </div>
@@ -103,7 +118,7 @@ export default async function ScoreSheetPage({
                   {components.map((component) => (
                     <div
                       key={component.id}
-                      className="flex items-center justify-between gap-3"
+                      className="flex min-w-0 flex-wrap items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
                         <p className="text-sm font-medium">{component.name}</p>
@@ -177,7 +192,12 @@ export default async function ScoreSheetPage({
             </p>
           ) : null}
         </div>
-        <div className="hidden overflow-x-auto sm:block">
+        <div
+          className="hidden overflow-x-auto sm:block"
+          tabIndex={0}
+          role="region"
+          aria-label="Score sheet table"
+        >
           <table className="w-full min-w-[760px] text-left text-sm">
             <thead>
               <tr className="border-b bg-slate-50">
@@ -264,7 +284,7 @@ export default async function ScoreSheetPage({
                           </span>
                         </>
                       ) : (
-                        "Draft"
+                        unavailableResultLabel(workspace.batch.status)
                       )}
                     </td>
                   </tr>

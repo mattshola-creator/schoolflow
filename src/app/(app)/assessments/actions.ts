@@ -1,5 +1,6 @@
 "use server";
 
+import { scoreSaveFailureMessage } from "@/features/assessments/score-save-error";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
@@ -90,8 +91,10 @@ export async function saveAssessmentScore(formData: FormData) {
   if (!parsed.success) redirect(`${back}?error=Check+the+score`);
   try {
     await saveScore(parsed.data);
-  } catch {
-    redirect(`${back}?error=Score+could+not+be+saved`);
+  } catch (error: unknown) {
+    redirect(
+      `${back}?error=${encodeURIComponent(scoreSaveFailureMessage(error))}`,
+    );
   }
   revalidatePath(back);
   redirect(`${back}?message=Score+saved`);

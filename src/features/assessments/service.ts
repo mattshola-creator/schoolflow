@@ -1,4 +1,5 @@
-import { requireCapability } from "@/lib/authorization";
+import { scoreSaveErrorCategory, QaScoreSaveError } from "./score-save-error";
+import { AuthorizationError, requireCapability } from "@/lib/authorization";
 import { requireUser } from "@/lib/auth";
 import { loadTenantContext } from "@/lib/tenant-context";
 import type {
@@ -9,6 +10,8 @@ import type {
 import type { z } from "zod";
 import type { resultBatchSchema } from "./schemas";
 import { assembleScoreSheetStudents } from "./score-sheet-roster";
+import { assignedTeacherLabel } from "./presentation";
+import { readScoreSheetContext } from "./score-sheet-context";
 
 type BatchInput = z.infer<typeof resultBatchSchema>;
 
@@ -193,6 +196,28 @@ export async function activateScheme(id: string) {
 
 export async function createResultBatch(input: BatchInput) {
   const c = await requireAssessmentContext("academics.scores.enter");
+  if (input.teachingAssignmentId) {
+    const assignment = await c.supabase
+      .from("teaching_assignments")
+      .select("id,assignment_type,subject_id,class_arm_id")
+      .eq("id", input.teachingAssignmentId)
+      .eq("organization_id", c.active.organizationId)
+      .eq("school_id", c.active.schoolId!)
+      .eq("session_id", input.sessionId)
+      .eq("class_level_id", input.classLevelId)
+      .eq("status", "active")
+      .maybeSingle();
+    if (assignment.error)
+      throw new Error("Teaching assignment could not be checked");
+    if (
+      !assignment.data ||
+      (assignment.data.assignment_type !== "class_teacher" &&
+        assignment.data.subject_id !== input.subjectId) ||
+      (assignment.data.class_arm_id !== null &&
+        assignment.data.class_arm_id !== (input.classArmId ?? null))
+    )
+      throw new AuthorizationError("permission_denied");
+  }
   const { error } = await c.supabase.from("result_batches").insert({
     organization_id: c.active.organizationId,
     school_id: c.active.schoolId!,
@@ -215,7 +240,14 @@ export async function saveScore(input: ScoreInput) {
     target_component_id: input.componentId,
     target_score: input.score,
   });
-  if (error) throw new Error("Score could not be saved");
+  if (error) {
+    const qa =
+      process.env.SCHOOLFLOW_SHELL_REVIEW === "true" &&
+      process.env.NEXT_PUBLIC_SUPABASE_URL ===
+        "https://afqykqlxecpzspjoyegc.supabase.co";
+    if (qa) throw new QaScoreSaveError(scoreSaveErrorCategory(error));
+    throw new Error("Score could not be saved");
+  }
 }
 
 export async function loadScoreSheet(batchId: string) {
@@ -223,12 +255,14 @@ export async function loadScoreSheet(batchId: string) {
   const batch = await context.supabase
     .from("result_batches")
     .select(
-      "*,assessment_schemes(name,total_mark,pass_mark,assessment_components(id,code,name,maximum_score,weight_percent,sequence)),subjects(name),academic_sessions(name),academic_periods(name),class_levels(name),class_arms(name)",
+      "*,assessment_schemes(name,total_mark,pass_mark,assessment_components(id,code,name,maximum_score,weight_percent,sequence))",
     )
     .eq("id", batchId)
-    .single();
-  if (batch.error || !batch.data)
-    throw new Error("Score sheet could not be loaded");
+    .eq("organization_id", context.active.organizationId)
+    .eq("school_id", context.active.schoolId!)
+    .maybeSingle();
+  if (batch.error) throw new Error("Score sheet could not be loaded");
+  if (!batch.data) throw new AuthorizationError("permission_denied");
   let membershipQuery = context.supabase
     .from("class_memberships")
     .select("student_id")
@@ -263,9 +297,31 @@ export async function loadScoreSheet(batchId: string) {
   ]);
   if (profiles.error || scores.error || results.error)
     throw new Error("Score sheet details could not be loaded");
+  const labels = await readScoreSheetContext(
+    (name, args) => context.supabase.rpc(name, args),
+    {
+      target_batch_id: batchId,
+      target_organization_id: context.active.organizationId,
+      target_school_id: context.active.schoolId!,
+    },
+  );
   return {
     ...context,
-    batch: batch.data,
+    batch: {
+      ...batch.data,
+      subjects:
+        labels.subjectName === null ? null : { name: labels.subjectName },
+      academic_sessions:
+        labels.sessionName === null ? null : { name: labels.sessionName },
+      academic_periods:
+        labels.periodName === null ? null : { name: labels.periodName },
+      class_levels:
+        labels.className === null ? null : { name: labels.className },
+      class_arms: labels.armName === null ? null : { name: labels.armName },
+    },
+    teacherLabel:
+      labels.assignedTeacherName ??
+      assignedTeacherLabel(Boolean(batch.data.teaching_assignment_id), null),
     students: assembleScoreSheetStudents(
       memberships.data ?? [],
       profiles.data ?? [],

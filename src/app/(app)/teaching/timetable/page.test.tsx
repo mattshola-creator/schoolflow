@@ -1,3 +1,4 @@
+import { AuthorizationError } from "@/lib/authorization";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -72,10 +73,56 @@ describe("manual timetable page", () => {
   });
 
   it("fails closed when the feature is disabled", async () => {
-    loadTimetableWorkspace.mockRejectedValueOnce(new Error("disabled"));
+    loadTimetableWorkspace.mockRejectedValueOnce(
+      new AuthorizationError("feature_disabled"),
+    );
     render(await TimetablePage({ searchParams: Promise.resolve({}) }));
     expect(
       screen.getByRole("heading", { name: "Timetable is not available" }),
     ).toBeInTheDocument();
   });
 });
+
+it("does not describe unexpected timetable failures as missing access", async () => {
+  const error = new Error("Timetable source unavailable");
+  loadTimetableWorkspace.mockRejectedValueOnce(error);
+  await expect(
+    TimetablePage({ searchParams: Promise.resolve({}) }),
+  ).rejects.toBe(error);
+});
+it("keeps an actual authorization denial unavailable", async () => {
+  const { AuthorizationError } = await import("@/lib/authorization");
+  loadTimetableWorkspace.mockRejectedValueOnce(
+    new AuthorizationError("permission_denied"),
+  );
+  render(await TimetablePage({ searchParams: Promise.resolve({}) }));
+  expect(
+    screen.getByRole("heading", { name: "Timetable is not available" }),
+  ).toBeInTheDocument();
+});
+
+it.each([
+  [undefined, "current"],
+  ["foreign", "current"],
+  ["planned", "planned"],
+])(
+  "selects current session by default while preserving valid requested scope %s",
+  async (requested, expected) => {
+    loadTimetableWorkspace.mockResolvedValueOnce({
+      ...workspace,
+      sessions: [
+        { id: "planned", name: "Future session", status: "planned" },
+        { id: "current", name: "Current session", status: "current" },
+      ],
+    });
+    render(
+      await TimetablePage({
+        searchParams: Promise.resolve({ session: requested }),
+      }),
+    );
+    expect(
+      screen.getByRole("combobox", { name: "Academic session" }),
+    ).toHaveValue(expected);
+    cleanup();
+  },
+);

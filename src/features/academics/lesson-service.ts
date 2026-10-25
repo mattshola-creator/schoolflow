@@ -1,3 +1,5 @@
+import { LessonOperationError } from "./lesson-operation-error";
+import { AuthorizationError } from "@/lib/authorization";
 import { requireTeachingContext } from "./teaching-service";
 import {
   lessonDeliverySchema,
@@ -21,9 +23,11 @@ async function requireLessonWorkspaceContext() {
   ]) {
     try {
       return await requireTeachingContext(permission);
-    } catch {}
+    } catch (error) {
+      if (!(error instanceof AuthorizationError)) throw error;
+    }
   }
-  throw new Error("Lesson management is unavailable");
+  throw new AuthorizationError("permission_denied");
 }
 
 export async function loadLessonWorkspace() {
@@ -196,7 +200,7 @@ export async function createLessonPlan(input: LessonPlanInput) {
     content_outline: parsed.contentOutline,
     teaching_resources: parsed.teachingResources ?? null,
   });
-  if (error) throw new Error("The lesson plan could not be created");
+  if (error) throw new LessonOperationError(error.code);
 }
 
 export async function updateLessonPlanStatus(input: LessonPlanReviewInput) {
@@ -215,7 +219,7 @@ export async function updateLessonPlanStatus(input: LessonPlanReviewInput) {
     .eq("id", parsed.lessonPlanId)
     .eq("organization_id", context.active.organizationId)
     .eq("school_id", context.active.schoolId!);
-  if (error) throw new Error("The lesson plan could not be updated");
+  if (error) throw new LessonOperationError(error.code);
 }
 
 export async function createLessonDelivery(input: LessonDeliveryInput) {
@@ -254,5 +258,5 @@ export async function createLessonDelivery(input: LessonDeliveryInput) {
     reflection: parsed.reflection ?? null,
     status: parsed.status,
   });
-  if (error) throw new Error("The lesson delivery could not be recorded");
+  if (error) throw new LessonOperationError(error.code);
 }

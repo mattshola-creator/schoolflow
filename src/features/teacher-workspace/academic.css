@@ -1,0 +1,46 @@
+/* Scoped presentation only; existing academic forms and authorization are retained. */
+.sf-academic-workspace {
+  color: var(--shell-ink, #17211d);
+  --border: var(--shell-border, #d8e0dc);
+  --muted-foreground: var(--shell-muted, #52615a);
+}
+.sf-academic-workspace .sf-academic-panel,
+.sf-academic-workspace .bg-white {
+  background: var(--shell-surface, white);
+  color: var(--shell-ink, #17211d);
+  border-color: var(--shell-border, #d8e0dc);
+}
+.sf-academic-workspace .text-slate-950,
+.sf-academic-workspace .text-slate-700 {
+  color: var(--shell-ink, #17211d);
+}
+.sf-academic-workspace .text-slate-500,
+.sf-academic-workspace .text-slate-600 {
+  color: var(--shell-muted, #52615a);
+}
+.sf-academic-workspace input:not([type="hidden"]),
+.sf-academic-workspace select,
+.sf-academic-workspace textarea {
+  background: var(--shell-surface, white);
+  color: var(--shell-ink, #17211d);
+  border-color: var(--shell-border, #d8e0dc);
+  max-width: 100%;
+}
+.sf-academic-workspace .sf-academic-panel a {
+  color: inherit;
+}
+.sf-academic-workspace :focus-visible {
+  outline-color: var(--shell-focus, #147a56);
+}
+.sf-academic-workspace .bg-slate-50,
+.sf-academic-workspace .bg-slate-100 {
+  background: var(--shell-canvas, #f1f5f3);
+  color: var(--shell-ink, #17211d);
+}
+.sf-academic-workspace .overflow-x-auto:focus-visible {
+  outline: 2px solid var(--shell-focus, #147a56);
+  outline-offset: 2px;
+}
+.sf-academic-workspace .text-brand {
+  color: var(--shell-primary, #087c57);
+}

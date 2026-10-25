@@ -1,6 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import {
+  appearanceThemes,
+  defaultAppearanceTheme,
+  isAppearanceTheme,
+} from "@/features/appearance/themes";
+import { publishedShellThemeStyle } from "@/features/appearance/published-shell-theme";
+import { resolveShowroomTheme } from "@/features/showroom/catalog";
+import { shellThemeStyle } from "@/features/appearance/shell-theme";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Bell,
@@ -18,6 +26,8 @@ import {
 
 type ApplicationShellProps = {
   children: ReactNode;
+  enableAppearance?: boolean;
+  schoolThemeId?: string;
   contextRibbon: ReactNode;
   helpHref?: string;
   homeHref?: string;
@@ -31,6 +41,8 @@ type ApplicationShellProps = {
 
 export function ApplicationShell({
   children,
+  enableAppearance = false,
+  schoolThemeId,
   contextRibbon,
   helpHref = "/experience-preview#guidance",
   homeHref = "/dashboard",
@@ -41,6 +53,9 @@ export function ApplicationShell({
   unavailableItems,
   userEmail,
 }: ApplicationShellProps) {
+  const [appearance, setAppearance] = useState<string>(
+    schoolThemeId ? "school" : defaultAppearanceTheme,
+  );
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -55,8 +70,28 @@ export function ApplicationShell({
     window.localStorage.setItem("sf-shell-collapsed", String(next));
   }
   return (
-    <div className="bg-background min-h-screen">
-      <header className="border-border bg-surface/95 sticky top-0 z-30 border-b backdrop-blur">
+    <div
+      className={`bg-background min-h-screen ${enableAppearance ? "sf-themed-shell" : ""}`}
+      style={
+        enableAppearance
+          ? appearance === "school" && schoolThemeId
+            ? publishedShellThemeStyle(schoolThemeId)
+            : shellThemeStyle(
+                isAppearanceTheme(appearance)
+                  ? appearance
+                  : defaultAppearanceTheme,
+              )
+          : undefined
+      }
+      data-appearance={
+        enableAppearance
+          ? appearance === "school"
+            ? schoolThemeId
+            : appearance
+          : undefined
+      }
+    >
+      <header className="sf-shell-header border-border bg-surface/95 sticky top-0 z-30 border-b backdrop-blur">
         <div className="flex min-h-16 items-center gap-3 px-3 sm:px-5">
           <WorkspaceNavigation
             variant="mobile"
@@ -67,12 +102,13 @@ export function ApplicationShell({
           />
           <Link
             href={homeHref}
+            aria-label="SchoolFlow home"
             className="flex min-w-0 items-center gap-3 rounded-xl font-semibold"
           >
             <span className="bg-tenant-accent grid size-10 shrink-0 place-items-center rounded-xl text-white shadow-sm">
               <Building2 aria-hidden="true" className="size-5" />
             </span>
-            <span className="hidden text-lg tracking-tight text-slate-950 sm:inline">
+            <span className="hidden text-lg tracking-tight text-[color:var(--shell-ink,#020617)] sm:inline">
               SchoolFlow
             </span>
           </Link>
@@ -138,12 +174,12 @@ export function ApplicationShell({
                 <UserRound aria-hidden="true" className="size-5" />
               </summary>
               <div className="border-border bg-surface absolute right-0 mt-2 w-64 rounded-xl border p-2 shadow-lg">
-                <p className="px-3 py-2 text-xs font-medium break-all text-slate-500">
+                <p className="px-3 py-2 text-xs font-medium break-all text-[color:var(--shell-muted,#64748b)]">
                   {userEmail ?? "Signed in"}
                 </p>
                 <Link
                   href={helpHref}
-                  className="hover:bg-surface-subtle flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold text-slate-700 sm:hidden"
+                  className="hover:bg-surface-subtle flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold text-[color:var(--shell-ink,#334155)] sm:hidden"
                 >
                   <CircleHelp aria-hidden="true" className="size-4" /> Help and
                   guidance
@@ -152,13 +188,13 @@ export function ApplicationShell({
                   <form action={signOutAction}>
                     <button
                       type="submit"
-                      className="hover:bg-surface-subtle flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-slate-700"
+                      className="hover:bg-surface-subtle flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-[color:var(--shell-ink,#334155)]"
                     >
                       <LogOut aria-hidden="true" className="size-4" /> Sign out
                     </button>
                   </form>
                 ) : (
-                  <p className="px-3 py-2 text-xs leading-5 text-slate-500">
+                  <p className="px-3 py-2 text-xs leading-5 text-[color:var(--shell-muted,#64748b)]">
                     Synthetic reference preview — no account session
                   </p>
                 )}
@@ -174,7 +210,7 @@ export function ApplicationShell({
             : "grid min-h-[calc(100vh-4rem)] md:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)]"
         }
       >
-        <aside className="border-border bg-surface hidden border-r md:block">
+        <aside className="sf-shell-sidebar border-border bg-surface hidden border-r md:block">
           <div className="sticky top-16 h-[calc(100vh-4rem)]">
             <WorkspaceNavigation
               variant="desktop"
@@ -187,7 +223,36 @@ export function ApplicationShell({
           </div>
         </aside>
         <div className="min-w-0">
-          <div className="border-border bg-surface/60 border-b px-3 py-2 sm:px-5 sm:py-3 lg:px-8">
+          <div className="sf-shell-ribbon border-border bg-surface/60 border-b px-3 py-2 sm:px-5 sm:py-3 lg:px-8">
+            {enableAppearance ? (
+              <label className="sf-shell-theme-picker mb-3 flex flex-wrap items-center justify-end gap-2 text-sm font-semibold">
+                <span>Shell theme</span>
+                <select
+                  aria-label="Shell theme"
+                  className="min-h-11 max-w-full rounded-lg border px-2 text-base"
+                  value={appearance}
+                  onChange={(event) => {
+                    if (
+                      (event.target.value === "school" && schoolThemeId) ||
+                      isAppearanceTheme(event.target.value)
+                    )
+                      setAppearance(event.target.value);
+                  }}
+                >
+                  {schoolThemeId ? (
+                    <option value="school">
+                      School appearance ·{" "}
+                      {resolveShowroomTheme(schoolThemeId).name}
+                    </option>
+                  ) : null}
+                  {Object.entries(appearanceThemes).map(([id, theme]) => (
+                    <option key={id} value={id}>
+                      {theme.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             {contextRibbon}
           </div>
           <div

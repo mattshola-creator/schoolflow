@@ -21,6 +21,8 @@ const invitationInput = z.object({
     "payment_verifier",
     "internal_qa_reader",
     "assessment_teacher",
+    "principal_review",
+    "bursar_recorder",
   ]),
   signInDestination: z.enum(["current", "stable_qa"]).default("current"),
 });
@@ -100,6 +102,14 @@ export async function createQaInvitation(
       };
 
     const preset = qaRolePresets[parsed.data.rolePreset];
+    if (
+      !preset.permissions.every((permission) =>
+        roleAccess.permissions.includes(permission),
+      )
+    )
+      return {
+        message: "The preset exceeds your authorized delegation permissions.",
+      };
     stage = "organization_check";
     const organization = await userResult.supabase
       .from("organizations")

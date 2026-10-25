@@ -16,6 +16,45 @@ const PERMISSION_REQUIREMENTS = [
 ] as const;
 
 const presets = {
+  principal_review: {
+    key: "qa_principal_review",
+    name: "QA Principal Review",
+    description:
+      "Founder-approved PR131 QA pilot. School-scoped assignments only; not production.",
+    email: "qa-principal-review@schoolflow.test",
+    fullName: "QA Principal Review",
+    organizationSlug: "cedarbridge-learning-group",
+    permissions: [
+      "organization.view",
+      "school.view",
+      "students.view",
+      "attendance.view",
+      "academics.view",
+      "academics.scores.view",
+      "academics.results.view",
+      "academics.results.review",
+      "reporting.dashboard.view",
+      "reporting.school.view",
+      "reporting.academic.view",
+      "reporting.attendance.view",
+      "shared.tasks.view",
+    ],
+  },
+  bursar_recorder: {
+    key: "qa_bursar_recorder",
+    name: "QA Bursar Recorder",
+    description:
+      "Founder-approved PR131 QA pilot. School-scoped assignments only; not production.",
+    email: "qa-bursar-recorder@schoolflow.test",
+    fullName: "QA Bursar Recorder",
+    organizationSlug: "cedarbridge-learning-group",
+    permissions: [
+      "finance.view",
+      "finance.billing.view",
+      "finance.payments.view",
+      "finance.payments.record",
+    ],
+  },
   payment_recorder: {
     key: "qa_payment_recorder",
     name: "QA Payment Recorder",
@@ -254,7 +293,15 @@ Deno.serve(async (request: Request) => {
         target_school_id: input.schoolId,
       },
     );
-    if (authorizationError || !capabilitySnapshotIsAllowed(snapshot)) {
+    if (
+      authorizationError ||
+      !capabilitySnapshotIsAllowed(snapshot) ||
+      !preset.permissions.every((permission) =>
+        (snapshot as { permissions: string[] }).permissions.includes(
+          permission,
+        ),
+      )
+    ) {
       return json({ error: "permission_denied" }, 403, origin);
     }
 

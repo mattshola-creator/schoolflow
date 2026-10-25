@@ -1,3 +1,5 @@
+import { unavailableOnAuthorizationDenial } from "@/features/academics/workspace-errors";
+import "@/features/teacher-workspace/academic.css";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { fieldClass } from "@/components/auth-card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -38,7 +40,9 @@ export default async function TimetablePage({
   }>;
 }) {
   const notice = await searchParams;
-  const workspace = await loadTimetableWorkspace().catch(() => null);
+  const workspace = await loadTimetableWorkspace().catch(
+    unavailableOnAuthorizationDenial,
+  );
   if (!workspace)
     return (
       <main className="py-16">
@@ -63,6 +67,7 @@ export default async function TimetablePage({
       : currentSchoolWeekday();
   const selectedSession =
     workspace.sessions.find((item) => item.id === notice.session) ??
+    workspace.sessions.find((item) => item.status === "current") ??
     workspace.sessions[0];
   const visiblePeriods = workspace.periods.filter(
     (period) => !selectedSession || period.session_id === selectedSession.id,
@@ -93,7 +98,7 @@ export default async function TimetablePage({
   };
 
   return (
-    <main className="py-10 sm:py-12">
+    <main className="sf-academic-workspace min-w-0 py-5 sm:py-7">
       <PageHeader
         eyebrow="Teaching management"
         title={`Manual timetable at ${workspace.active.schoolName}`}

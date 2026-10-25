@@ -1,11 +1,15 @@
+import { ExecutiveMetric } from "@/components/operational/premium";
 import Link from "next/link";
-import { PageHeader } from "@/components/ui/page-header";
+import {
+  WorkspaceHeader,
+  workspaceSurface,
+} from "@/components/workspace-presentation";
 import { StatePanel } from "@/components/ui/state-panel";
 import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
 import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
 import { loadFinanceDashboard } from "@/features/finance/service";
 
-const panel = "min-w-0 rounded-xl border bg-white p-5 sm:p-6";
+const panel = "min-w-0 rounded-2xl border p-5 shadow-sm sm:p-6";
 const money = (totals: Record<string, number>) => {
   const values = Object.entries(totals);
   if (!values.length) return "—";
@@ -68,7 +72,7 @@ export default async function FinanceOverviewPage() {
       ? {
           label: "Payments awaiting independent verification",
           count: w.pendingPayments,
-          href: "/finance/payments",
+          href: "/finance/payments?status=recorded#payment-register",
         }
       : null,
     w.visibility.expenses
@@ -95,18 +99,17 @@ export default async function FinanceOverviewPage() {
   ].filter((task): task is NonNullable<typeof task> => task !== null);
 
   return (
-    <main className="py-10 sm:py-12">
-      <PageHeader
+    <main className="space-y-6 py-4" style={workspaceSurface}>
+      <WorkspaceHeader
         eyebrow="Finance · School overview"
         title={`Finance at ${w.active.schoolName}`}
         description={`School-scoped billing and operational summaries. Collections, expenses and other income cover activity since ${w.windowStart}; pending tasks show current open records.`}
-        actions={
-          <FinanceWorkspaceNav
-            authorization={w.authorization}
-            currentPath="/finance/overview"
-          />
-        }
-      />
+      >
+        <FinanceWorkspaceNav
+          authorization={w.authorization}
+          currentPath="/finance/overview"
+        />
+      </WorkspaceHeader>
 
       {cards.length ? (
         <section
@@ -114,19 +117,20 @@ export default async function FinanceOverviewPage() {
           aria-label="Finance summary"
         >
           {cards.map((card) => (
-            <Link
-              className={`${panel} focus-visible:outline-tenant-accent transition-shadow hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2`}
-              href={card.href}
+            <ExecutiveMetric
               key={card.label}
+              title={card.label}
+              value={card.value}
+              href={card.href}
+              linkLabel="Open workspace"
             >
-              <p className="text-sm text-slate-600">{card.label}</p>
-              <p className="mt-2 text-2xl font-semibold tracking-tight break-words">
-                {card.value}
+              <p>
+                {card.label.includes("last 30 days")
+                  ? `Activity since ${w.windowStart}.`
+                  : "Current school-scoped records."}{" "}
+                Currency totals are displayed separately.
               </p>
-              <span className="text-tenant-accent mt-3 inline-block text-sm font-semibold">
-                Open workspace →
-              </span>
-            </Link>
+            </ExecutiveMetric>
           ))}
         </section>
       ) : (
@@ -140,13 +144,17 @@ export default async function FinanceOverviewPage() {
       )}
 
       {tasks.length ? (
-        <section className={`${panel} mt-7`} aria-labelledby="finance-tasks">
+        <section
+          style={workspaceSurface}
+          className={`${panel} mt-7`}
+          aria-labelledby="finance-tasks"
+        >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-xl font-semibold" id="finance-tasks">
                 Operational tasks
               </h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm opacity-80">
                 Counts reflect records visible to your current role and school.
               </p>
             </div>
@@ -159,7 +167,7 @@ export default async function FinanceOverviewPage() {
                   className="focus-visible:outline-tenant-accent flex min-h-14 items-center justify-between gap-4 py-3 focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   <span className="font-medium">{task.label}</span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold tabular-nums">
+                  <span className="rounded-full border px-3 py-1 text-sm font-semibold tabular-nums">
                     {task.count}
                   </span>
                 </Link>

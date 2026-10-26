@@ -82,7 +82,9 @@ try {
     }),
   );
 } catch {
-  console.error("Native PostgreSQL overlap probe failed; domain gates stay open.");
+  console.error(
+    "Native PostgreSQL overlap probe failed; domain gates stay open.",
+  );
   process.exitCode = 1;
 } finally {
   // Closing all disposable sessions releases any outstanding transaction locks.

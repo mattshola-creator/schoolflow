@@ -49,4 +49,3 @@ jobs:
         run: npm install --prefix "$RUNNER_TEMP/native-pg-driver" --ignore-scripts --no-fund --no-audit pg@8.16.3
       - name: Verify native version and independent transaction overlap
         run: node scripts/native-pg-overlap-probe.mjs
-

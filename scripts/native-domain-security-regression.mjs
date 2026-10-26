@@ -442,7 +442,7 @@ try {
   );
   await check("Finance concurrent shared-charge allocation", async () => {
     const sql = "select allocate_payment($1,$2::jsonb) id",
-      allocations = [{ chargeId: charge, amount: 80 }];
+      allocations = JSON.stringify([{ chargeId: charge, amount: 80 }]);
     await overlap(
       sql,
       [payment, allocations],

@@ -1,0 +1,52 @@
+name: Native PostgreSQL security lab
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/native-pg-security-lab.yml
+      - scripts/native-pg-overlap-probe.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-pg-security-lab-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  infrastructure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: schoolflow_disposable_probe
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: disposable-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: disposable-ci-only
+      PGDATABASE: schoolflow_disposable_probe
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install isolated test driver
+        run: npm install --prefix "$RUNNER_TEMP/native-pg-driver" --ignore-scripts --no-fund --no-audit pg@8.16.3
+      - name: Verify native version and independent transaction overlap
+        run: node scripts/native-pg-overlap-probe.mjs
+

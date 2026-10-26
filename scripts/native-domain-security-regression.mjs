@@ -536,6 +536,11 @@ try {
     ).rows;
     assert.equal(rows.length, 0);
   });
+  const functionFingerprints = (
+    await admin.query(
+      "select proname,md5(prosrc) body_hash from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and proname in ('allocate_payment','verify_payment','record_payment','issue_receipt','reverse_payment','save_school_branding_draft','publish_school_branding') order by proname",
+    )
+  ).rows;
   console.log(
     JSON.stringify({
       nativeDomainChecks: checks,
@@ -547,6 +552,7 @@ try {
       allocationConcurrency:
         "shared-charge wait and unchanged denied effects verified",
       privateStorageTransport: "NOT_RUN",
+      functionFingerprints,
     }),
   );
 } catch (error) {

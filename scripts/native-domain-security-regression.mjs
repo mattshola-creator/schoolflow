@@ -345,6 +345,141 @@ try {
       1,
     );
   });
+  stage = "synthetic billing fixture";
+  async function insert(table, values) {
+    assert.match(table, /^[a-z_]+$/);
+    const keys = Object.keys(values);
+    assert.ok(keys.every((key) => /^[a-z_]+$/.test(key)));
+    return (
+      await admin.query(
+        `insert into ${table}(${keys.join(",")}) values(${keys.map((_, index) => `$${index + 1}`).join(",")}) returning id`,
+        Object.values(values),
+      )
+    ).rows[0].id;
+  }
+  const person = await insert("people", {
+    first_name: "Synthetic",
+    last_name: "Learner",
+  });
+  const student = await insert("student_profiles", {
+    organization_id: org,
+    person_id: person,
+    student_number: "NATIVE-LAB-001",
+    gender: "male",
+    status: "active",
+  });
+  const session = (
+    await admin.query(
+      "insert into academic_sessions(organization_id,school_id,name,start_date,end_date,status) values($1,$2,'Synthetic session',current_date-30,current_date+30,'current') returning id",
+      ownerSchool,
+    )
+  ).rows[0].id;
+  const enrollment = (
+    await admin.query(
+      "insert into student_enrollments(organization_id,school_id,student_id,academic_session_id,status,enrolled_on) values($1,$2,$3,$4,'active',current_date) returning id",
+      [org, school, student, session],
+    )
+  ).rows[0].id;
+  const category = await insert("fee_categories", {
+    organization_id: org,
+    school_id: school,
+    code: "LAB",
+    name: "Synthetic fee",
+  });
+  const structure = (
+    await admin.query(
+      "insert into fee_structures(organization_id,school_id,session_id,name,effective_from,status,activated_at) values($1,$2,$3,'Synthetic structure',current_date,'active',now()) returning id",
+      [org, school, session],
+    )
+  ).rows[0].id;
+  const item = await insert("fee_structure_items", {
+    organization_id: org,
+    school_id: school,
+    fee_structure_id: structure,
+    fee_category_id: category,
+    amount: 100,
+  });
+  const run = (
+    await admin.query(
+      "insert into billing_runs(organization_id,school_id,fee_structure_id,idempotency_key,status,completed_at,affected_students,expected_total) values($1,$2,$3,$4,'completed',now(),1,100) returning id",
+      [org, school, structure, randomUUID()],
+    )
+  ).rows[0].id;
+  const invoice = await insert("student_invoices", {
+    organization_id: org,
+    school_id: school,
+    student_id: student,
+    enrollment_id: enrollment,
+    session_id: session,
+    billing_run_id: run,
+    invoice_number: "NATIVE-LAB-001",
+    currency_code: "NGN",
+  });
+  const charge = await insert("student_charges", {
+    organization_id: org,
+    school_id: school,
+    student_id: student,
+    enrollment_id: enrollment,
+    invoice_id: invoice,
+    fee_structure_id: structure,
+    fee_structure_item_id: item,
+    fee_category_id: category,
+    session_id: session,
+    currency_code: "NGN",
+    original_amount: 100,
+    fee_structure_name_snapshot: "Synthetic structure",
+    fee_structure_version_snapshot: 1,
+    fee_category_code_snapshot: "LAB",
+    fee_category_name_snapshot: "Synthetic fee",
+  });
+  const otherPayment = (await as(first, owner, paymentSQL, recordArgs()))
+    .rows[0].id;
+  await as(
+    first,
+    verifier,
+    "select verify_payment($1,true,'Synthetic independent verification')",
+    [otherPayment],
+  );
+  await check("Finance concurrent shared-charge allocation", async () => {
+    const sql = "select allocate_payment($1,$2::jsonb) id",
+      allocations = [{ chargeId: charge, amount: 80 }];
+    await overlap(
+      sql,
+      [payment, allocations],
+      sql,
+      [otherPayment, allocations],
+      ["23514"],
+    );
+    const balance = (
+      await admin.query(
+        "select outstanding_amount::text balance from student_charge_balances where student_charge_id=$1",
+        [charge],
+      )
+    ).rows[0].balance;
+    assert.equal(Number(balance), 20);
+    const rows = (
+      await admin.query(
+        "select amount::text amount,allocated_by from payment_allocations where student_charge_id=$1",
+        [charge],
+      )
+    ).rows;
+    assert.equal(rows.length, 1);
+    assert.equal(Number(rows[0].amount), 80);
+    assert.equal(rows[0].allocated_by, owner);
+    await denied(
+      () => as(first, owner, sql, [payment, allocations]),
+      ["23514", "23505"],
+    );
+    assert.equal(
+      (
+        await admin.query(
+          "select count(*)::int n from payment_allocations where student_charge_id=$1",
+          [charge],
+        )
+      ).rows[0].n,
+      1,
+    );
+  });
   await check("Finance concurrent receipt issuance", async () => {
     const sql = "select issue_receipt($1) id",
       r = await overlap(sql, [payment], sql, [payment], ["success"]);
@@ -357,6 +492,40 @@ try {
         )
       ).rows[0].n,
       1,
+    );
+  });
+  await check("Finance concurrent reversal retry", async () => {
+    const sql = "select reverse_payment($1,'Synthetic reversal') id";
+    const r = await overlap(sql, [payment], sql, [payment], ["success"]);
+    assert.equal(r.a.rows[0].id, r.b.value.rows[0].id);
+    assert.equal(
+      (
+        await admin.query(
+          "select count(*)::int n from payment_reversals where payment_id=$1",
+          [payment],
+        )
+      ).rows[0].n,
+      1,
+    );
+    assert.equal(
+      Number(
+        (
+          await admin.query(
+            "select outstanding_amount from student_charge_balances where student_charge_id=$1",
+            [charge],
+          )
+        ).rows[0].outstanding_amount,
+      ),
+      100,
+    );
+    assert.equal(
+      (
+        await admin.query(
+          "select reversed_by from payment_reversals where payment_id=$1",
+          [payment],
+        )
+      ).rows[0].reversed_by,
+      owner,
     );
   });
   await check("Exposed application table RLS", async () => {
@@ -375,7 +544,8 @@ try {
       restrictedArtifactsUsed: false,
       hostedResourcesAccessed: false,
       attendanceConcurrency: "NOT_RUN",
-      allocationConcurrency: "NOT_RUN",
+      allocationConcurrency:
+        "shared-charge wait and unchanged denied effects verified",
       privateStorageTransport: "NOT_RUN",
     }),
   );

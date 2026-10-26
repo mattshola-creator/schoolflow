@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/native-pg-security-lab.yml
       - scripts/native-pg-overlap-probe.mjs
+      - scripts/native-domain-security-regression.mjs
   workflow_dispatch:
 
 permissions:
@@ -49,3 +50,5 @@ jobs:
         run: npm install --prefix "$RUNNER_TEMP/native-pg-driver" --ignore-scripts --no-fund --no-audit pg@8.16.3
       - name: Verify native version and independent transaction overlap
         run: node scripts/native-pg-overlap-probe.mjs
+      - name: Verify repository schema and domain security transactions
+        run: node scripts/native-domain-security-regression.mjs

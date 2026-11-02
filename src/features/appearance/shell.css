@@ -244,3 +244,88 @@
   background: var(--shell-canvas);
   color: var(--shell-muted);
 }
+
+/* Original campus illustration and concept-aligned operational surfaces. */
+.sf-campus-art {
+  display: none;
+}
+.sf-themed-shell .sf-executive-header {
+  border-radius: 1.25rem;
+  background-image: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgb(0 0 0 / 0.14)
+  ) !important;
+}
+.sf-themed-shell .sf-campus-art {
+  display: block;
+  position: absolute;
+  right: -1rem;
+  bottom: 0;
+  width: 45%;
+  height: 100%;
+  color: var(--shell-accent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+.sf-themed-shell .sf-executive-copy {
+  max-width: 70%;
+}
+.sf-themed-shell .sf-metric-symbol {
+  color: var(--shell-primary);
+  background: color-mix(
+    in srgb,
+    var(--shell-primary) 10%,
+    var(--shell-surface)
+  );
+}
+.sf-themed-shell .sf-executive-metric {
+  border-radius: 1rem;
+  padding: 1.15rem;
+  box-shadow: 0 3px 14px rgb(16 42 58 / 0.045);
+}
+.sf-themed-shell .sf-executive-metric > p {
+  margin-block: 0.75rem;
+}
+.sf-themed-shell .sf-work-queue {
+  border-radius: 1rem;
+}
+.sf-themed-shell .sf-work-queue-link {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  padding: 0.75rem 0.25rem;
+  min-height: 3rem;
+}
+.sf-themed-shell .sf-work-queue ul {
+  gap: 0;
+}
+.sf-themed-shell .sf-work-queue li:last-child .sf-work-queue-link {
+  border-bottom: 0;
+}
+.sf-themed-shell:is([data-appearance="ocean"]) .sf-campus-art {
+  color: #8de1ff;
+}
+.sf-themed-shell:is([data-appearance="ocean"]) .sf-executive-header {
+  border-bottom-color: #3bb9d4;
+}
+.sf-themed-shell:is(
+    [data-appearance="midnight"],
+    [data-appearance="midnight-emerald"]
+  )
+  .sf-executive-metric {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+@media (max-width: 639px) {
+  .sf-themed-shell .sf-executive-copy {
+    max-width: 100%;
+  }
+  .sf-themed-shell .sf-campus-art {
+    width: 65%;
+    opacity: 0.14;
+  }
+}
+@media print {
+  .sf-campus-art {
+    display: none !important;
+  }
+}

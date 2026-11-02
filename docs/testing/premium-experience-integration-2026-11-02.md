@@ -22,3 +22,14 @@ Review three appearances using identical permitted data, keyboard and mobile int
 ## Reversibility
 
 Close this draft or revert the UI change to restore the prior presentation. No database rollback is required. Existing release restrictions remain in force.
+
+## Approved concept alignment
+
+The executive header now includes an original decorative campus illustration,
+with compact metric cards and task rows across the existing operational dashboards.
+Owner summaries use four columns when desktop space permits. Ocean and Midnight
+retain distinct surface treatments, while narrow screens preserve full-width text.
+The illustration is decorative, has no external image dependency and is omitted
+from print. No invented trends, records, permission changes or domain mutations
+are introduced by this presentation slice. Live visual acceptance remains separate
+from automated verification.

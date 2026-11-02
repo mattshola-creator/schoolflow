@@ -96,7 +96,7 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
         </p>
       ) : null}
       <section
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
         aria-label="Permitted school summaries"
       >
         {summary.activeEnrollments !== undefined ? (

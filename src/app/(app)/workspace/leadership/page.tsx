@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WorkQueue } from "@/components/operational/work-queue";
 import { evaluateAccess } from "@/features/authorization/evaluator";
 import { loadAssessmentWorkspace } from "@/features/assessments/service";
 import { projectAssessmentQueue } from "@/features/workspaces/assessment-queue";
@@ -186,33 +187,17 @@ export default async function LeadershipPage() {
         </section>
       ) : null}
       {work ? (
-        <section className="rounded-2xl border p-5">
-          <h2 className="text-xl font-semibold">Your next actions</h2>
-          <p className="mt-2">
-            {work.counts.tasks} open tasks
-            {work.counts.approvals !== undefined
-              ? ` · ${work.counts.approvals} pending approvals`
-              : ""}
-          </p>
-          <ul className="mt-4 grid gap-3">
-            {work.tasks.map((t) => (
-              <li key={`${t.kind}:${t.id}`}>
-                <Link
-                  href={t.href}
-                  className="block min-h-11 rounded-xl border p-3 font-medium"
-                >
-                  {t.title}
-                  <span className="block text-sm font-normal">{t.status}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          {!work.tasks.length ? (
-            <p className="mt-4">
-              No pending work returned for your current school.
-            </p>
-          ) : null}
-        </section>
+        <WorkQueue
+          title="Your next actions"
+          description={`${work.counts.tasks} open tasks${work.counts.approvals !== undefined ? ` · ${work.counts.approvals} pending approvals` : ""}`}
+          items={work.tasks.map((task) => ({
+            key: `${task.kind}:${task.id}`,
+            title: task.title,
+            status: task.status,
+            href: task.href,
+          }))}
+          emptyMessage="No pending work returned for your current school."
+        />
       ) : null}
     </main>
   );

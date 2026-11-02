@@ -18,7 +18,7 @@ export function ExecutiveMetric({
 }) {
   return (
     <article
-      className="relative min-w-0 overflow-hidden rounded-2xl border p-5 shadow-sm sm:p-6"
+      className="sf-executive-metric relative min-w-0 overflow-hidden rounded-2xl border p-5 shadow-sm sm:p-6"
       style={{
         background: "var(--shell-surface,white)",
         color: "var(--shell-ink,#17211d)",
@@ -70,10 +70,10 @@ export function ExecutiveHeader({
 }) {
   return (
     <header
-      className="relative isolate min-w-0 overflow-hidden rounded-3xl p-5 shadow-sm sm:p-8"
+      className="sf-executive-header relative isolate min-w-0 overflow-hidden rounded-3xl p-5 shadow-sm sm:p-8"
       style={{
-        background: "var(--shell-nav,#073d2b)",
-        color: "var(--shell-nav-ink,white)",
+        background: "var(--shell-hero,var(--shell-nav,#073d2b))",
+        color: "var(--shell-hero-ink,var(--shell-nav-ink,white))",
       }}
     >
       <div

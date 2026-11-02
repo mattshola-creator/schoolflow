@@ -9,6 +9,9 @@ describe("scoped shell adapter", () => {
     it(`${id} keeps navigation and primary text readable without changing application tokens`, () => {
       const style = shellThemeStyle(id) as Record<string, string>;
       expect(
+        contrastRatio(style["--shell-hero-ink"], style["--shell-hero"]),
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
         Object.keys(style).every((key) => key.startsWith("--shell-")),
       ).toBe(true);
       expect(

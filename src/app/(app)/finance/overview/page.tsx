@@ -1,5 +1,5 @@
 import { ExecutiveMetric } from "@/components/operational/premium";
-import Link from "next/link";
+import { WorkQueue } from "@/components/operational/work-queue";
 import {
   WorkspaceHeader,
   workspaceSurface,
@@ -9,7 +9,6 @@ import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
 import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
 import { loadFinanceDashboard } from "@/features/finance/service";
 
-const panel = "min-w-0 rounded-2xl border p-5 shadow-sm sm:p-6";
 const money = (totals: Record<string, number>) => {
   const values = Object.entries(totals);
   if (!values.length) return "—";
@@ -111,6 +110,18 @@ export default async function FinanceOverviewPage() {
         />
       </WorkspaceHeader>
 
+      {tasks.length ? (
+        <WorkQueue
+          title="Operational tasks"
+          description="Counts reflect records visible to your current role and school. Recording and independent verification remain separate actions."
+          items={tasks.map((task) => ({
+            key: task.href + task.label,
+            title: task.label,
+            count: task.count,
+            href: task.href,
+          }))}
+        />
+      ) : null}
       {cards.length ? (
         <section
           className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
@@ -142,40 +153,6 @@ export default async function FinanceOverviewPage() {
           />
         </div>
       )}
-
-      {tasks.length ? (
-        <section
-          style={workspaceSurface}
-          className={`${panel} mt-7`}
-          aria-labelledby="finance-tasks"
-        >
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-semibold" id="finance-tasks">
-                Operational tasks
-              </h2>
-              <p className="mt-1 text-sm opacity-80">
-                Counts reflect records visible to your current role and school.
-              </p>
-            </div>
-          </div>
-          <ul className="mt-4 divide-y">
-            {tasks.map((task) => (
-              <li key={task.label}>
-                <Link
-                  href={task.href}
-                  className="focus-visible:outline-tenant-accent flex min-h-14 items-center justify-between gap-4 py-3 focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
-                  <span className="font-medium">{task.label}</span>
-                  <span className="rounded-full border px-3 py-1 text-sm font-semibold tabular-nums">
-                    {task.count}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
     </main>
   );
 }

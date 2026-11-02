@@ -14,7 +14,7 @@ export function PageHeader({
   title,
 }: PageHeaderProps) {
   return (
-    <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5">
+    <header className="sf-page-header flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5">
       <div className="max-w-3xl min-w-0">
         {eyebrow ? (
           <p className="text-brand text-sm font-semibold">{eyebrow}</p>

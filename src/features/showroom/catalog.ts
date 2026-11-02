@@ -37,11 +37,11 @@ const midnight = appearanceThemes["midnight-emerald"];
 export const showroomThemes: readonly ShowroomTheme[] = [
   {
     id: "emerald",
-    name: "Emerald Executive",
+    name: "Royal Emerald Executive",
     tier: "core",
     mood: "Confident & composed",
     description:
-      "Deep forest navigation, an emerald welcome and a balanced executive canvas.",
+      "Midnight navy navigation, an emerald welcome and a pearl executive canvas.",
     layout: "executive",
     canvas: emerald.canvas,
     surface: emerald.surface,

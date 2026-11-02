@@ -149,3 +149,98 @@
 .sf-themed-shell .sf-shell-mobile-navigation button:hover {
   background: var(--shell-nav-selected);
 }
+
+/* Founder-approved operational presentation. No domain/status semantics change. */
+.sf-themed-shell #main-content {
+  color: var(--shell-ink);
+}
+.sf-themed-shell .sf-executive-header {
+  border: 1px solid var(--shell-border);
+  border-bottom: 3px solid var(--shell-accent);
+}
+.sf-themed-shell .sf-executive-header a:not([style]) {
+  color: inherit;
+}
+.sf-themed-shell .sf-executive-header a:not([style]):hover {
+  background: rgb(255 255 255 / 0.12);
+}
+.sf-themed-shell .sf-executive-metric {
+  box-shadow: 0 4px 20px rgb(16 42 58 / 0.05);
+}
+.sf-themed-shell .sf-executive-metric:nth-child(3n + 2) > span[aria-hidden] {
+  background: linear-gradient(90deg, #116c79, transparent);
+}
+.sf-themed-shell .sf-executive-metric:nth-child(3n) > span[aria-hidden] {
+  background: linear-gradient(90deg, var(--shell-accent), transparent);
+}
+.sf-work-queue {
+  color: var(--shell-ink, #17211d);
+  background: var(--shell-surface, white);
+  border-color: var(--shell-border, #d8e0dc);
+}
+.sf-work-queue-description {
+  color: var(--shell-muted, #52615a);
+}
+.sf-work-queue-link {
+  border-color: var(--shell-border, #d8e0dc);
+  color: inherit;
+}
+.sf-work-queue-link:hover {
+  background: var(--shell-canvas, #f4f8f7);
+  border-color: var(--shell-primary, #145c4a);
+}
+.sf-themed-shell #main-content :focus-visible {
+  outline: 3px solid var(--shell-focus);
+  outline-offset: 3px;
+}
+@media (max-width: 639px) {
+  .sf-themed-shell #main-content {
+    padding-inline: 0.75rem;
+  }
+  .sf-themed-shell .sf-executive-metric {
+    padding: 1rem;
+  }
+  .sf-themed-shell .sf-executive-metric > p {
+    font-size: 1.875rem;
+  }
+  .sf-themed-shell .sf-shell-theme-picker {
+    justify-content: flex-start;
+  }
+}
+
+/* Existing shared components inherit the current appearance only inside opt-in. */
+.sf-themed-shell #main-content {
+  --sf-surface: var(--shell-surface);
+  --sf-canvas: var(--shell-canvas);
+  --sf-ink: var(--shell-ink);
+  --sf-muted: var(--shell-muted);
+  --sf-border: var(--shell-border);
+  --sf-primary: var(--shell-primary);
+  --sf-on-primary: var(--shell-primary-ink);
+  --sf-accent: var(--shell-accent);
+}
+.sf-themed-shell .sf-page-header h1,
+.sf-themed-shell .sf-surface-card > h2,
+.sf-themed-shell .sf-data-table td,
+.sf-themed-shell .sf-data-table thead,
+.sf-themed-shell .sf-form-field > label {
+  color: var(--shell-ink);
+}
+.sf-themed-shell .sf-page-header p,
+.sf-themed-shell .sf-form-field > p:not([role="alert"]) {
+  color: var(--shell-muted);
+}
+.sf-themed-shell .sf-surface-card,
+.sf-themed-shell .sf-data-table,
+.sf-themed-shell .sf-form-input {
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-data-table thead {
+  background: var(--shell-canvas);
+}
+.sf-themed-shell .sf-form-input:disabled {
+  background: var(--shell-canvas);
+  color: var(--shell-muted);
+}

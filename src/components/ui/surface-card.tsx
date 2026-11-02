@@ -16,7 +16,7 @@ export function SurfaceCard({
   return (
     <section
       className={[
-        "border-border bg-surface rounded-2xl border p-5 shadow-sm sm:p-6",
+        "sf-surface-card border-border bg-surface rounded-2xl border p-5 shadow-sm sm:p-6",
         className,
       ]
         .filter(Boolean)

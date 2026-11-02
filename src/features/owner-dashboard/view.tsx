@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WorkQueue } from "@/components/operational/work-queue";
 import {
   ExecutiveHeader,
   ExecutiveMetric,
@@ -21,7 +22,7 @@ const chartStyle = {
   "--sf-border": "var(--shell-border,#d8e0dc)",
   "--sf-primary": "var(--shell-primary,#087C57)",
   "--sf-on-primary": "var(--shell-primary-ink,white)",
-  "--sf-accent": "#D6AE62",
+  "--sf-accent": "var(--shell-accent,#E6C47A)",
 } as CSSProperties;
 export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
   const { summary, visibility } = data;
@@ -238,26 +239,16 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
                     : ""}{" "}
                   {data.work.counts.urgent} high/urgent tasks
                 </p>
-                <ul className="mt-4 space-y-3">
-                  {data.work.tasks.map((task) => (
-                    <li key={`${task.kind}-${task.id}`}>
-                      <Link
-                        className="block min-h-11 rounded-lg border p-3 underline"
-                        href={task.href}
-                      >
-                        {task.title}
-                        <span className="block text-sm no-underline">
-                          {task.status}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                {!data.work.tasks.length ? (
-                  <p className="mt-3">
-                    No pending work returned for this scope.
-                  </p>
-                ) : null}
+                <WorkQueue
+                  title="Continue your work"
+                  description="Authorized next steps for the selected school."
+                  items={data.work.tasks.map((task) => ({
+                    key: `${task.kind}-${task.id}`,
+                    title: task.title,
+                    status: task.status,
+                    href: task.href,
+                  }))}
+                />
               </>
             ) : null}
             <Link className="mt-4 inline-block underline" href="/action-center">

@@ -148,9 +148,9 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
           </ExecutiveMetric>
         ) : null}
       </section>
-      <div className="grid min-w-0 items-start gap-5 xl:grid-cols-2">
+      <div className="sf-owner-insights grid min-w-0 items-start gap-5 xl:grid-cols-2">
         {summary.attendance ? (
-          <div style={chartStyle}>
+          <div className="sf-owner-attendance min-w-0" style={chartStyle}>
             <ProgressCard
               dataKind="authorized"
               title="Recorded-mark attendance"

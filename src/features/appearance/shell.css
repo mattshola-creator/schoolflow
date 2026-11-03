@@ -329,3 +329,24 @@
     display: none !important;
   }
 }
+
+/* Keep reading and keyboard order consistent when the desktop layout changes. */
+@media (min-width: 1440px) {
+  .sf-themed-shell:is(
+      [data-appearance="premium-emerald"],
+      [data-appearance="emerald"]
+    )
+    .sf-owner-insights {
+    grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, 1fr));
+  }
+  .sf-themed-shell[data-appearance="ocean"] .sf-owner-insights {
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  }
+  .sf-themed-shell:is(
+      [data-appearance="midnight-emerald"],
+      [data-appearance="midnight"]
+    )
+    .sf-owner-insights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

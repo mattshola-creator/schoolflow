@@ -1,3 +1,6 @@
+export const recordedPaymentRegisterHref =
+  "/finance/payments?status=recorded#payment-register";
+
 type PaymentStatus = "recorded" | "verified" | "rejected" | "reversed";
 
 function toMinorUnits(value: number | string) {

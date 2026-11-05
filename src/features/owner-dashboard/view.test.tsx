@@ -60,6 +60,38 @@ describe("operational Owner executive presentation", () => {
       screen.queryByRole("heading", { name: "School Finance" }),
     ).not.toBeInTheDocument();
   });
+  it("links the permitted pending-payment count to the recorded register", () => {
+    const financeVisible = {
+      ...data,
+      visibility: { ...data.visibility, finance: true },
+    };
+    const { rerender } = render(
+      <OwnerDashboard
+        data={{
+          ...financeVisible,
+          finance: { windowStart: "2026-09-24", pendingPayments: 3 },
+        }}
+      />,
+    );
+    expect(
+      screen.getByRole("link", {
+        name: /Payments awaiting independent verification: 3/,
+      }),
+    ).toHaveAttribute(
+      "href",
+      "/finance/payments?status=recorded#payment-register",
+    );
+    rerender(
+      <OwnerDashboard
+        data={{ ...financeVisible, finance: { windowStart: "2026-09-24" } }}
+      />,
+    );
+    expect(
+      screen.queryByRole("link", {
+        name: /Payments awaiting independent verification/,
+      }),
+    ).not.toBeInTheDocument();
+  });
   it("preserves unavailable states without inventing zero summaries", () => {
     render(
       <OwnerDashboard data={{ ...data, summary: {}, reportingError: true }} />,

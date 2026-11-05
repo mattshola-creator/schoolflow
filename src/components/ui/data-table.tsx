@@ -8,7 +8,12 @@ export function DataTable({
   children: ReactNode;
 }) {
   return (
-    <div className="border-border overflow-x-auto rounded-xl border">
+    <div
+      role="region"
+      aria-label={`${caption} · scrollable table`}
+      tabIndex={0}
+      className="sf-data-table border-border overflow-x-auto rounded-xl border"
+    >
       <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         {children}

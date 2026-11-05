@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WorkQueue } from "@/components/operational/work-queue";
 import { notFound } from "next/navigation";
 import { loadAssessmentWorkspace } from "@/features/assessments/service";
 import { readScoreSheetContext } from "@/features/assessments/score-sheet-context";
@@ -60,6 +61,26 @@ export default async function TeacherWorkspacePage() {
           My workspaces
         </Link>
       </ExecutiveHeader>
+      <section aria-labelledby="teacher-work-areas">
+        <h2 id="teacher-work-areas" className="mb-3 text-xl font-semibold">
+          Your work areas
+        </h2>
+        <WorkQueue
+          title="Continue your teaching work"
+          description="Open a permitted timetable, register or lesson. Your current assignments and academic locks still apply."
+          items={teacherWorkAreas(w.authorization).map((area) => ({
+            key: area.href,
+            title: area.title,
+            status: area.description,
+            href: area.href,
+          }))}
+          emptyMessage="No additional teaching work areas are available under your current access."
+        />
+        <p className="mt-3 text-sm">
+          Timetable, attendance, lessons and tasks appear only when your
+          existing permissions and entitlements include them.
+        </p>
+      </section>
       <p className="text-sm leading-6">
         Score sheets follow the existing school and assignment authorization.
         Displaying the latest {rows.length} of {w.batches.length} visible
@@ -100,29 +121,6 @@ export default async function TeacherWorkspacePage() {
         >
           <p>Submitted records in this list; score entry is read-only.</p>
         </ExecutiveMetric>
-      </section>
-      <section aria-labelledby="teacher-work-areas">
-        <h2 id="teacher-work-areas" className="mb-3 text-xl font-semibold">
-          Your work areas
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {teacherWorkAreas(w.authorization).map((area) => (
-            <Link
-              key={area.href}
-              href={area.href}
-              className="sf-academic-panel block min-h-11 rounded-2xl border p-5 focus-visible:outline-2 focus-visible:outline-offset-4"
-            >
-              <h3 className="font-semibold underline underline-offset-4">
-                {area.title} →
-              </h3>
-              <p className="mt-2 text-sm leading-6">{area.description}</p>
-            </Link>
-          ))}
-        </div>
-        <p className="mt-3 text-sm">
-          Timetable, attendance, lessons and tasks appear only when your
-          existing permissions and entitlements include them.
-        </p>
       </section>
       <section aria-labelledby="teacher-score-sheets">
         <h2 id="teacher-score-sheets" className="mb-3 text-xl font-semibold">

@@ -149,3 +149,204 @@
 .sf-themed-shell .sf-shell-mobile-navigation button:hover {
   background: var(--shell-nav-selected);
 }
+
+/* Founder-approved operational presentation. No domain/status semantics change. */
+.sf-themed-shell #main-content {
+  color: var(--shell-ink);
+}
+.sf-themed-shell .sf-executive-header {
+  border: 1px solid var(--shell-border);
+  border-bottom: 3px solid var(--shell-accent);
+}
+.sf-themed-shell .sf-executive-header a:not([style]) {
+  color: inherit;
+}
+.sf-themed-shell .sf-executive-header a:not([style]):hover {
+  background: rgb(255 255 255 / 0.12);
+}
+.sf-themed-shell .sf-executive-metric {
+  box-shadow: 0 4px 20px rgb(16 42 58 / 0.05);
+}
+.sf-themed-shell .sf-executive-metric:nth-child(3n + 2) > span[aria-hidden] {
+  background: linear-gradient(90deg, #116c79, transparent);
+}
+.sf-themed-shell .sf-executive-metric:nth-child(3n) > span[aria-hidden] {
+  background: linear-gradient(90deg, var(--shell-accent), transparent);
+}
+.sf-work-queue {
+  color: var(--shell-ink, #17211d);
+  background: var(--shell-surface, white);
+  border-color: var(--shell-border, #d8e0dc);
+}
+.sf-work-queue-description {
+  color: var(--shell-muted, #52615a);
+}
+.sf-work-queue-link {
+  border-color: var(--shell-border, #d8e0dc);
+  color: inherit;
+}
+.sf-work-queue-link:hover {
+  background: var(--shell-canvas, #f4f8f7);
+  border-color: var(--shell-primary, #145c4a);
+}
+.sf-themed-shell #main-content :focus-visible {
+  outline: 3px solid var(--shell-focus);
+  outline-offset: 3px;
+}
+@media (max-width: 639px) {
+  .sf-themed-shell #main-content {
+    padding-inline: 0.75rem;
+  }
+  .sf-themed-shell .sf-executive-metric {
+    padding: 1rem;
+  }
+  .sf-themed-shell .sf-executive-metric > p {
+    font-size: 1.875rem;
+  }
+  .sf-themed-shell .sf-shell-theme-picker {
+    justify-content: flex-start;
+  }
+}
+
+/* Existing shared components inherit the current appearance only inside opt-in. */
+.sf-themed-shell #main-content {
+  --sf-surface: var(--shell-surface);
+  --sf-canvas: var(--shell-canvas);
+  --sf-ink: var(--shell-ink);
+  --sf-muted: var(--shell-muted);
+  --sf-border: var(--shell-border);
+  --sf-primary: var(--shell-primary);
+  --sf-on-primary: var(--shell-primary-ink);
+  --sf-accent: var(--shell-accent);
+}
+.sf-themed-shell .sf-page-header h1,
+.sf-themed-shell .sf-surface-card > h2,
+.sf-themed-shell .sf-data-table td,
+.sf-themed-shell .sf-data-table thead,
+.sf-themed-shell .sf-form-field > label {
+  color: var(--shell-ink);
+}
+.sf-themed-shell .sf-page-header p,
+.sf-themed-shell .sf-form-field > p:not([role="alert"]) {
+  color: var(--shell-muted);
+}
+.sf-themed-shell .sf-surface-card,
+.sf-themed-shell .sf-data-table,
+.sf-themed-shell .sf-form-input {
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  border-color: var(--shell-border);
+}
+.sf-themed-shell .sf-data-table thead {
+  background: var(--shell-canvas);
+}
+.sf-themed-shell .sf-form-input:disabled {
+  background: var(--shell-canvas);
+  color: var(--shell-muted);
+}
+
+/* Original campus illustration and concept-aligned operational surfaces. */
+.sf-campus-art {
+  display: none;
+}
+.sf-themed-shell .sf-executive-header {
+  border-radius: 1.25rem;
+  background-image: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgb(0 0 0 / 0.14)
+  ) !important;
+}
+.sf-themed-shell .sf-campus-art {
+  display: block;
+  position: absolute;
+  right: -1rem;
+  bottom: 0;
+  width: 45%;
+  height: 100%;
+  color: var(--shell-accent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+.sf-themed-shell .sf-executive-copy {
+  max-width: 70%;
+}
+.sf-themed-shell .sf-metric-symbol {
+  color: var(--shell-primary);
+  background: color-mix(
+    in srgb,
+    var(--shell-primary) 10%,
+    var(--shell-surface)
+  );
+}
+.sf-themed-shell .sf-executive-metric {
+  border-radius: 1rem;
+  padding: 1.15rem;
+  box-shadow: 0 3px 14px rgb(16 42 58 / 0.045);
+}
+.sf-themed-shell .sf-executive-metric > p {
+  margin-block: 0.75rem;
+}
+.sf-themed-shell .sf-work-queue {
+  border-radius: 1rem;
+}
+.sf-themed-shell .sf-work-queue-link {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  padding: 0.75rem 0.25rem;
+  min-height: 3rem;
+}
+.sf-themed-shell .sf-work-queue ul {
+  gap: 0;
+}
+.sf-themed-shell .sf-work-queue li:last-child .sf-work-queue-link {
+  border-bottom: 0;
+}
+.sf-themed-shell:is([data-appearance="ocean"]) .sf-campus-art {
+  color: #8de1ff;
+}
+.sf-themed-shell:is([data-appearance="ocean"]) .sf-executive-header {
+  border-bottom-color: #3bb9d4;
+}
+.sf-themed-shell:is(
+    [data-appearance="midnight"],
+    [data-appearance="midnight-emerald"]
+  )
+  .sf-executive-metric {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+@media (max-width: 639px) {
+  .sf-themed-shell .sf-executive-copy {
+    max-width: 100%;
+  }
+  .sf-themed-shell .sf-campus-art {
+    width: 65%;
+    opacity: 0.14;
+  }
+}
+@media print {
+  .sf-campus-art {
+    display: none !important;
+  }
+}
+
+/* Keep reading and keyboard order consistent when the desktop layout changes. */
+@media (min-width: 1440px) {
+  .sf-themed-shell:is(
+      [data-appearance="premium-emerald"],
+      [data-appearance="emerald"]
+    )
+    .sf-owner-insights {
+    grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, 1fr));
+  }
+  .sf-themed-shell[data-appearance="ocean"] .sf-owner-insights {
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  }
+  .sf-themed-shell:is(
+      [data-appearance="midnight-emerald"],
+      [data-appearance="midnight"]
+    )
+    .sf-owner-insights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

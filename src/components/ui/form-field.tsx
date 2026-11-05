@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
 
 export const inputClassName =
-  "border-border-strong bg-surface min-h-11 w-full rounded-lg border px-3.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 hover:border-slate-400 focus:border-focus-ring focus:outline-none focus:ring-3 focus:ring-brand-soft disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500";
+  "sf-form-input border-border-strong bg-surface min-h-11 w-full rounded-lg border px-3.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 hover:border-slate-400 focus:border-focus-ring focus:outline-none focus:ring-3 focus:ring-brand-soft disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500";
 
 type FormFieldProps = {
   children: ReactNode;
@@ -23,7 +23,7 @@ export function FormField({
   const descriptionId = description ? `${htmlFor}-description` : undefined;
   const errorId = error ? `${htmlFor}-error` : undefined;
   return (
-    <div>
+    <div className="sf-form-field">
       <label htmlFor={htmlFor} className="text-sm font-semibold text-slate-800">
         {label}
         {required ? <span className="text-status-danger"> *</span> : null}

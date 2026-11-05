@@ -7,6 +7,7 @@ import {
 import { StatePanel } from "@/components/ui/state-panel";
 import { FinanceWorkspaceNav } from "@/components/finance-workspace-nav";
 import { FinanceUnavailableState } from "@/components/finance-unavailable-state";
+import { recordedPaymentRegisterHref } from "@/features/finance/payment-presentation";
 import { loadFinanceDashboard } from "@/features/finance/service";
 
 const money = (totals: Record<string, number>) => {
@@ -71,7 +72,7 @@ export default async function FinanceOverviewPage() {
       ? {
           label: "Payments awaiting independent verification",
           count: w.pendingPayments,
-          href: "/finance/payments?status=recorded#payment-register",
+          href: recordedPaymentRegisterHref,
         }
       : null,
     w.visibility.expenses

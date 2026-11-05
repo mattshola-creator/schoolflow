@@ -1,3 +1,4 @@
+import { recordedPaymentRegisterHref } from "@/features/finance/payment-presentation";
 import Link from "next/link";
 import { WorkQueue } from "@/components/operational/work-queue";
 import {
@@ -208,10 +209,15 @@ export function OwnerDashboard({ data }: { data: OwnerDashboardDTO }) {
                   ),
                 )}
                 {data.finance?.pendingPayments !== undefined ? (
-                  <p className="mt-3">
-                    Awaiting independent verification:{" "}
-                    {data.finance.pendingPayments}
-                  </p>
+                  <Link
+                    className="mt-3 flex min-h-11 flex-wrap items-center gap-x-2 rounded-lg border px-3 py-2 font-medium underline underline-offset-4"
+                    href={recordedPaymentRegisterHref}
+                  >
+                    Payments awaiting independent verification:{" "}
+                    <span className="tabular-nums">
+                      {data.finance.pendingPayments}
+                    </span>
+                  </Link>
                 ) : null}
               </>
             )}
